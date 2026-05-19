@@ -72,13 +72,36 @@ module.exports = (io) => {
       }
 
       //  store in DB
+      // await pool.execute(
+      //   "INSERT INTO messages (topic, payload) VALUES (?, ?)",
+      //   [topic, JSON.stringify(parsed)]
+      // );
       await pool.execute(
-        "INSERT INTO messages (topic, payload) VALUES (?, ?)",
-        [topic, JSON.stringify(parsed)]
+        `INSERT INTO messages
+  (serial_number, topic, payload)
+  VALUES (?, ?, ?)`,
+        [
+          parsed.ASN_31,
+          topic,
+          JSON.stringify(parsed),
+        ]
       );
 
-      // REAL-TIME EMIT
-      io.emit("inverterData", parsed);
+      // ✅ FETCH LAST VALUE FROM DB (IMPORTANT)
+      const [rows] = await pool.execute(
+        "SELECT payload FROM messages ORDER BY created_at DESC LIMIT 1"
+      );
+
+      // // REAL-TIME EMIT
+      // io.emit("inverterData", parsed);
+      if (rows.length > 0) {
+        const latest = JSON.parse(rows[0].payload);
+
+        // ✅ Emit DB value instead of raw MQTT
+        // io.emit("inverterData", latest);
+        io.to(parsed.ASN_31.toString())
+          .emit("inverterData", latest);
+      }
 
     } catch (err) {
       console.error("Error:", err.message);

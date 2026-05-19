@@ -42,3 +42,38 @@ exports.getLatestMessage = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getLatestMessage = async (req, res) => {
+  try {
+
+    // from JWT
+    const serial = req.user.serial_number;
+
+    const [rows] = await pool.execute(
+      `SELECT payload, created_at
+       FROM messages
+       WHERE serial_number = ?
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [serial]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        error: "No data found",
+      });
+    }
+
+    const parsed = JSON.parse(rows[0].payload);
+
+    parsed.DB_TIME = rows[0].created_at;
+
+    res.json(parsed);
+
+  } catch (err) {
+
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};

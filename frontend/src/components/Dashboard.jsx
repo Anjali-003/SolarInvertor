@@ -26,20 +26,6 @@ const P = {
     orange: "#F97316",
 };
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// const MOCK_DATA = {
-//     VD: 5, TIMESTAMP: "2026-03-09 14:39:47", MAXINDEX: 96, INDEX: 26,
-//     LOAD: 0, STINTERVAL: 15, MSGID: "", DATE: 90326,
-//     IMEI: "869863080708267", ASN_31: 31123450, POTP: "316360", COTP: "610912",
-//     "IS-1-0---IST": 0, "IS-1-0---DCV1": 432.1, "IS-1-0---DCI1": 6.4,
-//     "IS-1-0---DCKW1": 2270, "IS-1-0---VN": 234.5, "IS-1-0---I": 0.78,
-//     "IS-1-0---POW": 1234, "IS-1-0---TKWH": 0, "IS-1-0---TON": 0,
-//     "IS-1-0---LKWH": 0, "IS-1-0---LON": 0, "IS-1-0---TEMP": 34.51,
-//     "IS-1-0---FREQ": 49.8, "IS-1-0---PF": 0, "IS-1-0---APOW": 0,
-//     "IS-1-0---RPOW": 0, "IS-1-0---FT1": 0, "IS-1-0---FT2": 0,
-//     "IS-1-0---FT3": 0, "IS-1-0---FT4": 0, "IS-1-0---FT5": 0,
-// };
-
 // ─── Field map ────────────────────────────────────────────────────────────────
 const FIELD_MAP = [
     // { label: "Sr. No", key: "ASN_31", unit: "", group: "meta", desc: "Device Serial Number" },
@@ -80,24 +66,6 @@ function StatusBadge({ value }) {
     const status = getStatus();
 
     return (
-        // <span style={{
-        //     display: "inline-flex", alignItems: "center", gap: 7,
-        //     padding: "5px 13px", borderRadius: 20,
-        //     background: on ? "#FFF3D0" : "#F5F0EA",
-        //     border: `1.5px solid ${on ? P.deepAmber : P.border}`,
-        //     color: on ? P.deepAmber : P.textMuted,
-        //     fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
-        //     fontFamily: "'Space Mono', monospace",
-        // }}>
-        //     <span style={{
-        //         width: 7, height: 7, borderRadius: "50%",
-        //         background: on ? P.deepAmber : P.textDim,
-        //         boxShadow: on ? `0 0 6px ${P.deepAmber}` : "none",
-        //         animation: on ? "blink 1.8s infinite" : "none",
-        //         flexShrink: 0,
-        //     }} />
-        //     {on ? "RUNNING" : "STANDBY"}
-        // </span>
 
         <span style={{
             display: "inline-flex", alignItems: "center", gap: 7,
@@ -156,19 +124,6 @@ export function MetricCard({ field, value, index }) {
                 pointerEvents: "none",
             }} />
 
-            {/* Key chip */}
-            {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <span style={{
-                    fontSize: 9, fontFamily: "'Space Mono', monospace",
-                    color: accent, letterSpacing: 0.8,
-                    background: `${accent}18`,
-                    padding: "2px 8px", borderRadius: 5,
-                    border: `1px solid ${accent}40`,
-                }}>
-                    {field.key.replace("IS-1-0---", "").replace("ASN_31", "SN")}
-                </span>
-            </div> */}
-
             {/* Label */}
             <div style={{
                 fontSize: 14, color: P.textMuted,
@@ -215,111 +170,9 @@ export function MetricCard({ field, value, index }) {
     );
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
-// function Header({ data, lastUpdated, isLive }) {
-//     return (
-//         <div style={{
-//             background: P.surfaceAlt,
-//             borderBottom: `1px solid ${P.border}`,
-//             padding: "18px 32px",
-//             display: "flex", alignItems: "center",
-//             justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-//         }}>
-//             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-//                 <div style={{
-//                     width: 42, height: 42,
-//                     background: `linear-gradient(135deg, ${P.deepAmber}, ${P.orange})`,
-//                     borderRadius: 10,
-//                     boxShadow: `0 4px 16px ${P.orange}44`,
-//                     display: "flex", alignItems: "center", justifyContent: "center",
-//                     flexShrink: 0,
-//                 }}>
-//                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-//                         stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
-//                         <circle cx="12" cy="12" r="4" />
-//                         <line x1="12" y1="2" x2="12" y2="5" />
-//                         <line x1="12" y1="19" x2="12" y2="22" />
-//                         <line x1="2" y1="12" x2="5" y2="12" />
-//                         <line x1="19" y1="12" x2="22" y2="12" />
-//                         <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" />
-//                         <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" />
-//                         <line x1="19.78" y1="4.22" x2="17.66" y2="6.34" />
-//                         <line x1="6.34" y1="17.66" x2="4.22" y2="19.78" />
-//                     </svg>
-//                 </div>
-//                 <div>
-//                     <div style={{
-//                         fontSize: 18, fontWeight: 700,
-//                         fontFamily: "'Space Mono', monospace",
-//                         color: P.textPrimary, letterSpacing: -0.5,
-//                     }}>
-//                         Solar Inverter Monitor
-//                     </div>
-//                     {/* <div style={{
-//                         fontSize: 10, color: P.textMuted,
-//                         fontFamily: "'Space Mono', monospace", letterSpacing: 1,
-//                     }}>
-//                         IMEI: {data?.IMEI || "-"} · MQTT LIVE FEED
-//                     </div> */}
-
-//                     <div style={{
-//                         fontSize: 10,
-//                         color: P.textMuted,
-//                         fontFamily: "'Space Mono', monospace",
-//                         letterSpacing: 1,
-//                     }}>
-//                         Serial No: {data?.ASN_31 ?? "--"}
-//                     </div>
-
-//                 </div>
-//             </div>
-
-//             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-//                 <div style={{ textAlign: "right" }}>
-//                     <div style={{ fontSize: 10, color: P.textDim, fontFamily: "'Space Mono', monospace" }}>Last Update</div>
-//                     <div style={{ fontSize: 12, color: P.textSecond, fontFamily: "'Space Mono', monospace" }}>
-//                         {lastUpdated || "-"}
-//                     </div>
-//                 </div>
-
-//                 <div style={{
-//                     display: "flex", alignItems: "center", gap: 7,
-//                     padding: "6px 14px", borderRadius: 20,
-//                     background: isLive ? "#FFF3D0" : "#FEE2E2",
-//                     border: `1.5px solid ${isLive ? P.deepAmber : "#FCA5A5"}`,
-//                 }}>
-//                     <div style={{
-//                         width: 8, height: 8, borderRadius: "50%",
-//                         background: isLive ? P.deepAmber : "#EF4444",
-//                         boxShadow: isLive ? `0 0 7px ${P.deepAmber}` : "0 0 7px #EF4444",
-//                         animation: "blink 1.5s infinite",
-//                     }} />
-//                     <span style={{
-//                         fontSize: 10, fontWeight: 700,
-//                         fontFamily: "'Space Mono', monospace",
-//                         color: isLive ? P.deepAmber : "#DC2626",
-//                         letterSpacing: 1.5,
-//                     }}>
-//                         {isLive ? "LIVE" : "OFFLINE"}
-//                     </span>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
 
 // ─── Summary Bar ──────────────────────────────────────────────────────────────
 function SummaryBar({ data }) {
-    //const pills = [
-    // { label: "DC Power", value: `${(data?.["IS-1-0---DCKW1"] ?? 0).toLocaleString()} W`, accent: P.deepAmber },
-    //{ label: "DC Power", value: data?.["IS-1-0---DCKW1"] != null ? `${data["IS-1-0---DCKW1"]} W` : "--", accent: P.deepAmber },
-    // { label: "AC Voltage", value: `${data?.["IS-1-0---VN"] ?? 0} V`, accent: P.orange },
-    //{ label: "AC Voltage", value: data?.["IS-1-0---VN"] != null ? `${data["IS-1-0---VN"]} V` : "--", accent: P.orange },
-    // { label: "Temperature", value: `${data?.["IS-1-0---TEMP"] ?? 0} °C`, accent: P.amber },
-    //{ label: "Temperature", value: data?.["IS-1-0---TEMP"] != null ? `${data["IS-1-0---TEMP"]} °C` : "--", accent: P.amber },
-    // { label: "Grid Freq", value: `${data?.["IS-1-0---FREQ"] ?? 0} Hz`, accent: "#C9860A" },
-    //{ label: "Grid Freq", value: data?.["IS-1-0---FREQ"] != null ? `${data["IS-1-0---FREQ"]} Hz` : "--", accent: "#C9860A" },
-    //];
 
     const pills = [
         {
@@ -379,13 +232,9 @@ function SummaryBar({ data }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Dashboard() {
-    // const [data, setData] = useState(MOCK_DATA);
     const navigate = useNavigate();
-    // const [data, setData] = useState(null);
     const { data, setData, lastUpdated } = useInverter();
-    // const [lastUpdated, setLastUpdated] = useState(null);
     
-    // const [lastUpdated, setLastUpdated] = useState(MOCK_DATA.TIMESTAMP);
     const [isLive, setIsLive] = useState(true);
     const [apiUrl, setApiUrl] = useState("http://localhost:3000/api/latest");
     const [showConfig, setShowConfig] = useState(false);
@@ -404,66 +253,6 @@ export default function Dashboard() {
             setIsLive(false);
         }
     };
-    // code for the api polling method, currently disabled in favor of socket.io real-time updates
-    // useEffect(() => {
-    //     fetchData();
-
-    //     intervalRef.current = setInterval(() => {
-    //         fetchData();
-    //     }, refreshInterval * 1000);
-
-    //     return () => clearInterval(intervalRef.current);
-    // }, [apiUrl, refreshInterval]);
-
-
-    // ─── Socket.IO Real-Time Updates ─────────────────────────────────────────────
-
-    // useEffect(() => {
-    //     const socket = io("http://localhost:3000");
-
-    //     socket.on("connect", () => {
-    //         console.log("Connected to server");
-    //     });
-
-    //     socket.on("inverterData", (newData) => {
-    //         console.log("Live Data:", newData);
-
-    //         setData(newData);
-    //         setLastUpdated(new Date().toLocaleTimeString());
-    //         setIsLive(true);
-    //     });
-
-    //     socket.on("disconnect", () => {
-    //         setIsLive(false);
-    //     });
-
-    //     return () => socket.disconnect();
-    // }, []);
-
-
-
-
-    //   useEffect(() => {
-    // Uncomment to enable real polling:
-    // fetchData();
-    // intervalRef.current = setInterval(fetchData, refreshInterval * 1000);
-    // return () => clearInterval(intervalRef.current);
-
-    //     const timer = setInterval(() => {
-    //       setData(prev => ({
-    //         ...prev,
-    //         "IS-1-0---TEMP": parseFloat((prev["IS-1-0---TEMP"] + (Math.random() - 0.5) * 0.2).toFixed(2)),
-    //         "IS-1-0---FREQ": parseFloat((49.8 + (Math.random() - 0.5) * 0.1).toFixed(2)),
-    //         "IS-1-0---VN":   parseFloat((234.5 + (Math.random() - 0.5) * 1).toFixed(1)),
-    //         "IS-1-0---I":    parseFloat((0.78 + (Math.random() - 0.5) * 0.05).toFixed(3)),
-    //       }));
-    //       setLastUpdated(new Date().toLocaleTimeString());
-    //     }, 3000);
-    //     return () => clearInterval(timer);
-    //   }, []);
-
-
-
     const inputStyle = {
         width: "100%",
         background: P.bg,
@@ -504,73 +293,6 @@ export default function Dashboard() {
                 <Header data={data} lastUpdated={lastUpdated} isLive={isLive} />
                 <SummaryBar data={data} />
                 
-
-                {/* Config bar */}
-                {/* <div style={{
-                    padding: "10px 32px",
-                    background: "#FFFBF0",
-                    borderBottom: `1px solid ${P.border}`,
-                    display: "flex", alignItems: "center",
-                    justifyContent: "space-between", gap: 12, flexWrap: "wrap",
-                }}>
-                    <div style={{ fontSize: 10, color: P.textDim, letterSpacing: 1 }}>
-                        POLLING EVERY {refreshInterval}s · INDEX {data?.INDEX ?? "-"} / {data?.MAXINDEX ?? "-"}
-                    </div>
-                    <button
-                        onClick={() => setShowConfig(v => !v)}
-                        style={{
-                            background: "transparent",
-                            border: `1px solid ${P.border}`,
-                            borderRadius: 8,
-                            color: P.textMuted,
-                            padding: "4px 14px",
-                            fontSize: 10, cursor: "pointer",
-                            letterSpacing: 1,
-                            fontFamily: "'Space Mono', monospace",
-                        }}
-                    >
-                        {showConfig ? "HIDE CONFIG" : "API CONFIG"}
-                    </button>
-                </div> */}
-
-                {/* {showConfig && (
-                    <div style={{
-                        padding: "16px 32px",
-                        background: "#FFFDF5",
-                        borderBottom: `1px solid ${P.border}`,
-                        display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center",
-                    }}>
-                        <div style={{ flex: 1, minWidth: 260 }}>
-                            <div style={{ fontSize: 9, color: P.textMuted, letterSpacing: 1, marginBottom: 5 }}>BACKEND API URL</div>
-                            <input value={apiUrl} onChange={e => setApiUrl(e.target.value)}
-                                placeholder="http://your-backend/api/latest" style={inputStyle} />
-                        </div>
-                        <div style={{ minWidth: 120 }}>
-                            <div style={{ fontSize: 9, color: P.textMuted, letterSpacing: 1, marginBottom: 5 }}>REFRESH (SEC)</div>
-                            <input type="number" value={refreshInterval} min={5} max={300}
-                                onChange={e => setRefreshInterval(Number(e.target.value))} style={inputStyle} />
-                        </div>
-                        <button onClick={fetchData} style={{
-                            background: `${P.deepAmber}18`,
-                            border: `1px solid ${P.deepAmber}66`,
-                            borderRadius: 8, color: P.deepAmber,
-                            padding: "8px 18px", fontSize: 11,
-                            cursor: "pointer", letterSpacing: 1,
-                            fontFamily: "'Space Mono', monospace",
-                            alignSelf: "flex-end",
-                        }}>
-                            FETCH NOW
-                        </button>
-                    </div>
-                )} */}
-
-                {/* Card Grid */}
-                {/* <div style={{
-                    flex: 1, padding: "28px 32px",
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                    gap: 16, alignContent: "start",
-                }}> */}
                 <div style={{
                     flex: 1,
                     padding: "28px 32px",
@@ -636,22 +358,6 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-
-                {/* Footer */}
-                {/* <div style={{
-                    padding: "14px 32px",
-                    borderTop: `1px solid ${P.border}`,
-                    display: "flex", justifyContent: "space-between",
-                    alignItems: "center", flexWrap: "wrap", gap: 8,
-                    background: P.surfaceAlt,
-                }}>
-                    <span style={{ fontSize: 9, color: P.textDim, letterSpacing: 1 }}>
-                        SOLAR INVERTER DASHBOARD · MQTT → MYSQL → REST
-                    </span>
-                    <span style={{ fontSize: 9, color: P.textDim, letterSpacing: 1 }}>
-                        POTP: {data?.POTP} · STINTERVAL: {data?.STINTERVAL}s
-                    </span>
-                </div> */}
                 <Footer data={data} />
 
             </div>
