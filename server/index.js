@@ -1,184 +1,198 @@
-// require("dotenv").config();
-
-// const express = require("express");
-// const cors = require("cors");
-
-// const app = express();
-
-// app.use(cors());
-// app.use(express.json());
-
-// // Import MQTT handler (important: starts listener)
-// require("./src/services/mqttHandler");
-
-// const messageRoutes = require("./src/routes/messageRoutes");
-// app.use("/api", messageRoutes);
-
-// app.get("/", (req, res) => {
-//   res.send("Backend is running 🚀");
-// });
-
-// app.listen(process.env.PORT, () => {
-//   console.log(`Server running on port ${process.env.PORT}`);
-// });
-
-
-
-
-
-// Updated version with Socket.IO integration
-
-// require("dotenv").config();
-
-// const express = require("express");
-// const cors = require("cors");
-// const http = require("http");
-// const { Server } = require("socket.io");
-
-// const app = express();
-// const server = http.createServer(app);
-
-// // 🔥 attach socket.io
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//   },
-// });
-
-// app.use(cors());
-// app.use(express.json());
-
-// // make io available globally
-// app.set("io", io);
-
-// // import MQTT handler and pass io
-// require("./services/mqttHandler")(io);
-
-// const messageRoutes = require("./routes/messageRoutes");
-// app.use("/api", messageRoutes);
-
-// app.get("/", (req, res) => {
-//   res.send("Backend is running 🚀");
-// });
-
-// server.listen(process.env.PORT, () => {
-//   console.log(`Server running on port ${process.env.PORT}`);
-// });
-
-
-
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
-const pool = require("./src/config/database"); // 👈 ADD THIS
 const jwt = require("jsonwebtoken");
+
+const pool = require("./src/config/database");
+const vendorRoutes = require("./src/routes/vendorRoutes");
+const authRoutes = require("./src/routes/authRoutes");
+const messageRoutes = require("./src/routes/messageRoutes");
+const userRoutes = require("./src/routes/userRoutes");
+const certificateRoutes = require("./src/routes/certificateRoutes");
+const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
 
 const app = express();
 const server = http.createServer(app);
-const authRoutes = require("./src/routes/authRoutes");
 
-// ✅ Create socket server
+// ─────────────────────────────────────
+// SOCKET.IO
+// ─────────────────────────────────────
 const io = new Server(server, {
   cors: {
     origin: "*",
   },
 });
 
+// ─────────────────────────────────────
+// MIDDLEWARE
+// ─────────────────────────────────────
 app.use(cors());
+
 app.use(express.json());
 
-// mount routes AFTER JSON and CORS middleware
+// ─────────────────────────────────────
+// ROUTES
+// ─────────────────────────────────────
 app.use("/api/auth", authRoutes);
 
-// ✅ 🔥 ADD THIS BLOCK HERE
-// io.on("connection", async (socket) => {
-//   console.log("Client connected");
+app.use("/api", messageRoutes);
 
-//   try {
-//     const [rows] = await pool.execute(
-//       "SELECT payload FROM messages ORDER BY created_at DESC LIMIT 1"
-//     );
+app.use("/api", userRoutes);
 
-//     if (rows.length > 0) {
-//       socket.emit("inverterData", JSON.parse(rows[0].payload));
-//     }
-//   } catch (err) {
-//     console.error("Error sending initial data:", err.message);
-//   }
-// });
+app.use("/api/certs",certificateRoutes);
 
-io.on("connection", async (socket) => {
-  console.log("AUTH:", socket.handshake.auth);
+app.use("/api/vendor",vendorRoutes);
 
+// app.use(
+//   "/api/devices",
+//   require("./routes/vendorDeviceRoutes")
+// );
+
+app.use(
+  "/api/devices",
+  vendorDeviceRoutes
+);
+
+// ─────────────────────────────────────
+// SOCKET AUTH MIDDLEWARE
+// ─────────────────────────────────────
+io.use((socket, next) => {
 
   try {
 
-    // token from frontend
-    const token = socket.handshake.auth.token;
+    const token =
+      socket.handshake.auth.token;
 
     if (!token) {
-      console.log("No token");
-      return socket.disconnect();
+
+      return next(
+        new Error("No token")
+      );
     }
 
-    // verify JWT
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
     );
-        console.log(decoded);
 
+    // attach user to socket
+    socket.user = decoded;
 
-    // user device serial
-    const serial = decoded.serial_number;
+    next();
+
+  } catch (err) {
+
+    next(
+      new Error("Authentication error")
+    );
+  }
+});
+
+// ─────────────────────────────────────
+// SOCKET CONNECTION
+// ─────────────────────────────────────
+io.on("connection", async (socket) => {
+
+  try {
+
+    console.log("✅ Socket Connected");
+
+    const imei =
+      socket.user.imei;
 
     console.log(
-      `Client connected for inverter: ${serial}`
+      `Client connected for inverter: ${imei}`
     );
 
     // join room
-    socket.join(serial.toString());
+    socket.join(imei.toString());
 
-    // send latest data ONLY for this serial
+    // fetch latest ONLY for this inverter
     const [rows] = await pool.execute(
-      `SELECT payload
-       FROM messages
-       WHERE serial_number = ?
-       ORDER BY created_at DESC
-       LIMIT 1`,
-      [serial]
+      `
+      SELECT payload
+      FROM messages
+      WHERE imei = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+      `,
+      [imei]
     );
 
     if (rows.length > 0) {
 
-      const latest = JSON.parse(rows[0].payload);
+      const latest = JSON.parse(
+        rows[0].payload
+      );
 
-      socket.emit("inverterData", latest);
+      socket.emit(
+        "inverterData",
+        latest
+      );
     }
+
+    socket.on("disconnect", () => {
+
+      console.log(
+        `❌ Client disconnected: ${imei}`
+      );
+    });
 
   } catch (err) {
 
-    console.log("Socket auth error:", err.message);
+    console.log(
+      "Socket connection error:",
+      err.message
+    );
 
     socket.disconnect();
   }
 });
 
-// 👇 MQTT handler (keep this AFTER io is created)
+// ─────────────────────────────────────
+// MQTT HANDLER
+// ─────────────────────────────────────
 require("./src/services/mqttHandler")(io);
 
-const messageRoutes = require("./src/routes/messageRoutes");
-app.use("/api", messageRoutes);
-
+// ─────────────────────────────────────
+// TEST ROUTE
+// ─────────────────────────────────────
 app.get("/", (req, res) => {
+
   res.send("Backend is running 🚀");
 });
 
-const PORT = process.env.PORT || 3000;
+
+// Add this BEFORE server.listen()
+
+app.get("/test", (req, res) => {
+  res.json({ 
+    message: "Express is working",
+    time: new Date().toISOString()
+  });
+});
+
+app.get("/api/test", (req, res) => {
+  res.json({ 
+    message: "API routes working",
+    time: new Date().toISOString()
+  });
+});
+
+
+
+// ─────────────────────────────────────
+// START SERVER
+// ─────────────────────────────────────
+const PORT =
+  process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+  console.log(
+    `Server running on port ${PORT}`
+  );
 });

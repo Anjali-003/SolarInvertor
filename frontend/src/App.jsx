@@ -1,111 +1,82 @@
-// import InverterDashboard from "./components/Dashboard";
-
-// function App() {
-//   return <InverterDashboard />;
-// }
-
-// export default App;
-
-
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import InverterDashboard from "./components/Dashboard";
-// import PowerPage from "./components/PowerPage";
-// import FaultPage from "./components/FaultPage";
-
-// export default function App() {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/" element={<InverterDashboard />} />
-//         <Route path="/power" element={<PowerPage />} />
-//         <Route path="/faults" element={<FaultPage />} />
-//       </Routes>
-//     </Router>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import { InverterProvider } from "./context/Context";
-
-// import InverterDashboard from "./components/Dashboard";
-// import PowerPage from "./components/Power";
-// import FaultPage from "./components/Fault";
-
-// export default function App() {
-//   return (
-//     <InverterProvider>
-//       <Router>
-//         <Routes>
-//           <Route path="/" element={<InverterDashboard />} />
-//           <Route path="/power" element={<PowerPage />} />
-//           <Route path="/faults" element={<FaultPage />} />
-//         </Routes>
-//       </Router>
-//     </InverterProvider>
-//   );
-// }
-
-
-
 import {
   BrowserRouter,
   Routes,
   Route,
 } from "react-router-dom";
 
-import Dashboard from "./components/Dashboard";
-import FaultPage from "./components/Fault";
-import PowerPage from "./components/Power";
-
+import Home from "./pages/Home";
+import Fault from "./pages/Fault";
+import Power from "./pages/Power";
+import User from "./pages/User";
 import Login from "./pages/Login";
-
+import VendorLogin from "./pages/VendorLogin";
+import DeviceHub from "./pages/DeviceHub";
+import RegisterDevice from "./pages/RegisterDevice";
+import DeviceCredentials from "./pages/DeviceCredentials";
+import VendorDevices from "./pages/VendorDevices";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VendorProtectedRoute from "./components/VendorProtectedRoutes";
+import VendorHome from "./pages/VendorHome";
+import VendorPower from "./pages/VendorPower";
+import VendorFault from "./pages/VendorFault";
 
 import { InverterProvider } from "./context/Context";
 
-export default function App() {
-
+function App() {
   return (
-
     <BrowserRouter>
-
       <Routes>
 
-        {/* LOGIN */}
+        {/* USER LOGIN */}
         <Route
           path="/login"
           element={<Login />}
         />
 
-        {/* PROTECTED ROUTES */}
+        {/* VENDOR LOGIN */}
+        <Route
+          path="/vendor-login"
+          element={<VendorLogin />}
+        />
+
+        {/* VENDOR ONLY */}
+        <Route
+          path="/devices"
+          element={
+            <VendorProtectedRoute>
+              <DeviceHub />
+            </VendorProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/register-device"
+          element={
+            <VendorProtectedRoute>
+              <RegisterDevice />
+            </VendorProtectedRoute>
+          }
+        />
+
+        {/* SHARED PAGES (USER + VENDOR) */}
+
         <Route
           path="/"
           element={
             <ProtectedRoute>
               <InverterProvider>
-                <Dashboard />
+                <Home />
               </InverterProvider>
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/faults"
+          path="/fault"
           element={
             <ProtectedRoute>
               <InverterProvider>
-                <FaultPage />
+                <Fault />
               </InverterProvider>
             </ProtectedRoute>
           }
@@ -116,14 +87,76 @@ export default function App() {
           element={
             <ProtectedRoute>
               <InverterProvider>
-                <PowerPage />
+                <Power />
               </InverterProvider>
             </ProtectedRoute>
           }
         />
 
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute>
+              <InverterProvider>
+                <User />
+              </InverterProvider>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/credentials/:certificateId"
+          element={<DeviceCredentials />}
+        />
+
+         <Route
+  path="/my-devices"
+  element={<VendorDevices />}
+/>
+
+
+<Route
+    path="/vendor"
+    element={
+        <VendorProtectedRoute>
+            <VendorHome />
+        </VendorProtectedRoute>
+    }
+/>
+
+<Route
+    path="/vendor/device/:id/power"
+    element={
+        <VendorProtectedRoute>
+            <VendorPower />
+        </VendorProtectedRoute>
+    }
+/>
+
+<Route
+    path="/vendor/device/:id/fault"
+    element={
+        <VendorProtectedRoute>
+            <VendorFault />
+        </VendorProtectedRoute>
+    }
+/>
+<Route
+  path="*"
+  element={
+    <div style={{ padding: 40 }}>
+      Route Not Found
+      <br />
+      Current URL:
+      {window.location.pathname}
+    </div>
+  }
+/>
       </Routes>
 
+     
     </BrowserRouter>
   );
 }
+
+export default App;

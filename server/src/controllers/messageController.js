@@ -1,61 +1,19 @@
-// const pool = require("../config/database");
-
-// exports.getMessages = async (req, res) => {
-//   try {
-//     const [rows] = await pool.execute(
-//       "SELECT * FROM messages ORDER BY created_at DESC LIMIT 50"
-//     );
-//     res.json(rows);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-
-
 const pool = require("../config/database");
-
-exports.getLatestMessage = async (req, res) => {
-  try {
-    const [rows] = await pool.execute(
-      "SELECT payload, created_at FROM messages ORDER BY created_at DESC LIMIT 1"
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "No data found" });
-    }
-
-    const rawPayload = rows[0].payload;
-
-    let parsed;
-    try {
-      parsed = JSON.parse(rawPayload);
-    } catch (err) {
-      return res.status(500).json({ error: "Invalid JSON in payload" });
-    }
-
-    // attach timestamp
-    parsed.TIMESTAMP = rows[0].created_at;
-
-    res.json(parsed);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 exports.getLatestMessage = async (req, res) => {
   try {
 
     // from JWT
-    const serial = req.user.serial_number;
+    const imei = req.user.imei;
+    console.log(req.user);
 
     const [rows] = await pool.execute(
       `SELECT payload, created_at
        FROM messages
-       WHERE serial_number = ?
+       WHERE imei = ?
        ORDER BY created_at DESC
        LIMIT 1`,
-      [serial]
+      [imei]
     );
 
     if (rows.length === 0) {
@@ -66,7 +24,7 @@ exports.getLatestMessage = async (req, res) => {
 
     const parsed = JSON.parse(rows[0].payload);
 
-    parsed.DB_TIME = rows[0].created_at;
+    // parsed.TIMESTAMP = rows[0].created_at;
 
     res.json(parsed);
 
@@ -77,3 +35,88 @@ exports.getLatestMessage = async (req, res) => {
     });
   }
 };
+
+
+
+exports.getVendorLatestMessage =
+  async (req, res) => {
+
+    try {
+
+      const vendorId =
+        req.vendor.id;
+
+      const deviceId =
+        req.params.id;
+
+    //   console.log("vendor from token:", req.vendor);  
+    // console.log("deviceId:", deviceId);               
+    // console.log("vendorId:", vendorId); 
+
+      const [devices] =
+        await pool.execute(
+          `
+          SELECT *
+          FROM devices
+          WHERE id = ?
+          AND vendor_id = ?
+          `,
+          [
+            deviceId,
+            vendorId
+          ]
+        );
+
+      if (
+        devices.length === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "Device not found"
+          });
+      }
+
+      const imei =
+        devices[0].imei;
+
+      const [rows] =
+        await pool.execute(
+          `
+          SELECT payload
+          FROM messages
+          WHERE imei = ?
+          ORDER BY created_at DESC
+          LIMIT 1
+          `,
+          [imei]
+        );
+
+      if (
+        rows.length === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "No data found"
+          });
+      }
+
+      res.json(
+        JSON.parse(
+          rows[0].payload
+        )
+      );
+
+    } catch (err) {
+
+      res.status(500)
+        .json({
+          error:
+            err.message
+        });
+
+    }
+  };

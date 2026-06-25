@@ -7,77 +7,106 @@ export function InverterProvider({ children }) {
   const [data, setData] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // useEffect(() => {
-  //   // const socket = io("http://localhost:3000");
-  //   const socket = io("http://localhost:3000", {
-  //     auth: {
-  //       token: localStorage.getItem("token"),
-  //     },
-  //   });
 
-  //   socket.on("connect", () => {
-  //     console.log("Connected to server");
-  //   });
-
-  //   socket.on("inverterData", (newData) => {
-  //     console.log("Live Data:", newData);
-  //     setData({ ...newData });
-  //     // setLastUpdated(new Date().toLocaleTimeString());
-  //     const fixedTimestamp = newData.TIMESTAMP.replace(
-  //       /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
-  //       "$1 $2"
-  //     );
-
-  //     setLastUpdated(fixedTimestamp);
-  //     // setLastUpdated(newData.TIMESTAMP);
-  //   });
-
-  //   socket.on("disconnect", () => {
-  //     console.log("Disconnected");
-  //   });
-
-  //   return () => socket.disconnect();
-  // }, []);
 
   useEffect(() => {
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  if (!token) {
-    console.log("No token found");
-    return;
-  }
+    if (!token) {
+      console.log("No token found");
+      return;
+    }
 
-  const socket = io("http://localhost:3000", {
-    auth: {
-      token,
-    },
-  });
+    // ─────────────────────────────────────
+    // INITIAL FETCH
+    // ─────────────────────────────────────
+    const fetchLatest = async () => {
 
-  socket.on("connect", () => {
-    console.log("✅ Connected");
-  });
+      try {
 
-  socket.on("inverterData", (newData) => {
+        const res = await fetch(
+          "http://localhost:3000/api/latest-message",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setData({ ...newData });
+        const latest = await res.json();
 
-    const fixedTimestamp =
-      newData.TIMESTAMP?.replace(
-        /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
-        "$1 $2"
-      );
+        console.log("Initial Data:", latest);
 
-    setLastUpdated(fixedTimestamp);
-  });
+        setData(latest);
 
-  socket.on("disconnect", () => {
-    console.log("❌ Disconnected");
-  });
+        // timestamp formatting
+        const fixedTimestamp =
+          latest.TIMESTAMP?.replace(
+            /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
+            "$1 $2"
+          );
 
-  return () => socket.disconnect();
+        setLastUpdated(fixedTimestamp);
 
-}, []);
+      } catch (err) {
+
+        console.log(
+          "Initial fetch error:",
+          err
+        );
+      }
+    };
+
+    // call fetch
+    fetchLatest();
+
+    // ─────────────────────────────────────
+    // SOCKET CONNECTION
+    // ─────────────────────────────────────
+    const socket = io(
+      "http://localhost:3000",
+      {
+        auth: {
+          token,
+        },
+      }
+    );
+
+    socket.on("connect", () => {
+      console.log("✅ Connected");
+    });
+
+    socket.on(
+      "inverterData",
+      (newData) => {
+
+        console.log(
+          "Realtime Data:",
+          newData
+        );
+
+        setData({ ...newData });
+
+        const fixedTimestamp =
+          newData.TIMESTAMP?.replace(
+            /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
+            "$1 $2"
+          );
+
+        setLastUpdated(
+          fixedTimestamp
+        );
+      }
+    );
+
+    socket.on("disconnect", () => {
+      console.log("❌ Disconnected");
+    });
+
+    return () => socket.disconnect();
+
+  }, []);
 
   return (
     <InverterContext.Provider value={{

@@ -1,9 +1,13 @@
+//THIS FILE IS OF NO UE 
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useInverter } from "../context/Context";
 import Header from "./Header";
 import Footer from "../components/Footer";
+import { parseKeyword } from "../utils/parseKeyword";
+import { PARAMETER_MAP } from "../constants/parameterMap";
+import { DEVICE_TYPES } from "../constants/deviceTypes";
 
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
@@ -234,7 +238,7 @@ function SummaryBar({ data }) {
 export default function Dashboard() {
     const navigate = useNavigate();
     const { data, setData, lastUpdated } = useInverter();
-    
+
     const [isLive, setIsLive] = useState(true);
     const [apiUrl, setApiUrl] = useState("http://localhost:3000/api/latest");
     const [showConfig, setShowConfig] = useState(false);
@@ -265,6 +269,30 @@ export default function Dashboard() {
         outline: "none",
     };
 
+    const dynamicFields = Object.keys(data || {})
+        .filter((key) => key.includes("---"))
+        .map((key) => {
+
+            const parsed = parseKeyword(key);
+
+            const meta =
+                PARAMETER_MAP[parsed.parameter];
+
+            if (!meta) return null;
+
+            return {
+
+                key,
+
+                value: data[key],
+
+                ...meta,
+
+                parsed,
+            };
+        })
+        .filter(Boolean);
+
     return (
         <>
             <style>{`
@@ -292,7 +320,7 @@ export default function Dashboard() {
             }}>
                 <Header data={data} lastUpdated={lastUpdated} isLive={isLive} />
                 <SummaryBar data={data} />
-                
+
                 <div style={{
                     flex: 1,
                     padding: "28px 32px",
@@ -302,9 +330,36 @@ export default function Dashboard() {
                     gap: 20,
                     width: "100%",
                 }}>
-                    {FIELD_MAP.map((field, i) => (
+                    {/* {FIELD_MAP.map((field, i) => (
                         <MetricCard key={field.key} field={field} value={data?.[field.key]} index={i} />
-                    ))}
+                    ))} */}
+                    {Object.entries(data || {})
+                        .filter(([key]) => key.includes("-"))
+                        .map(([key, value], i) => {
+
+                            const parsed = parseKeyword(key);
+
+                            const paramInfo =
+                                PARAMETER_MAP[parsed.parameter];
+
+                            if (!paramInfo) return null;
+
+                            return (
+                                <MetricCard
+                                    key={key}
+                                    field={{
+                                        label: paramInfo.label,
+                                        unit: paramInfo.unit,
+                                        desc: `
+            ${DEVICE_TYPES[parsed.deviceType] || parsed.deviceType}
+            | Device ${parsed.deviceId}
+          `,
+                                    }}
+                                    value={value}
+                                    index={i}
+                                />
+                            );
+                        })}
                 </div>
 
 
