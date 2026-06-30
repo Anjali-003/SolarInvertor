@@ -4,11 +4,11 @@ const jwt = require("jsonwebtoken");
 
 exports.login = async (req,res) => {
 
-  const { email,password } = req.body;
+  const { login,password } = req.body;
 
   const [rows] = await pool.execute(
-    `SELECT * FROM vendors WHERE email=?`,
-    [email]
+    `SELECT * FROM vendors WHERE email=? OR phone = ?`,
+    [login, login]
   );
 
   if(rows.length === 0){
@@ -18,6 +18,20 @@ exports.login = async (req,res) => {
   }
 
   const vendor = rows[0];
+
+  if (vendor.status === "pending") {
+    return res.status(403).json({
+      error:
+        "Your account is awaiting admin approval."
+    });
+  }
+
+  if (vendor.status === "rejected") {
+    return res.status(403).json({
+      error:
+        "Your registration request has been rejected."
+    });
+  }
 
   const valid = await bcrypt.compare(
     password,
@@ -106,20 +120,24 @@ exports.register = async (req, res) => {
       name,
       email,
       phone,
-      password
+      password,
+      status
     )
     VALUES
-    (?, ?, ?, ?)
+    (?, ?, ?, ?, ?)
     `,
     [
       name,
       email,
       phone,
-      hash
+      hash,
+      "pending"
     ]
   );
 
   res.json({
-    success: true
+    success: true,
+    message:
+      "Registration submitted successfully. Your account is awaiting admin approval."
   });
 };

@@ -3,10 +3,12 @@
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.3",
     "mqtt": "^5.15.1",
+    "multer": "^2.2.0",
     "mysql2": "^3.22.2",
     "socket.io": "^4.8.3",
     "ssh2": "^1.17.0"
