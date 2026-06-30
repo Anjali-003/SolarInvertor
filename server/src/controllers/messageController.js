@@ -5,7 +5,7 @@ exports.getLatestMessage = async (req, res) => {
 
     // from JWT
     const imei = req.user.imei;
-    console.log(req.user);
+    //console.log(req.user);
 
     const [rows] = await pool.execute(
       `SELECT payload, created_at
@@ -22,11 +22,19 @@ exports.getLatestMessage = async (req, res) => {
       });
     }
 
-    const parsed = JSON.parse(rows[0].payload);
+    // const parsed = JSON.parse(rows[0].payload);
 
     // parsed.TIMESTAMP = rows[0].created_at;
 
-    res.json(parsed);
+    // res.json(parsed);
+
+    const parsed =
+JSON.parse(rows[0].payload);
+
+parsed.created_at =
+rows[0].created_at;
+
+res.json(parsed);
 
   } catch (err) {
 

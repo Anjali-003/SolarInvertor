@@ -1,6 +1,10 @@
 const fs = require("fs");
 const { Client } = require("ssh2");
-const pool = require("../config/database");
+const pool = require("../config/database");            
+const {
+    subscribeDevice
+} = require("../services/mqttSubscription");
+
 
 exports.generateCertificate =
   async (req, res) => {
@@ -166,6 +170,7 @@ const vendorId = req.user.id;
                       ]
                     );
 
+subscribeDevice(imei);
                     return res.json(
                       json
                     );
