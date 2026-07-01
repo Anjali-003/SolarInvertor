@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import ErrorMessage from "../components/ErrorMessage";
+import ImeiInput from "../components/ImeiInput";
+import P from "../theme/colors";
 
 export default function RegisterDevice() {
   const navigate = useNavigate();
@@ -159,6 +162,7 @@ navigate("/devices");
   //     "linear-gradient(135deg,#FFB84D,#FF6B6B)",
   // };
 
+
   // const downloadFile = async (url, filename) => {
 
   //   try {
@@ -218,7 +222,7 @@ navigate("/devices");
     <div
       style={{
         minHeight: "100vh",
-        background: "#FFFDF5",
+        background: P.bg,
         padding: "40px 20px",
       }}
     >
@@ -226,7 +230,7 @@ navigate("/devices");
         style={{
           maxWidth: 500,
           margin: "0 auto",
-          background: "#fff",
+          background: P.surface,
           borderRadius: 24,
           padding: 40,
           boxShadow:
@@ -317,7 +321,7 @@ navigate("/devices");
                 padding: "14px 16px",
                 borderRadius: 12,
                 border:
-                  "1px solid #ddd",
+                  `1px solid ${P.border}`,
                 fontSize: 16,
               }}
               required
@@ -383,13 +387,13 @@ navigate("/devices");
               fontWeight: 700,
               fontSize: 16,
               cursor: "pointer",
-              color: "white",
+              color: P.surface,
               opacity:
                 loading
                   ? 0.7
                   : 1,
               background:
-                "linear-gradient(135deg,#FFB84D,#FF6B6B)",
+                `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
             }}
           >
             {loading
@@ -406,7 +410,7 @@ navigate("/devices");
               padding: 24,
               borderRadius: 20,
               background:
-                "#FFF7E8",
+                P.surfaceWarm,
             }}
           >
             <h3>
@@ -497,8 +501,8 @@ navigate("/devices");
       cursor: "pointer",
       fontWeight: 700,
       fontSize: 16,
-      color: "#555",
-      background: "#fff",
+      color: P.textSubtle,
+      background: P.surface,
       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
     }}
   >
