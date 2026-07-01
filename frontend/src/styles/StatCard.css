@@ -1,0 +1,63 @@
+.stat-card {
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    box-shadow: 0 8px 18px rgba(0,0,0,.08);
+
+    transition: .25s;
+
+}
+
+.stat-card:hover {
+
+    transform: translateY(-4px);
+
+}
+
+.stat-title {
+
+    color: #6B7280;
+
+    font-size: 15px;
+
+    margin-bottom: 10px;
+
+    font-weight: 600;
+
+}
+
+.stat-value {
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+}
+
+.stat-card.green {
+
+    border-left: 6px solid #16A34A;
+
+}
+
+.stat-card.red {
+
+    border-left: 6px solid #DC2626;
+
+}
+
+.stat-card.yellow {
+
+    border-left: 6px solid #F59E0B;
+
+}
+
+.stat-card.blue {
+
+    border-left: 6px solid #2563EB;
+
+}

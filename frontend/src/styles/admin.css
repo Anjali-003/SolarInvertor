@@ -1,0 +1,315 @@
+/* ==========================================
+   ADMIN PANEL THEME
+========================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+    background:#F4F6F9;
+}
+
+/* ==========================================
+   LAYOUT
+========================================== */
+
+.admin-container{
+    display:flex;
+    min-height:100vh;
+    background:#F4F6F9;
+}
+
+.sidebar{
+
+    width:260px;
+
+    background:#1F2937;
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    padding:25px;
+
+    box-shadow:
+    4px 0 15px rgba(0,0,0,.15);
+}
+
+.logo-section{
+
+    text-align:center;
+
+    margin-bottom:35px;
+}
+
+.logo-section img{
+
+    width:75px;
+
+    margin-bottom:15px;
+}
+
+.logo-section h2{
+
+    margin:0;
+
+    font-size:24px;
+}
+
+.logo-section p{
+
+    color:#BDBDBD;
+
+    margin-top:8px;
+
+    font-size:14px;
+}
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar-menu{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+.sidebar-link{
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px 18px;
+
+    border-radius:10px;
+
+    transition:.25s;
+
+    font-weight:600;
+}
+
+.sidebar-link:hover{
+
+    background:#374151;
+}
+
+.sidebar-link.active{
+
+    background:
+    linear-gradient(
+        135deg,
+        #F59E0B,
+        #EA580C
+    );
+
+    color:white;
+}
+
+.logout-btn{
+
+    margin-top:25px;
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:
+    linear-gradient(
+        135deg,
+        #EF4444,
+        #DC2626
+    );
+
+    transition:.25s;
+}
+
+.logout-btn:hover{
+
+    transform:translateY(-2px);
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.admin-content{
+
+    flex:1;
+
+    padding:35px;
+}
+
+.page-title{
+
+    margin:0;
+
+    font-size:34px;
+
+    color:#1F2937;
+}
+
+.page-subtitle{
+
+    margin-top:8px;
+
+    color:#6B7280;
+
+    margin-bottom:30px;
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,.08);
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.admin-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+.admin-table thead{
+
+    background:#F3F4F6;
+}
+
+.admin-table th{
+
+    padding:18px;
+
+    text-align:left;
+
+    color:#374151;
+
+    font-size:15px;
+}
+
+.admin-table td{
+
+    padding:18px;
+
+    border-top:1px solid #E5E7EB;
+}
+
+.admin-table tbody tr{
+
+    transition:.2s;
+}
+
+.admin-table tbody tr:hover{
+
+    background:#FFF7ED;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.action-buttons{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.approve-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    color:white;
+
+    border-radius:8px;
+
+    padding:10px 16px;
+
+    font-weight:bold;
+
+    background:
+    linear-gradient(
+        135deg,
+        #10B981,
+        #059669
+    );
+}
+
+.reject-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    color:white;
+
+    border-radius:8px;
+
+    padding:10px 16px;
+
+    font-weight:bold;
+
+    background:
+    linear-gradient(
+        135deg,
+        #EF4444,
+        #DC2626
+    );
+}
+
+.approve-btn:hover,
+.reject-btn:hover{
+
+    transform:translateY(-1px);
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.empty{
+
+    text-align:center;
+
+    padding:50px;
+
+    color:#9CA3AF;
+
+    font-size:18px;
+}

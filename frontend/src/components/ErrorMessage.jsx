@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import { AlertCircle } from "lucide-react";
 import P from "../theme/colors";
@@ -30,4 +31,22 @@ export default function ErrorMessage({ message }) {
       <span>{message}</span>
     </div>
   );
+=======
+import "../styles/common.css";
+
+export default function ErrorMessage({ message }) {
+
+    if (!message) return null;
+
+    return (
+
+        <div className="error-message">
+
+            ❌ {message}
+
+        </div>
+
+    );
+
+>>>>>>> 296a5b581e98660b51d495da935d0632ea7ef954
 }

@@ -169,9 +169,11 @@ export default function VendorLogin() {
   const [mode, setMode] = useState("login");
 
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
 
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
   const [confirmPassword,
@@ -201,7 +203,7 @@ export default function VendorLogin() {
               "application/json"
           },
           body: JSON.stringify({
-            email,
+            login,
             password
           })
         }
@@ -284,28 +286,16 @@ export default function VendorLogin() {
     }
 
     // Auto-login after successful registration
-    const loginRes = await fetch("http://localhost:3000/api/vendor/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    alert("Registration submitted successfully.\n\nPlease wait for admin approval before logging in.");
 
-    const loginData = await loginRes.json();
+    setMode("login");
 
-    if (!loginRes.ok) {
-      // registration succeeded but auto-login failed -> show login form
-      setMode("login");
-      setError(loginData.error || "Registration succeeded, please login");
-      return;
-    }
+    setName("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
+    setConfirmPassword("");
 
-    // store token + vendor info and navigate to devices
-    localStorage.setItem("vendorToken", loginData.token);
-    localStorage.setItem("vendorId", loginData.vendor.id);
-    localStorage.setItem("vendorName", loginData.vendor.name);
-    localStorage.setItem("vendorEmail", loginData.vendor.email);
-
-    navigate("/devices");
   } catch {
     setError("Server error");
   } finally {
@@ -471,11 +461,11 @@ export default function VendorLogin() {
           <form onSubmit={handleLogin}>
 
             <input
-              type="email"
-              placeholder="Email"
-              value={email}
+              type="text"
+              placeholder="Email or Phone Number"
+              value={login}
               onChange={(e) =>
-                setEmail(
+                setLogin(
                   e.target.value
                 )
               }

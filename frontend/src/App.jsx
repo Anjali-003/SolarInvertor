@@ -4,6 +4,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import UploadIMEI from "./pages/UploadIMEI";
 import Home from "./pages/Home";
 import Fault from "./pages/Fault";
 import Power from "./pages/Power";
@@ -19,6 +20,10 @@ import VendorProtectedRoute from "./components/VendorProtectedRoutes";
 import VendorHome from "./pages/VendorHome";
 import VendorPower from "./pages/VendorPower";
 import VendorFault from "./pages/VendorFault";
+import AdminLogin from "./pages/AdminLogin";
+import PendingVendors from "./pages/PendingVendors";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import AdminLayout from "./components/AdminLayout";
 
 import { InverterProvider } from "./context/Context";
 
@@ -37,6 +42,11 @@ function App() {
         <Route
           path="/vendor-login"
           element={<VendorLogin />}
+        />
+
+        <Route
+          path="/admin-login"
+          element={<AdminLogin />}
         />
 
         {/* VENDOR ONLY */}
@@ -141,6 +151,32 @@ function App() {
         </VendorProtectedRoute>
     }
 />
+
+<Route
+  element={
+    <AdminProtectedRoute>
+      <AdminLayout />
+    </AdminProtectedRoute>
+  }
+>
+  <Route
+    path="/admin"
+    element={<PendingVendors />}
+  />
+
+  <Route
+    path="/admin/upload-imei"
+    element={<UploadIMEI />}
+  />
+
+  <Route
+    path="/admin/users"
+    element={
+      <h2>Users (Coming Next)</h2>
+    }
+  />
+</Route>
+
 <Route
   path="*"
   element={
