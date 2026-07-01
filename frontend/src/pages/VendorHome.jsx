@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import DeviceInfo from "../components/DeviceInfo";
 import VendorFooter from "../components/VendorFooter";
@@ -8,6 +9,7 @@ import useVendorDeviceData from "../hooks/useVendorDeviceData";
 
 export default function VendorHome() {
 
+    const navigate = useNavigate();
     const device = JSON.parse(
         localStorage.getItem("selectedVendorDevice") || "null"
     );
@@ -53,7 +55,14 @@ export default function VendorHome() {
     const renderMetric = (key, label, unit, description) => (
         <div style={{
             display: "flex", justifyContent: "space-between",
-            alignItems: "flex-start", paddingBottom: "16px", gap: "12px",
+            alignItems: "flex-start", gap: "12px",
+            paddingTop: "4px",
+            paddingLeft: "12px",
+            paddingRight: "12px",
+            paddingBottom: "12px",
+            maxWidth: "100%",
+            margin: "0px 24px 28px",
+            boxSizing: "border-box",
         }}>
             <div style={{ flex: 1, display: "flex", alignItems: "flex-start", gap: "10px" }}>
                 <div style={{ color: P.deepAmber, marginTop: "2px", flexShrink: 0 }}>
@@ -98,6 +107,37 @@ export default function VendorHome() {
         <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg }}>
 
             <Header />
+
+            <div style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "4px" }}>
+                <button
+                    onClick={() => navigate("/my-devices")}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        width: "15%",
+                        minWidth: 140,
+                        background: P.surface,
+                        border: `1px solid ${P.borderStrong}`,
+                        borderRadius: 12,
+                        padding: "12px 16px",
+                        marginBottom: 16,
+                        fontSize: 15,
+                        fontWeight: 700,
+                        color: P.textPrimary,
+                        cursor: "pointer",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                        fontFamily: "'Source Sans Pro', sans-serif",
+                    }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    Back to My Devices
+                </button>
+            </div>
 
             <DeviceInfo data={data} lastUpdated={lastUpdated} />
 

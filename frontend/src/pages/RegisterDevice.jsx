@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import ErrorMessage from "../components/ErrorMessage";
+import ImeiInput from "../components/ImeiInput";
+import P from "../theme/colors";
 
 export default function RegisterDevice() {
   const navigate = useNavigate();
@@ -46,18 +49,18 @@ export default function RegisterDevice() {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    try {
+    if (!/^\d{15,16}$/.test(imei)) {
+      setError("IMEI must be 15 or 16 digits with no letters or symbols");
+      return;
+    }
 
+    try {
       setLoading(true);
       setError("");
 
-      const token =
-        localStorage.getItem(
-          "vendorToken"
-        );
+      const token = localStorage.getItem("vendorToken");
 
       const res =
         await fetch(
@@ -148,9 +151,9 @@ export default function RegisterDevice() {
     borderRadius: 12,
     cursor: "pointer",
     fontWeight: 700,
-    color: "white",
+    color: P.surface,
     background:
-      "linear-gradient(135deg,#FFB84D,#FF6B6B)",
+      'linear-gradient(135deg, ${P.amber}, ${P.orange})',
   };
 
   const downloadFile = async (url, filename) => {
@@ -212,7 +215,7 @@ export default function RegisterDevice() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#FFFDF5",
+        background: P.bg,
         padding: "40px 20px",
       }}
     >
@@ -220,7 +223,7 @@ export default function RegisterDevice() {
         style={{
           maxWidth: 500,
           margin: "0 auto",
-          background: "#fff",
+          background: P.surface,
           borderRadius: 24,
           padding: 40,
           boxShadow:
@@ -242,23 +245,14 @@ export default function RegisterDevice() {
 
         <p
           style={{
-            color: "#666",
+            color: P.textLight,
             marginBottom: 30,
           }}
         >
           Add a new inverter device
         </p>
 
-        {error && (
-          <p
-            style={{
-              color: "red",
-              marginBottom: 20,
-            }}
-          >
-            {error}
-          </p>
-        )}
+        <ErrorMessage message={error} />
 
         <form onSubmit={handleSubmit}>
 
@@ -278,24 +272,17 @@ export default function RegisterDevice() {
               IMEI Number
             </label>
 
-            <input
-              type="text"
-              placeholder="Enter IMEI"
+            <ImeiInput
               value={imei}
-              onChange={(e) =>
-                setImei(e.target.value)
-              }
-              style={{
-                width: "100%",
+              onChange={(e) => setImei(e.target.value)}
+              placeholder="Enter IMEI"
+              required
+              inputStyle={{
                 padding: "14px 16px",
                 borderRadius: 12,
-                border:
-                  "1px solid #ddd",
+                border: `1px solid ${P.border}`,
                 fontSize: 16,
-                boxSizing:
-                  "border-box",
               }}
-              required
             />
           </div>
 
@@ -327,7 +314,7 @@ export default function RegisterDevice() {
                 padding: "14px 16px",
                 borderRadius: 12,
                 border:
-                  "1px solid #ddd",
+                  `1px solid ${P.border}`,
                 fontSize: 16,
               }}
               required
@@ -361,13 +348,13 @@ export default function RegisterDevice() {
               fontWeight: 700,
               fontSize: 16,
               cursor: "pointer",
-              color: "white",
+              color: P.surface,
               opacity:
                 loading
                   ? 0.7
                   : 1,
               background:
-                "linear-gradient(135deg,#FFB84D,#FF6B6B)",
+                `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
             }}
           >
             {loading
@@ -384,7 +371,7 @@ export default function RegisterDevice() {
               padding: 24,
               borderRadius: 20,
               background:
-                "#FFF7E8",
+                P.surfaceWarm,
             }}
           >
             <h3>
@@ -475,8 +462,8 @@ export default function RegisterDevice() {
       cursor: "pointer",
       fontWeight: 700,
       fontSize: 16,
-      color: "#555",
-      background: "#fff",
+      color: P.textSubtle,
+      background: P.surface,
       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
     }}
   >

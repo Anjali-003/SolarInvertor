@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorMessage from "../components/ErrorMessage";
+import ImeiInput from "../components/ImeiInput";
+import P from "../theme/colors";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -171,6 +174,12 @@ localStorage.setItem(
       return;
     }
 
+if (!/^\d{16}$/.test(imei)) {
+      setError("IMEI must be exactly 16 digits with no letters or symbols");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(
         "http://localhost:3000/api/auth/setup-device",
@@ -222,7 +231,7 @@ localStorage.setItem(
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        //background: "#f5f5f5",
+        //background: P.surfaceLight,
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       }}
     >
@@ -262,129 +271,35 @@ localStorage.setItem(
 
 
         {/* BRAND HEADER */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 18,
-            marginBottom: 14,
-          }}
-        >
-          {/* LOGO */}
-          <div
-            style={{
-              width: 90,
-              height: 90,
-              overflow: "hidden",
+<div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: 14,
+  }}
+>
+  {/* LOGO */}
+  <img
+    src="/src/assets/logo.png"
+    alt="Logo"
+    style={{
+      width: 400,
+      height: 120,
+      objectFit: "contain",
+      justifyContent: "center",
+      alignItems: "center",
 
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src="src/assets/logo.png"
-              alt="Logo"
-              style={{
-                width: 95,
-                height: 95,
-                objectFit: "cover",
+    }}
+  />
+</div>
 
-                transform: "scale(1.18)",
-              }}
-            />
-          </div>
-
-          {/* TITLE */}
-          <div>
-            <div
-              style={{
-                fontSize: 24,
-                fontWeight: 900,
-                color: "#1F2937",
-
-                lineHeight: 1,
-                letterSpacing: -0.8,
-
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              SOLAR INVERTER
-            </div>
-
-            <div
-              style={{
-                fontSize: 34,
-                fontWeight: 900,
-
-                background:
-                  "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor:
-                  "transparent",
-
-                lineHeight: 1.1,
-                letterSpacing: -0.8,
-
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              Monitor
-            </div>
-
-            {/* SUBTITLE */}
-            <div
-              style={{
-                marginTop: 4,
-
-                fontSize: 13,
-                fontWeight: 700,
-
-                color: "#6B7280",
-
-                letterSpacing: 1,
-
-                textTransform: "uppercase",
-
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              SunPower. Simplified.
-            </div>
-
-
-          </div>
-
-        </div>
-
-        {/* ERROR MESSAGE */}
-        {error && (
-          <div
-            style={{
-              background: "#fee",
-              border: "1px solid #fcc",
-              color: "#c33",
-              padding: "10px 12px",
-              borderRadius: 4,
-              marginBottom: 20,
-              fontSize: 13,
-            }}
-          >
-            {error}
-          </div>
-        )}
         {/* PAGE MODE */}
         <div
           style={{
             marginTop: 20,
             fontSize: 20,
             fontWeight: 600,
-            color: "#4b4e54",
+            color: P.textBlue,
             marginBottom: 28,
             textAlign: "center",
           }}
@@ -394,20 +309,23 @@ localStorage.setItem(
             : "Sign Up"}
         </div>
 
+{/* ERROR MESSAGE */}
+        <ErrorMessage message={error} />
+
         {/* LOGIN FORM */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
             <div style={{ marginBottom: 16 }}>
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="Email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 style={{
                   width: "100%",
                   padding: "14px 16px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 14,
                   boxSizing: "border-box",
@@ -426,7 +344,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "14px 16px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 14,
                   boxSizing: "border-box",
@@ -441,9 +359,9 @@ localStorage.setItem(
               style={{
                 width: "100%",
                 padding: "14px 16px",
-                background: "linear-gradient(135deg, #FFB84D 0%, #FF6B6B 100%)",
+                background:`linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)`,
                 border: "none",
-                color: "white",
+                color: P.surface,
                 fontSize: 15,
                 fontWeight: 600,
                 borderRadius: 6,
@@ -469,7 +387,7 @@ localStorage.setItem(
               </a>
             </div> */}
 
-            <div style={{ fontSize: 18, color: "#999", textAlign: "center" }}>
+            <div style={{ fontSize: 18, color: P.textHint, textAlign: "center" }}>
               Not a member?{" "}
               <a
                 href="#"
@@ -479,7 +397,7 @@ localStorage.setItem(
                   setError("");
                 }}
                 style={{
-                  color: "#5B9BD5",
+                  color: P.blueLight,
                   textDecoration: "none",
                   fontWeight: 500,
                   cursor: "pointer",
@@ -495,24 +413,21 @@ localStorage.setItem(
         {mode === "signup" && (
           <form onSubmit={handleSetupDevice}>
             <div style={{ marginBottom: 12 }}>
-              <input
-                type="text"
-                // placeholder="Serial Number"
+              <ImeiInput
+              // placeholder="Serial Number"
                 // value={serialNumber}
                 // onChange={(e) => setSerialNumber(e.target.value)}
                 placeholder="IMEI Number"
                 value={imei}
                 onChange={(e) => setImei(e.target.value)}
-                style={{
-                  width: "100%",
+                required
+                inputStyle={{
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
-                  boxSizing: "border-box",
                 }}
-                required
               />
             </div>
 
@@ -526,7 +441,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
                   boxSizing: "border-box",
@@ -545,7 +460,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
                   boxSizing: "border-box",
@@ -564,7 +479,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
                   boxSizing: "border-box",
@@ -595,7 +510,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
                   boxSizing: "border-box",
@@ -614,7 +529,7 @@ localStorage.setItem(
                   width: "100%",
                   padding: "12px 14px",
                   border: "none",
-                  background: "#f0f0f0",
+                  background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
                   boxSizing: "border-box",
@@ -629,7 +544,7 @@ localStorage.setItem(
               style={{
                 width: "100%",
                 padding: "14px 16px",
-                background: "linear-gradient(135deg, #FFB84D 0%, #FF6B6B 100%)",
+                background: 'linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)',
                 border: "none",
                 color: "white",
                 fontSize: 15,
@@ -644,7 +559,7 @@ localStorage.setItem(
               {loading ? "SIGNING..." : "SIGN UP"}
             </button>
 
-            <div style={{ fontSize: 13, color: "#999", textAlign: "center" }}>
+            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center" }}>
               Already have an account?{" "}
               <a
                 href="#"
@@ -654,7 +569,7 @@ localStorage.setItem(
                   setError("");
                 }}
                 style={{
-                  color: "#5B9BD5",
+                  color: P.blueLight,
                   textDecoration: "none",
                   fontWeight: 500,
                   cursor: "pointer",

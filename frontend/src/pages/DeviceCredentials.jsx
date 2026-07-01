@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import P from "../theme/colors";
 
 function CredentialRow({
   label,
@@ -9,7 +10,7 @@ function CredentialRow({
   return (
     <div
       style={{
-        background: "#FFF7E8",
+        background: P.surfaceWarm,
         padding: 18,
         borderRadius: 16,
       }}
@@ -17,7 +18,7 @@ function CredentialRow({
       <div
         style={{
           fontSize: 13,
-          color: "#777",
+          color: P.textFaint,
           marginBottom: 6,
         }}
       >
@@ -28,7 +29,7 @@ function CredentialRow({
         style={{
           fontSize: 17,
           fontWeight: 700,
-          color: "#222",
+          color: P.textDeep,
           wordBreak: "break-all",
         }}
       >
@@ -89,7 +90,7 @@ return (
   <div
     style={{
       minHeight: "100vh",
-      background: "#FFFDF5",
+      background: P.bg,
       padding: "40px 20px",
     }}
   >
@@ -97,7 +98,7 @@ return (
       style={{
         maxWidth: 600,
         margin: "0 auto",
-        background: "#fff",
+        background: P.surface,
         borderRadius: 24,
         padding: 40,
         boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
@@ -115,7 +116,7 @@ return (
 
       <p
         style={{
-          color: "#666",
+          color: P.textLight,
           marginBottom: 30,
         }}
       >
@@ -172,8 +173,8 @@ return (
       cursor: "pointer",
       fontWeight: 700,
       fontSize: 16,
-      color: "#555",
-      background: "#fff",
+      color: P.textSubtle,
+      background: P.surface,
       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
     }}
   >

@@ -21,80 +21,23 @@ export default function Header() {
         <div
           style={{
             display: "flex",
+            justifyContent: "center",
             alignItems: "center",
-            gap: 20,
+            width: "100%",
           }}
         >
           {/* LOGO */}
-          <div
+          <img
+            src="/src/assets/logo.png"
+            alt="logo"
             style={{
-              width: 90,
-              height: 90,
-              display: "flex",
-              alignItems: "center",
+              width: 500,
+              height: 120,
               justifyContent: "center",
+              alignItems: "center",
+              objectFit: "contain",
             }}
-          >
-            <img
-              src="src/assets/logo.png"
-              alt="Logo"
-              style={{
-                width: 95,
-                height: 95,
-                objectFit: "cover",
-                transform: "scale(1.18)",
-              }}
-            />
-          </div>
-
-          {/* TITLE */}
-          <div>
-            <div
-              style={{
-                fontSize: 26,
-                fontWeight: 900,
-                color: P.textPrimary,
-                lineHeight: 1,
-                letterSpacing: -0.8,
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              SOLAR INVERTER
-            </div>
-
-            <div
-              style={{
-                fontSize: 36,
-                fontWeight: 900,
-                background:
-                  "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                lineHeight: 1.1,
-                letterSpacing: -0.8,
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              Monitor
-            </div>
-
-            <div
-              style={{
-                marginTop: 4,
-                fontSize: 14,
-                fontWeight: 600,
-                color: P.textPrimary,
-                letterSpacing: 0.4,
-                textTransform: "uppercase",
-                fontFamily:
-                  "'Source Sans Pro', sans-serif",
-              }}
-            >
-              SunPower. Simplified.
-            </div>
-          </div>
+          />
         </div>
       </div>
     </div>

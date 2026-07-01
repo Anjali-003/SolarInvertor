@@ -171,9 +171,12 @@ export default function Home() {
             <div
                 style={{
                     paddingTop: "4px",
-                    paddingLeft: "24px",
-                    paddingRight: "24px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     paddingBottom: "12px",
+                    maxWidth: "100%",
+                    margin: "0px 24px 28px",
+                    boxSizing: "border-box",
                 }}
             >
                 {/* HEADING */}

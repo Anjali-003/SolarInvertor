@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import P from "../theme/colors";
 
 export default function DeviceHub() {
     const navigate = useNavigate();
@@ -27,10 +28,8 @@ export default function DeviceHub() {
     return (
         <div
             style={{
-                // minHeight: "100vh",
-                height: "100vh",
-                overflow: "hidden",
-                background: "#FFFDF5",
+                minHeight: "100vh",
+                background: P.bg,
                 padding: 30,
                 display: "flex",
                 flexDirection: "column",
@@ -38,14 +37,14 @@ export default function DeviceHub() {
             }}
         >
             {/* PAGE CONTENT */}
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, width: "100%", maxWidth: 450, margin: "0 auto" }}>
 
                 <Header />
 
                 {/* WELCOME */}
                 <div
                     style={{
-                        marginBottom: 40,
+                        marginBottom: 50,
                     }}
                 >
                     <h1
@@ -53,7 +52,7 @@ export default function DeviceHub() {
                             fontSize: 34,
                             fontWeight: 800,
                             marginBottom: 8,
-                            color: "#2C1A06",
+                            color: P.textPrimary,
                         }}
                     >
                         Welcome {username}
@@ -61,7 +60,7 @@ export default function DeviceHub() {
 
                     <div
                         style={{
-                            color: "#7A5230",
+                            color: P.textSecond,
                             fontSize: 16,
                         }}
                     >
@@ -101,11 +100,9 @@ export default function DeviceHub() {
             {/* LOGOUT BUTTON AT BOTTOM */}
             <div
                 style={{
-                    position: "fixed",
-                    bottom: 20,
-                    left: 30,
-                    right: 30,
+                    width: "100%",
                     maxWidth: 450,
+                    margin: "20px auto 0",
                 }}
             >
                 <button
@@ -124,8 +121,8 @@ const buttonStyle = {
     border: "none",
     borderRadius: 18,
     background:
-        "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-    color: "white",
+        'linear-gradient(135deg, ${P.amber}, ${P.orange})',
+    color: P.surface,
     fontSize: 20,
     fontWeight: 700,
     cursor: "pointer",
@@ -135,10 +132,10 @@ const buttonStyle = {
 const logoutStyle = {
     width: "100%",
     padding: "22px",
-    background: "#EF4444",
+    background: P.red,
     border: "none",
-    borderRadius: 12,
-    color: "#fff",
+    borderRadius: 18,
+    color: P.surface,
     fontSize: 20,
     fontWeight: 700,
     cursor: "pointer",
