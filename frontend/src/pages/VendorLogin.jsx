@@ -161,6 +161,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
+import P from "../theme/colors";
 
 export default function VendorLogin() {
 
