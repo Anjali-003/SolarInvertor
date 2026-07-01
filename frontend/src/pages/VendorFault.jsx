@@ -127,10 +127,11 @@ export default function VendorFault() {
                 </h2>
 
                 <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                    display: "flex",
+                    flexDirection: "column",
                     gap: "16px",
                 }}>
+                    
                     {faultDefs.map((fault) => {
                         const active = isFaultActive(fault);
                         return (
@@ -172,7 +173,7 @@ export default function VendorFault() {
                                         flexShrink: 0,
                                     }}>
                                         <span style={{
-                                            fontSize: 13, fontWeight: 700, color: "#FFFFFF",
+                                            fontSize: 13, fontWeight: 700, color: P.surface,
                                             fontFamily: "'Source Sans Pro', sans-serif",
                                             letterSpacing: 0.5, wordWrap: "break-word",
                                             whiteSpace: "normal", textAlign: "center",

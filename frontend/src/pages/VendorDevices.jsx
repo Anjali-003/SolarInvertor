@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import P from "../theme/colors";
 
 export default function VendorDevices() {
 
@@ -64,7 +65,7 @@ export default function VendorDevices() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#FFFDF5",
+        background: P.bg,
         padding: "40px 20px",
       }}
     >
@@ -95,7 +96,7 @@ export default function VendorDevices() {
 
           <p
             style={{
-              color: "#666",
+              color: P.textLight,
             }}
           >
             All registered inverter devices
@@ -106,7 +107,7 @@ export default function VendorDevices() {
         {loading && (
           <div
             style={{
-              background: "#fff",
+              background: P.surface,
               padding: 30,
               borderRadius: 24,
               textAlign: "center",
@@ -123,7 +124,7 @@ export default function VendorDevices() {
           devices.length === 0 && (
             <div
               style={{
-                background: "#fff",
+                background: P.surface,
                 padding: 40,
                 borderRadius: 24,
                 textAlign: "center",
@@ -137,7 +138,7 @@ export default function VendorDevices() {
 
               <p
                 style={{
-                  color: "#666",
+                  color: P.textLight,
                 }}
               >
                 Register your first
@@ -172,7 +173,7 @@ export default function VendorDevices() {
   navigate("/vendor");
 }}
               style={{
-                background: "#fff",
+                background: P.surface,
                 borderRadius: 24,
                 padding: 24,
                 cursor: "pointer",
@@ -212,7 +213,7 @@ export default function VendorDevices() {
                     fontWeight: 700,
                     fontSize: 13,
                     background:
-                      "linear-gradient(135deg,#FFB84D,#FF6B6B)",
+                      `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
                   }}
                 >
                   Active
@@ -228,7 +229,7 @@ export default function VendorDevices() {
                 <div
                   style={{
                     fontSize: 13,
-                    color: "#888",
+                    color: P.textIcon,
                   }}
                 >
                   IMEI
@@ -249,7 +250,7 @@ export default function VendorDevices() {
                 <div
                   style={{
                     fontSize: 13,
-                    color: "#888",
+                    color: P.textIcon,
                   }}
                 >
                   Solution Type
@@ -258,7 +259,7 @@ export default function VendorDevices() {
                 <div
                   style={{
                     fontWeight: 600,
-                    color: "#444",
+                    color: P.textSoft,
                   }}
                 >
                   {device.solution}
@@ -288,8 +289,8 @@ export default function VendorDevices() {
               cursor: "pointer",
               fontWeight: 700,
               fontSize: 16,
-              color: "#555",
-              background: "#fff",
+              color: P.textSubtle,
+              background: P.surface,
               boxShadow:
                 "0 4px 12px rgba(0,0,0,0.08)",
             }}

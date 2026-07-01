@@ -47,18 +47,18 @@ export default function RegisterDevice() {
   // };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    try {
+    if (!/^\d{15,16}$/.test(imei)) {
+      setError("IMEI must be 15 or 16 digits with no letters or symbols");
+      return;
+    }
 
+    try {
       setLoading(true);
       setError("");
 
-      const token =
-        localStorage.getItem(
-          "vendorToken"
-        );
+      const token = localStorage.getItem("vendorToken");
 
       const res =
         await fetch(
@@ -248,23 +248,14 @@ navigate("/devices");
 
         <p
           style={{
-            color: "#666",
+            color: P.textLight,
             marginBottom: 30,
           }}
         >
           Add a new inverter device
         </p>
 
-        {error && (
-          <p
-            style={{
-              color: "red",
-              marginBottom: 20,
-            }}
-          >
-            {error}
-          </p>
-        )}
+        <ErrorMessage message={error} />
 
         <form onSubmit={handleSubmit}>
 
@@ -284,24 +275,17 @@ navigate("/devices");
               IMEI Number
             </label>
 
-            <input
-              type="text"
-              placeholder="Enter IMEI"
+            <ImeiInput
               value={imei}
-              onChange={(e) =>
-                setImei(e.target.value)
-              }
-              style={{
-                width: "100%",
+              onChange={(e) => setImei(e.target.value)}
+              placeholder="Enter IMEI"
+              required
+              inputStyle={{
                 padding: "14px 16px",
                 borderRadius: 12,
-                border:
-                  "1px solid #ddd",
+                border: `1px solid ${P.border}`,
                 fontSize: 16,
-                boxSizing:
-                  "border-box",
               }}
-              required
             />
           </div>
 

@@ -160,6 +160,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorMessage from "../components/ErrorMessage";
+import P from "../theme/colors";
 
 export default function VendorLogin() {
 
@@ -402,45 +404,33 @@ export default function VendorLogin() {
         }}
       >
 
-        {/* BRAND */}
-
+{/* BRAND */}
         <div
           style={{
             textAlign: "center",
-            marginBottom: 30
+            marginBottom: 10
           }}
         >
-
           <img
             src="src/assets/logo.png"
             alt="logo"
             style={{
-              width: 90,
-              marginBottom: 10
+              width: 500,
+              height: 120,
+              justifyContent: "center",
+              alignItems: "center",
+              objectFit: "contain",
             }}
           />
 
           <div
             style={{
-              fontSize: 24,
-              fontWeight: 900,
-              color: "#1F2937"
-            }}
-          >
-            SOLAR INVERTER
-          </div>
-
-          <div
-            style={{
               fontSize: 34,
-              fontWeight: 900,
-
+              fontWeight: 800,
               background:
-                "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-
+                `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
               WebkitBackgroundClip:
                 "text",
-
               WebkitTextFillColor:
                 "transparent",
             }}
@@ -450,33 +440,20 @@ export default function VendorLogin() {
 
         </div>
 
-        {error && (
-
-          <div
-            style={{
-              background: "#FEE2E2",
-              color: "#B91C1C",
-              padding: 12,
-              borderRadius: 8,
-              marginBottom: 20
-            }}
-          >
-            {error}
-          </div>
-        )}
+        <ErrorMessage message={error} />
 
         <div
           style={{
             textAlign: "center",
             fontSize: 20,
             fontWeight: 600,
-            marginBottom: 25
+            marginBottom: 10
           }}
         >
           {
             mode === "login"
-              ? "Vendor Login"
-              : "Vendor Registration"
+              ? "Login"
+              : "Registration"
           }
         </div>
 
@@ -673,11 +650,11 @@ const buttonStyle = {
   padding: 14,
 
   background:
-    "linear-gradient(135deg,#FFB84D,#FF6B6B)",
+    `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
 
   border: "none",
 
-  color: "#fff",
+  color: P.surface,
 
   fontWeight: 700,
 

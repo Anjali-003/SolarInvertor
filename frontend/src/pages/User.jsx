@@ -116,8 +116,8 @@ export default function User() {
             <div
                 style={{
                     paddingTop: 12,
-                    paddingLeft: 16,
-                    paddingRight: 16,
+                    paddingLeft: 24,
+                    paddingRight: 24,
                 }}
             >
 
@@ -127,7 +127,7 @@ export default function User() {
                         background: P.surface,
                         border: `1px solid ${P.border}`,
                         borderRadius: 18,
-                        padding: "24px",
+                        padding: "24px 24px 24px 24px",
                         boxShadow:
                             "0 2px 8px rgba(0,0,0,0.06)",
                     }}
@@ -268,10 +268,10 @@ export default function User() {
                         style={{
                             width: "100%",
                             padding: "14px",
-                            background: "#EF4444",
+                            background: P.errorRed,
                             border: "none",
                             borderRadius: 12,
-                            color: "#fff",
+                            color: P.surface,
                             fontSize: 16,
                             fontWeight: 700,
                             cursor: "pointer",

@@ -171,9 +171,12 @@ export default function Fault() {
             <div
                 style={{
                     paddingTop: "4px",
-                    paddingLeft: "24px",
-                    paddingRight: "24px",
+                    paddingLeft: "12px",
+                    paddingRight: "12px",
                     paddingBottom: "12px",
+                    maxWidth: "100%",
+                    margin: "0px 24px 28px",
+                    boxSizing: "border-box",
                 }}
             >
 
@@ -196,11 +199,8 @@ export default function Fault() {
                 {/* FAULT CONTAINER */}
                 <div
                     style={{
-                        display: "grid",
-
-                        gridTemplateColumns:
-                            "repeat(auto-fit, minmax(260px, 1fr))",
-
+                        display: "flex",
+                        flexDirection: "column",
                         gap: "16px",
                     }}
                 >
@@ -337,7 +337,7 @@ export default function Fault() {
 
                                                 fontWeight: 700,
 
-                                                color: "#FFFFFF",
+                                                color: P.surface,
 
                                                 fontFamily:
                                                     "'Source Sans Pro', sans-serif",

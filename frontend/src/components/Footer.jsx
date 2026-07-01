@@ -1,20 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
-// Color Palette
-const P = {
-  bg: "#FFFDF5",
-  surface: "#FFFFFF",
-  surfaceAlt: "#FFF8E7",
-  border: "#F0E0C0",
-  borderStrong: "#E8C87A",
-  textPrimary: "#2C1A06",
-  textSecond: "#7A5230",
-  textMuted: "#B08050",
-  textDim: "#D4AA80",
-  deepAmber: "#F59E0B",
-  orange: "#F97316",
-};
+import P from "../theme/colors";
 
 export default function Footer() {
 
@@ -38,7 +24,7 @@ export default function Footer() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 >
-                    <triangle points="12 2 22 20 2 20 12 2" />
+                    <polygon points="12 2 22 20 2 20 12 2" />
                     <line x1="12" y1="8" x2="12" y2="13" />
                     <circle cx="12" cy="17" r="1" />
                 </svg>

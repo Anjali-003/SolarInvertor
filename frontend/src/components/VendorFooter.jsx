@@ -49,7 +49,7 @@ const navItems = [
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 >
-                    <triangle points="12 2 22 20 2 20 12 2" />
+                    <polygon points="12 2 22 20 2 20 12 2" />
                     <line x1="12" y1="8" x2="12" y2="13" />
                     <circle cx="12" cy="17" r="1" />
                 </svg>
@@ -136,6 +136,18 @@ const navItems = [
               transition: "0.2s",
             }}
           >
+            {/* ICON */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {item.icon}
+            </div>
+
+            {/* LABEL */}
             <div style={{
               fontSize: 12,
               fontWeight: isActive ? 700 : 600,
