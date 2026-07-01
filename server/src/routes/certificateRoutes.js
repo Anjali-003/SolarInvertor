@@ -24,11 +24,23 @@ router.post(
 //   controller.downloadCertificate
 // );
 
-router.get(
-  "/credentials/:certificateId",
-  auth,
-  controller.getCredentials
-);
+
+router.post("/device/config", controller.getDeviceConfig);
+
+
+
+
+// Working 
+// router.get(
+//   "/credentials/:certificateId",
+//   auth,
+//   controller.getCredentials
+// );
+
+
+
+
+
 
 // router.get(
 //   "/:certificateId/credentials",
@@ -36,12 +48,17 @@ router.get(
 //   controller.getCredentials
 // );
 
+
+
+
+
+// Working 
 // Download files
-router.get(
-  "/:certificateId/:type",
-  auth,
-  controller.downloadCertificate
-);
+// router.get(
+//   "/:certificateId/:type",
+//   auth,
+//   controller.downloadCertificate
+// );
 
 
 module.exports = router;
