@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const path = require('path');
 const express = require("express");
 const cors = require("cors");
 
@@ -59,6 +59,7 @@ app.use(
   "/api/devices",
   vendorDeviceRoutes
 );
+
 
 // ─────────────────────────────────────
 // SOCKET AUTH MIDDLEWARE
@@ -169,10 +170,10 @@ require("./src/services/mqttHandler");
 // ─────────────────────────────────────
 // TEST ROUTE
 // ─────────────────────────────────────
-app.get("/", (req, res) => {
+// app.get("/", (req, res) => {
 
-  res.send("Backend is running 🚀");
-});
+//   res.send("Backend is running 🚀");
+// });
 
 
 // Add this BEFORE server.listen()
@@ -190,6 +191,17 @@ app.get("/api/test", (req, res) => {
     time: new Date().toISOString()
   });
 });
+
+
+
+
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.use((req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
+
 
 
 
