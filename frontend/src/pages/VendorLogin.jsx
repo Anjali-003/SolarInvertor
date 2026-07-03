@@ -184,8 +184,8 @@ export default function VendorLogin() {
   const [loading, setLoading] =
     useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleLogin = async (e) => {
 
@@ -288,15 +288,14 @@ export default function VendorLogin() {
     }
 
     // Auto-login after successful registration
-    alert("Registration submitted successfully.\n\nPlease wait for admin approval before logging in.");
-
     setMode("login");
-
     setName("");
     setEmail("");
     setPhone("");
     setPassword("");
     setConfirmPassword("");
+    setError("");
+    setSuccess("Registration submitted! Please wait for admin approval before logging in.");
 
   } catch {
     setError("Server error");
@@ -419,6 +418,27 @@ export default function VendorLogin() {
         </div>
 
         <ErrorMessage message={error} />
+        {success && (
+          <div
+            style={{
+              background: "#DCFCE7",
+              border: "1px solid #BBF7D0",
+              color: "#166534",
+              padding: "10px 14px",
+              borderRadius: 8,
+              marginBottom: 20,
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {success}
+          </div>
+        )}
 
         <div
           style={{
@@ -482,11 +502,7 @@ export default function VendorLogin() {
                   color: P.blueAccent,
                   cursor: "pointer"
                 }}
-                onClick={() =>
-                  setMode(
-                    "signup"
-                  )
-                }
+                onClick={() => { setMode("signup"); setSuccess(""); setError(""); }}
               >
                 Sign Up
               </span>
@@ -542,6 +558,7 @@ export default function VendorLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
+              autoComplete="new-password"
               required
               inputStyle={inputStyle}
             />
@@ -549,9 +566,10 @@ export default function VendorLogin() {
 
           <div style={{ marginTop: 14, marginBottom: 14 }}>
             <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm Password"
+              autoComplete="new-password"
               required
               inputStyle={inputStyle}
             />
@@ -581,11 +599,7 @@ export default function VendorLogin() {
                   color: P.blueAccent,
                   cursor: "pointer"
                 }}
-                onClick={() =>
-                  setMode(
-                    "login"
-                  )
-                }
+                onClick={() => { setMode("login"); setSuccess(""); setError(""); }}
               >
                 Login
               </span>

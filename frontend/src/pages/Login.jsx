@@ -23,6 +23,7 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState("");
   // const [role, setRole] = useState("viewer");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -210,8 +211,10 @@ if (!/^\d{15}$/.test(imei)) {
         return;
       }
 
-      alert("Device setup successful! Please login.");
       setMode("login");
+      setError("");
+      setSuccess("Device setup successful! Please login.");
+
       //setSerialNumber("");
       setClientName("");
       setPhone("");
@@ -312,6 +315,27 @@ if (!/^\d{15}$/.test(imei)) {
 
 {/* ERROR MESSAGE */}
         <ErrorMessage message={error} />
+        {success && (
+          <div
+            style={{
+              background: "#DCFCE7",
+              border: "1px solid #BBF7D0",
+              color: "#166534",
+              padding: "10px 14px",
+              borderRadius: 8,
+              marginBottom: 20,
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {success}
+          </div>
+        )}
 
         {/* LOGIN FORM */}
         {mode === "login" && (
@@ -393,6 +417,7 @@ if (!/^\d{15}$/.test(imei)) {
                   e.preventDefault();
                   setMode("signup");
                   setError("");
+                  setSuccess("");
                 }}
                 style={{
                   color: P.blueLight,
