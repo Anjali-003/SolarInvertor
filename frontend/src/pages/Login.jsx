@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import ImeiInput from "../components/ImeiInput";
 import P from "../theme/colors";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -296,7 +297,7 @@ loginUser(loginData);
     >
       <div
         style={{
-          width: "100%",
+          width: "95%",
           // maxWidth: 380,
           // padding: "50px 40px",
           // background: "#ffffff",
@@ -394,21 +395,18 @@ loginUser(loginData);
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <input
-                type="password"
-                placeholder="Password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: "100%",
+                placeholder="Password"
+                required
+                inputStyle={{
                   padding: "14px 16px",
                   border: "none",
                   background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 14,
-                  boxSizing: "border-box",
                 }}
-                required
               />
             </div>
 
@@ -473,12 +471,9 @@ loginUser(loginData);
           <form onSubmit={handleSetupDevice}>
             <div style={{ marginBottom: 12 }}>
               <ImeiInput
-              // placeholder="Serial Number"
-                // value={serialNumber}
-                // onChange={(e) => setSerialNumber(e.target.value)}
-                placeholder="IMEI Number"
                 value={imei}
                 onChange={(e) => setImei(e.target.value)}
+                placeholder="IMEI Number"
                 required
                 inputStyle={{
                   padding: "12px 14px",
@@ -560,40 +555,34 @@ loginUser(loginData);
 </div> */}
 
             <div style={{ marginBottom: 12 }}>
-              <input
-                type="password"
-                placeholder="Password"
+              <PasswordInput
                 value={setupPassword}
                 onChange={(e) => setSetupPassword(e.target.value)}
-                style={{
-                  width: "100%",
+                placeholder="Password"
+                required
+                inputStyle={{
                   padding: "12px 14px",
                   border: "none",
                   background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
-                  boxSizing: "border-box",
                 }}
-                required
               />
             </div>
 
             <div style={{ marginBottom: 20 }}>
-              <input
-                type="password"
-                placeholder="Confirm Password"
+              <PasswordInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{
-                  width: "100%",
+                placeholder="Confirm Password"
+                required
+                inputStyle={{
                   padding: "12px 14px",
                   border: "none",
                   background: P.surfaceForm,
                   borderRadius: 6,
                   fontSize: 13,
-                  boxSizing: "border-box",
                 }}
-                required
               />
             </div>
 
@@ -603,9 +592,9 @@ loginUser(loginData);
               style={{
                 width: "100%",
                 padding: "14px 16px",
-                background: 'linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)',
+                background: `linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)`,
                 border: "none",
-                color: "white",
+                color: P.surface,
                 fontSize: 15,
                 fontWeight: 600,
                 borderRadius: 6,

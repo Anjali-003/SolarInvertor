@@ -150,18 +150,17 @@ navigate("/devices");
     }
   };
 
-  // const downloadButton = {
-  //   width: "100%",
-  //   padding: 14,
-  //   border: "none",
-  //   borderRadius: 12,
-  //   cursor: "pointer",
-  //   fontWeight: 700,
-  //   color: "white",
-  //   background:
-  //     "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-  // };
-
+  const downloadButton = {
+    width: "100%",
+    padding: 14,
+    border: "none",
+    borderRadius: 12,
+    cursor: "pointer",
+    fontWeight: 700,
+    color: P.surface,
+    background:
+      `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
+  };
 
   // const downloadFile = async (url, filename) => {
 

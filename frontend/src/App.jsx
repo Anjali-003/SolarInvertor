@@ -24,7 +24,7 @@ import AdminLogin from "./pages/AdminLogin";
 import PendingVendors from "./pages/PendingVendors";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
-
+import VendorProfile from "./pages/VendorProfile";
 import { InverterProvider } from "./context/Context";
 
 function App() {
@@ -148,6 +148,15 @@ function App() {
     element={
         <VendorProtectedRoute>
             <VendorFault />
+        </VendorProtectedRoute>
+    }
+/>
+
+<Route
+    path="/vendor/profile"
+    element={
+        <VendorProtectedRoute>
+            <VendorProfile />
         </VendorProtectedRoute>
     }
 />
