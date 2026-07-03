@@ -1,3 +1,203 @@
+// import {
+//   createContext,
+//   useContext,
+//   useEffect,
+//   useState
+// } from "react";
+
+// import { io } from "socket.io-client";
+
+// const VendorDeviceContext =
+//   createContext();
+
+// export function VendorDeviceProvider({
+//   children
+// }) {
+
+//   const [selectedDevice,
+//     setSelectedDevice] =
+//     useState(null);
+
+//   const [data,
+//     setData] =
+//     useState(null);
+
+//   const [lastUpdated,
+//     setLastUpdated] =
+//     useState(null);
+
+//   // ----------------------------------
+//   // Fetch latest data for selected device
+//   // ----------------------------------
+
+//   useEffect(() => {
+
+//     if (!selectedDevice) return;
+
+//     const token =
+//       localStorage.getItem(
+//         "vendorToken"
+//       );
+
+//     const fetchLatest =
+//       async () => {
+
+//         try {
+
+//           const res =
+//             await fetch(
+//               `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
+//               {
+//                 headers: {
+//                   Authorization:
+//                     `Bearer ${token}`
+//                 }
+//               }
+//             );
+
+//           const json =
+//             await res.json();
+
+//           if (!res.ok) {
+//             console.log(json);
+//             return;
+//           }
+
+//           setData(json);
+
+//           const fixedTimestamp =
+//             json.TIMESTAMP?.replace(
+//               /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
+//               "$1 $2"
+//             );
+
+//           setLastUpdated(
+//             fixedTimestamp
+//           );
+
+//         } catch (err) {
+
+//           console.error(
+//             "Latest fetch failed",
+//             err
+//           );
+
+//         }
+//       };
+
+//     fetchLatest();
+
+//   }, [selectedDevice]);
+
+//   // ----------------------------------
+//   // Socket for selected device
+//   // ----------------------------------
+
+//   useEffect(() => {
+
+//     if (!selectedDevice) return;
+
+//     const token =
+//       localStorage.getItem(
+//         "vendorToken"
+//       );
+
+//     const socket =
+//       io(
+//         "http://localhost:3000",
+//         {
+//           auth: {
+//             token
+//           }
+//         }
+//       );
+
+//     socket.on(
+//       "connect",
+//       () => {
+
+//         console.log(
+//           "Vendor socket connected"
+//         );
+
+//         socket.emit(
+//           "joinDevice",
+//           selectedDevice.imei
+//         );
+//       }
+//     );
+
+//     socket.on(
+//       "inverterData",
+//       (newData) => {
+
+//         setData(
+//           { ...newData }
+//         );
+
+//         const fixedTimestamp =
+//           newData.TIMESTAMP?.replace(
+//             /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
+//             "$1 $2"
+//           );
+
+//         setLastUpdated(
+//           fixedTimestamp
+//         );
+//       }
+//     );
+
+//     socket.on(
+//       "disconnect",
+//       () => {
+
+//         console.log(
+//           "Vendor socket disconnected"
+//         );
+
+//       }
+//     );
+
+//     return () => {
+//       socket.disconnect();
+//     };
+
+//   }, [selectedDevice]);
+
+//   return (
+
+//     <VendorDeviceContext.Provider
+//       value={{
+//         selectedDevice,
+//         setSelectedDevice,
+
+//         data,
+//         setData,
+
+//         lastUpdated,
+//         setLastUpdated
+//       }}
+//     >
+//       {children}
+//     </VendorDeviceContext.Provider>
+
+//   );
+// }
+
+// export function useVendorDevice() {
+
+//   return useContext(
+//     VendorDeviceContext
+//   );
+
+// }
+
+
+
+
+
+
+
 import {
   createContext,
   useContext,
@@ -5,162 +205,71 @@ import {
   useState
 } from "react";
 
-import { io } from "socket.io-client";
+const VendorDeviceContext = createContext();
 
-const VendorDeviceContext =
-  createContext();
+export function VendorDeviceProvider({ children }) {
 
-export function VendorDeviceProvider({
-  children
-}) {
+  const [selectedDevice, setSelectedDevice] = useState(null);
 
-  const [selectedDevice,
-    setSelectedDevice] =
-    useState(null);
+  const [data, setData] = useState(null);
 
-  const [data,
-    setData] =
-    useState(null);
-
-  const [lastUpdated,
-    setLastUpdated] =
-    useState(null);
-
-  // ----------------------------------
-  // Fetch latest data for selected device
-  // ----------------------------------
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
 
-    if (!selectedDevice) return;
+    if (!selectedDevice) {
+      setData(null);
+      setLastUpdated(null);
+      return;
+    }
 
-    const token =
-      localStorage.getItem(
-        "vendorToken"
-      );
+    const token = localStorage.getItem("vendorToken");
 
-    const fetchLatest =
-      async () => {
+    const fetchLatest = async () => {
 
-        try {
+      try {
 
-          const res =
-            await fetch(
-              `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
-              {
-                headers: {
-                  Authorization:
-                    `Bearer ${token}`
-                }
-              }
-            );
-
-          const json =
-            await res.json();
-
-          if (!res.ok) {
-            console.log(json);
-            return;
+        const res = await fetch(
+          `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
+        );
 
-          setData(json);
+        const json = await res.json();
 
-          const fixedTimestamp =
-            json.TIMESTAMP?.replace(
-              /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
-              "$1 $2"
-            );
-
-          setLastUpdated(
-            fixedTimestamp
-          );
-
-        } catch (err) {
-
-          console.error(
-            "Latest fetch failed",
-            err
-          );
-
+        if (!res.ok) {
+          console.log(json);
+          return;
         }
-      };
 
-    fetchLatest();
-
-  }, [selectedDevice]);
-
-  // ----------------------------------
-  // Socket for selected device
-  // ----------------------------------
-
-  useEffect(() => {
-
-    if (!selectedDevice) return;
-
-    const token =
-      localStorage.getItem(
-        "vendorToken"
-      );
-
-    const socket =
-      io(
-        "http://localhost:3000",
-        {
-          auth: {
-            token
-          }
-        }
-      );
-
-    socket.on(
-      "connect",
-      () => {
-
-        console.log(
-          "Vendor socket connected"
-        );
-
-        socket.emit(
-          "joinDevice",
-          selectedDevice.imei
-        );
-      }
-    );
-
-    socket.on(
-      "inverterData",
-      (newData) => {
-
-        setData(
-          { ...newData }
-        );
+        setData(json);
 
         const fixedTimestamp =
-          newData.TIMESTAMP?.replace(
+          json.TIMESTAMP?.replace(
             /^(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d{2})$/,
             "$1 $2"
           );
 
-        setLastUpdated(
-          fixedTimestamp
-        );
-      }
-    );
+        setLastUpdated(fixedTimestamp);
 
-    socket.on(
-      "disconnect",
-      () => {
+      } catch (err) {
 
-        console.log(
-          "Vendor socket disconnected"
-        );
+        console.error("Latest fetch failed", err);
 
       }
-    );
 
-    return () => {
-      socket.disconnect();
     };
+
+    // Initial fetch
+    fetchLatest();
+
+    // Poll every 60 seconds
+    const interval = setInterval(fetchLatest, 60000);
+
+    return () => clearInterval(interval);
 
   }, [selectedDevice]);
 
@@ -170,10 +279,8 @@ export function VendorDeviceProvider({
       value={{
         selectedDevice,
         setSelectedDevice,
-
         data,
         setData,
-
         lastUpdated,
         setLastUpdated
       }}
@@ -185,9 +292,5 @@ export function VendorDeviceProvider({
 }
 
 export function useVendorDevice() {
-
-  return useContext(
-    VendorDeviceContext
-  );
-
+  return useContext(VendorDeviceContext);
 }

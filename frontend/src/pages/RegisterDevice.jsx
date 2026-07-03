@@ -338,7 +338,7 @@ navigate("/devices");
                 Off Grid Rooftop
               </option>
 
-              <option value="hybridgridrooftop">
+              <option value="hybridrooftop">
                 Hybrid Grid Rooftop
               </option>
             </select>

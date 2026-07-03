@@ -25,19 +25,19 @@ const { encrypt } = require("../utils/encryption");
   // });
 
 
-const APP = process.env.MQTT_APP_VERSION;
-const SOLUTION = process.env.MQTT_SOLUTION;
-const DIRECTION = process.env.MQTT_DIRECTION;
+// const APP = process.env.MQTT_APP_VERSION;
+// const SOLUTION = process.env.MQTT_SOLUTION;
+// const DIRECTION = process.env.MQTT_DIRECTION;
 
-const SUBTOPICS =
-    process.env.MQTT_SUBTOPICS.split(",");
+// const SUBTOPICS =
+//     process.env.MQTT_SUBTOPICS.split(",");
 
 client.on("connect", async () => {
 
     console.log("Loading devices...");
 
     const [devices] = await pool.execute(
-        "SELECT imei FROM devices"
+        "SELECT imei, device_version, solution FROM devices"
     );
 
 //     devices.forEach(device => {
@@ -57,8 +57,8 @@ client.on("connect", async () => {
 
 devices.forEach(device => {
 
-    const topic =
-`${APP}/${SOLUTION}/${device.imei}/#`;
+const topic =
+`${device.device_version}/${device.solution}/${device.imei}/#`;
 
     client.subscribe(topic);
 
@@ -74,7 +74,7 @@ devices.forEach(device => {
     const payload = message.toString();
     const topicInfo = parseTopic(topic);
 
-    console.log("Received:", payload);
+    // console.log("Received:", payload);
 
     try {
 

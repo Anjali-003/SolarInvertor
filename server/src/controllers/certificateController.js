@@ -490,7 +490,7 @@ exports.generateCertificate = async (req, res) => {
             });
         }
 
-        const vendorId = req.user.id;
+        const vendorId = req.vendor.id;
 
         const mqttPassword = crypto
             .randomBytes(24)
@@ -561,6 +561,11 @@ exports.generateCertificate = async (req, res) => {
                         );
 
                         // subscribeDevice(imei);
+                        subscribeDevice(
+    imei,
+    solution,
+    deviceVersion
+);
 
                         return res.json({
                             success: true,

@@ -120,8 +120,7 @@ const buttonStyle = {
     padding: "22px",
     border: "none",
     borderRadius: 18,
-    background:
-        'linear-gradient(135deg, ${P.amber}, ${P.orange})',
+    background:'linear-gradient(135deg, ${P.amber}, ${P.orange})',
     color: P.surface,
     fontSize: 20,
     fontWeight: 700,

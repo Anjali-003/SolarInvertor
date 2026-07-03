@@ -201,7 +201,7 @@ export default function VendorDevices() {
                     fontWeight: 700,
                   }}
                 >
-                  Device #{device.id}
+                  Device ID:{device.id}
                 </h3>
 
                 <div

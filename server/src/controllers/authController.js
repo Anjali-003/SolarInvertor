@@ -17,7 +17,7 @@ exports.setupDevice = async (req, res) => {
       password,
       confirm_password,
       imei,
-      solution
+      // solution
     } = req.body;
 
     const nameRegex = /^[A-Za-z\s.'-]{2,100}$/;
@@ -168,31 +168,74 @@ if (!imeiRegex.test(imei)) {
     // );
 
 
-    await pool.execute(
-      `INSERT INTO users
-      (
-        name,
+    // await pool.execute(
+    //   `INSERT INTO users
+    //   (
+    //     name,
+    // email,
+    // phone,
+    // password,
+    // imei
+    //   )
+    //   VALUES (?, ?, ?, ?, ?)`,
+    //   [
+    //     name,
+    //     email,
+    //     phone,
+    //     hashedPassword,
+    //     imei,
+    //     // solution
+    //   ]
+    // );
+
+    // res.json({
+    //   success: true,
+    //   message: "Device setup successful",
+    // });
+
+
+    const [result] = await pool.execute(
+  `INSERT INTO users
+  (
+    name,
     email,
     phone,
     password,
-    imei,
-    solution
-      )
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        name,
-        email,
-        phone,
-        hashedPassword,
-        imei,
-        solution
-      ]
-    );
+    imei
+  )
+  VALUES (?, ?, ?, ?, ?)`,
+  [
+    name,
+    email,
+    phone,
+    hashedPassword,
+    imei
+  ]
+);
 
-    res.json({
-      success: true,
-      message: "Device setup successful",
-    });
+const token = jwt.sign(
+  {
+    id: result.insertId,
+    imei,
+    type: "user"
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: "7d"
+  }
+);
+
+res.json({
+  success: true,
+  token,
+  user: {
+    id: result.insertId,
+    name,
+    email,
+    phone,
+    imei
+  }
+});
 
   } catch (err) {
 

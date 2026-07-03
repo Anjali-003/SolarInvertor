@@ -257,7 +257,7 @@ export default function User() {
                             {userProfile?.created_at
                                 ? new Date(
                                     userProfile.created_at
-                                ).toLocaleDateString()
+                                ).toLocaleDateString('en-GB')
                                 : "--"}
                         </div>
                     </div>

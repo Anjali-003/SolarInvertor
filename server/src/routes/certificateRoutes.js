@@ -10,10 +10,13 @@ const controller =
 const auth =
   require("../middleware/authMiddleware");
 
+const vendorAuth =
+  require("../middleware/vendorAuth");
+
 // Generate cert
 router.post(
   "/generate",
-  auth,
+  vendorAuth,
   controller.generateCertificate
 );
 
