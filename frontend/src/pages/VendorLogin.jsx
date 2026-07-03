@@ -161,6 +161,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
+import P from "../theme/colors";
+import PasswordInput from "../components/PasswordInput";
 
 export default function VendorLogin() {
 
@@ -382,22 +384,16 @@ export default function VendorLogin() {
 
       <div
         style={{
-          width: "100%",
+          width: "95%",
           maxWidth: 460,
-
           padding: "55px 42px",
-
           background:
             "rgba(255,255,255,0.75)",
-
           backdropFilter:
             "blur(20px)",
-
           borderRadius: 28,
-
           border:
             "1px solid rgba(255,184,77,0.12)",
-
           boxShadow:
             "0 18px 45px rgba(255,184,77,0.12)",
         }}
@@ -406,37 +402,20 @@ export default function VendorLogin() {
 {/* BRAND */}
         <div
           style={{
-            textAlign: "center",
-            marginBottom: 10
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 14,
           }}
         >
           <img
-            src="src/assets/logo.png"
-            alt="logo"
+            src="/src/assets/logo.png"
+            alt="Logo"
             style={{
-              width: 500,
+              width: 400,
               height: 120,
-              justifyContent: "center",
-              alignItems: "center",
               objectFit: "contain",
             }}
           />
-
-          <div
-            style={{
-              fontSize: 34,
-              fontWeight: 800,
-              background:
-                `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
-              WebkitBackgroundClip:
-                "text",
-              WebkitTextFillColor:
-                "transparent",
-            }}
-          >
-            Vendor Portal
-          </div>
-
         </div>
 
         <ErrorMessage message={error} />
@@ -473,29 +452,22 @@ export default function VendorLogin() {
               style={inputStyle}
             />
 
-            <input
-              type="password"
-              placeholder="Password"
+           <div style={{ marginBottom: 14 }}>
+            <PasswordInput
               value={password}
-              onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
               required
-              style={inputStyle}
+              inputStyle={inputStyle}
             />
+          </div>
 
             <button
               type="submit"
               disabled={loading}
               style={buttonStyle}
             >
-              {
-                loading
-                  ? "Logging In..."
-                  : "Login"
-              }
+              {loading ? "Logging In..." : "Login"}
             </button>
 
             <p
@@ -507,7 +479,7 @@ export default function VendorLogin() {
 
               <span
                 style={{
-                  color: "#3B82F6",
+                  color: P.blueAccent,
                   cursor: "pointer"
                 }}
                 onClick={() =>
@@ -565,31 +537,25 @@ export default function VendorLogin() {
               style={inputStyle}
             />
 
-            <input
-              type="password"
-              placeholder="Password"
+          <div style={{ marginTop: 14, marginBottom: 14 }}>
+            <PasswordInput
               value={password}
-              onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
               required
-              style={inputStyle}
+              inputStyle={inputStyle}
             />
+          </div>
 
-            <input
-              type="password"
+          <div style={{ marginTop: 14, marginBottom: 14 }}>
+            <PasswordInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(
-                  e.target.value
-                )
-              }
               required
-              style={inputStyle}
+              inputStyle={inputStyle}
             />
+          </div>
 
             <button
               type="submit"
@@ -612,7 +578,7 @@ export default function VendorLogin() {
 
               <span
                 style={{
-                  color: "#3B82F6",
+                  color: P.blueAccent,
                   cursor: "pointer"
                 }}
                 onClick={() =>
@@ -639,7 +605,7 @@ const inputStyle = {
   padding: "14px 16px",
   marginBottom: 14,
   border: "none",
-  background: "#F3F4F6",
+  background: P.surfaceLight,
   borderRadius: 8,
   boxSizing: "border-box"
 };

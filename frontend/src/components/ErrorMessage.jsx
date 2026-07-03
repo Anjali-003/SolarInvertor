@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React from "react";
 import { AlertCircle } from "lucide-react";
 import P from "../theme/colors";
@@ -10,7 +9,7 @@ export default function ErrorMessage({ message }) {
     <div
       style={{
         background: P.errorBg,
-        border: "1px solid P.borderError",
+        border: `1px solid ${P.borderError}`,
         color: P.errorRed,
         padding: "10px 14px",
         borderRadius: 8,
@@ -25,28 +24,10 @@ export default function ErrorMessage({ message }) {
     >
       <AlertCircle
         size={16}
-        color= {P.errorRed}
+        color={P.errorRed}
         style={{ flexShrink: 0 }}
       />
       <span>{message}</span>
     </div>
   );
-=======
-import "../styles/common.css";
-
-export default function ErrorMessage({ message }) {
-
-    if (!message) return null;
-
-    return (
-
-        <div className="error-message">
-
-            ❌ {message}
-
-        </div>
-
-    );
-
->>>>>>> 296a5b581e98660b51d495da935d0632ea7ef954
 }

@@ -153,7 +153,7 @@ export default function RegisterDevice() {
     fontWeight: 700,
     color: P.surface,
     background:
-      'linear-gradient(135deg, ${P.amber}, ${P.orange})',
+      `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
   };
 
   const downloadFile = async (url, filename) => {

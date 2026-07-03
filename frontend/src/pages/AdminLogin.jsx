@@ -2,102 +2,69 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import logo from "../assets/logo.png";
+import P from "../theme/colors";
+import ErrorMessage from "../components/ErrorMessage";
+import PasswordInput from "../components/PasswordInput";
 
 export default function AdminLogin() {
 
     const navigate = useNavigate();
-
     const [email, setEmail] = useState("");
-
     const [password, setPassword] = useState("");
-
     const [loading, setLoading] = useState(false);
-
     const [error, setError] = useState("");
-
     const handleLogin = async (e) => {
-
         e.preventDefault();
 
         try {
 
             setLoading(true);
-
             setError("");
-
             const { data } = await api.post(
-
                 "/admin/login",
-
                 {
-
                     email,
-
                     password
-
                 }
 
             );
 
             localStorage.setItem(
-
                 "adminToken",
-
                 data.token
-
             );
 
             localStorage.setItem(
-
                 "adminName",
-
                 data.admin.name
-
             );
 
             localStorage.setItem(
-
                 "adminEmail",
-
                 data.admin.email
-
             );
 
             navigate("/admin");
-
         }
 
         catch (err) {
-
             if (err.response) {
-
                 setError(
-
                     err.response.data.error ||
-
                     "Login failed"
-
                 );
 
             }
 
             else {
-
                 setError(
-
                     "Unable to connect to server."
-
                 );
-
             }
 
         }
 
-        finally {
-
-            setLoading(false);
-
-        }
+        finally {setLoading(false);}
 
     };
 
@@ -115,7 +82,7 @@ export default function AdminLogin() {
 
             <div
                 style={{
-                    width: "100%",
+                    width: "95%",
                     maxWidth: 460,
                     padding: "55px 42px",
                     background: "rgba(255,255,255,0.75)",
@@ -128,64 +95,23 @@ export default function AdminLogin() {
 
                 <div
                     style={{
-                        textAlign: "center",
-                        marginBottom: 30
+                        display: "flex",
+                        justifyContent: "center",
+                        marginBottom: 14,
                     }}
                 >
-
                     <img
-                        src={logo}
-                        alt="logo"
+                        src="/src/assets/logo.png"
+                        alt="Logo"
                         style={{
-                            width: 90,
-                            marginBottom: 10
+                            width: 400,
+                            height: 120,
+                            objectFit: "contain",
                         }}
                     />
-
-                    <div
-                        style={{
-                            fontSize: 24,
-                            fontWeight: 900,
-                            color: "#1F2937"
-                        }}
-                    >
-                        SOLAR INVERTER
-                    </div>
-
-                    <div
-                        style={{
-                            fontSize: 34,
-                            fontWeight: 900,
-                            background:
-                                "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                        }}
-                    >
-                        Admin Portal
-                    </div>
-
                 </div>
 
-                {
-
-                    error && (
-
-                        <div
-                            style={{
-                                background: "#FEE2E2",
-                                color: "#B91C1C",
-                                padding: 12,
-                                borderRadius: 8,
-                                marginBottom: 20
-                            }}
-                        >
-                            {error}
-                        </div>
-
-                    )
-
-                }
+                <ErrorMessage message={error} />
 
                 <div
                     style={{
@@ -209,30 +135,23 @@ export default function AdminLogin() {
                         style={inputStyle}
                     />
 
-                    <input
-                        type="password"
-                        placeholder="Password"
+                    <div style={{ marginTop: 10, marginBottom: 30 }}>
+                      <PasswordInput
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Password"
                         required
-                        style={inputStyle}
-                    />
+                        inputStyle={inputStyle}
+                      />
+                    </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        style={buttonStyle}
-                    >
-                        {
-
-                            loading
-
-                                ? "Logging In..."
-
-                                : "Login"
-
-                        }
-                    </button>
+            <button
+              type="submit"
+              disabled={loading}
+              style={buttonStyle}
+            >
+              {loading ? "Logging In..." : "Login"}
+            </button>
 
                 </form>
 
@@ -245,42 +164,23 @@ export default function AdminLogin() {
 }
 
 const inputStyle = {
-
     width: "100%",
-
     padding: "14px 16px",
-
-    marginBottom: 14,
-
     border: "none",
-
-    background: "#F3F4F6",
-
+    background: P.surfaceForm,
     borderRadius: 8,
-
     boxSizing: "border-box"
-
 };
 
 const buttonStyle = {
-
     width: "100%",
-
     padding: 14,
-
-    background:
-        "linear-gradient(135deg,#FFB84D,#FF6B6B)",
-
+    background:`linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)`,
     border: "none",
-
-    color: "#fff",
-
+    color: P.surface,
     fontWeight: 700,
-
     borderRadius: 8,
-
     cursor: "pointer",
-
     marginBottom: 20
 
 };
