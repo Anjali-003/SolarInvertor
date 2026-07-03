@@ -88,14 +88,10 @@ export default function PendingVendors() {
 
         catch (err) {
 
-            alert(
-
+            setError(
                 err.response?.data?.error ||
-
                 "Approval failed."
-
             );
-
         }
 
     }
@@ -118,12 +114,9 @@ export default function PendingVendors() {
 
         catch (err) {
 
-            alert(
-
+            setError(
                 err.response?.data?.error ||
-
                 "Rejection failed."
-
             );
 
         }
@@ -221,15 +214,10 @@ export default function PendingVendors() {
                                     vendors.map((vendor) => (
 
                                         <tr key={vendor.id}>
-
-                                            <td>{vendor.name}</td>
-
-                                            <td>{vendor.email}</td>
-
-                                            <td>{vendor.phone}</td>
-
-                                            <td>
-
+                                            <td data-label="Name">{vendor.name}</td>
+                                            <td data-label="Email">{vendor.email}</td>
+                                            <td data-label="Phone">{vendor.phone}</td>
+                                            <td data-label="Action">
                                                 <div className="action-buttons">
 
                                                     <button

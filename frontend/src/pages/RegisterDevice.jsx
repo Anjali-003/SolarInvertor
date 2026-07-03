@@ -131,10 +131,7 @@ export default function RegisterDevice() {
       // setCertData(data);
 
       console.log("Response:", data);
-
-alert("Device registered successfully.");
-
-navigate("/devices");
+      navigate("/devices");
 
     } catch (err) {
 
@@ -367,7 +364,7 @@ navigate("/devices");
       width: "100%",
       padding: "14px 16px",
       borderRadius: 12,
-      border: "1px solid #ddd",
+      border: `1px solid ${P.border}`,
       fontSize: 16,
       boxSizing: "border-box",
     }}

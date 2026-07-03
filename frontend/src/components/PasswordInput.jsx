@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import P from "../theme/colors";
 
-export default function PasswordInput({ value, onChange, placeholder = "Password", required = false, inputStyle = {} }) {
-
+export default function PasswordInput({ value, onChange, placeholder = "Password", required = false, inputStyle = {}, autoComplete = "current-password" }) {
   const [visible, setVisible] = useState(false);
   const timerRef = useRef(null);
 
@@ -33,6 +32,7 @@ export default function PasswordInput({ value, onChange, placeholder = "Password
         value={value}
         onChange={onChange}
         required={required}
+        autoComplete={autoComplete}
         style={{
           width: "100%",
           paddingRight: 44,
