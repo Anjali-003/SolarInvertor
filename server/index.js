@@ -2,9 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
-const jwt = require("jsonwebtoken");
+
+// TO BE REMOVED 
+// const http = require("http");
+// const { Server } = require("socket.io");
+// const jwt = require("jsonwebtoken");
 
 const pool = require("./src/config/database");
 const vendorRoutes = require("./src/routes/vendorRoutes");
@@ -16,16 +18,16 @@ const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
 const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
 
 const app = express();
-const server = http.createServer(app);
+//const server = http.createServer(app);
 
 // ─────────────────────────────────────
 // SOCKET.IO
 // ─────────────────────────────────────
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
+// const io = new Server(server, {
+//   cors: {
+//     origin: "*",
+//   },
+// });
 
 // ─────────────────────────────────────
 // MIDDLEWARE
@@ -61,103 +63,108 @@ app.use(
 // ─────────────────────────────────────
 // SOCKET AUTH MIDDLEWARE
 // ─────────────────────────────────────
-io.use((socket, next) => {
 
-  try {
+// io.use((socket, next) => {
 
-    const token =
-      socket.handshake.auth.token;
+//   try {
 
-    if (!token) {
+//     const token =
+//       socket.handshake.auth.token;
 
-      return next(
-        new Error("No token")
-      );
-    }
+//     if (!token) {
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+//       return next(
+//         new Error("No token")
+//       );
+//     }
 
-    // attach user to socket
-    socket.user = decoded;
+//     const decoded = jwt.verify(
+//       token,
+//       process.env.JWT_SECRET
+//     );
 
-    next();
+//     // attach user to socket
+//     socket.user = decoded;
 
-  } catch (err) {
+//     next();
 
-    next(
-      new Error("Authentication error")
-    );
-  }
-});
+//   } catch (err) {
+
+//     next(
+//       new Error("Authentication error")
+//     );
+//   }
+// });
 
 // ─────────────────────────────────────
 // SOCKET CONNECTION
 // ─────────────────────────────────────
-io.on("connection", async (socket) => {
 
-  try {
 
-    console.log("✅ Socket Connected");
+// io.on("connection", async (socket) => {
 
-    const imei =
-      socket.user.imei;
+//   try {
 
-    console.log(
-      `Client connected for inverter: ${imei}`
-    );
+//     console.log("✅ Socket Connected");
 
-    // join room
-    socket.join(imei.toString());
+//     const imei =
+//       socket.user.imei;
 
-    // fetch latest ONLY for this inverter
-    const [rows] = await pool.execute(
-      `
-      SELECT payload
-      FROM messages
-      WHERE imei = ?
-      ORDER BY created_at DESC
-      LIMIT 1
-      `,
-      [imei]
-    );
+//     console.log(
+//       `Client connected for inverter: ${imei}`
+//     );
 
-    if (rows.length > 0) {
+//     // join room
+//     socket.join(imei.toString());
 
-      const latest = JSON.parse(
-        rows[0].payload
-      );
+//     // fetch latest ONLY for this inverter
+//     const [rows] = await pool.execute(
+//       `
+//       SELECT payload
+//       FROM messages
+//       WHERE imei = ?
+//       ORDER BY created_at DESC
+//       LIMIT 1
+//       `,
+//       [imei]
+//     );
 
-      socket.emit(
-        "inverterData",
-        latest
-      );
-    }
+//     if (rows.length > 0) {
 
-    socket.on("disconnect", () => {
+//       const latest = JSON.parse(
+//         rows[0].payload
+//       );
 
-      console.log(
-        `❌ Client disconnected: ${imei}`
-      );
-    });
+//       socket.emit(
+//         "inverterData",
+//         latest
+//       );
+//     }
 
-  } catch (err) {
+//     socket.on("disconnect", () => {
 
-    console.log(
-      "Socket connection error:",
-      err.message
-    );
+//       console.log(
+//         `❌ Client disconnected: ${imei}`
+//       );
+//     });
 
-    socket.disconnect();
-  }
-});
+//   } catch (err) {
+
+//     console.log(
+//       "Socket connection error:",
+//       err.message
+//     );
+
+//     socket.disconnect();
+//   }
+// });
 
 // ─────────────────────────────────────
 // MQTT HANDLER
 // ─────────────────────────────────────
-require("./src/services/mqttHandler")(io);
+// require("./src/services/mqttHandler")(io);
+require("./src/services/mqttHandler");
+
 
 // ─────────────────────────────────────
 // TEST ROUTE
@@ -192,8 +199,9 @@ app.get("/api/test", (req, res) => {
 const PORT =
   process.env.PORT || 3000;
 
-server.listen(PORT, () => {
+// server.listen(PORT, () => {
 
+app.listen(PORT, () => {
   console.log(
     `Server running on port ${PORT}`
   );

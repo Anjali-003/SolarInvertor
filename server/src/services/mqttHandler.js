@@ -1,25 +1,73 @@
-const mqtt = require("mqtt");
+// const mqtt = require("mqtt");
+const client = require("./mqttClient");
 const pool = require("../config/database");
 const parseTopic = require("../utils/parseTopic");
+const { encrypt } = require("../utils/encryption");
 
-module.exports = (io) => {
 
-  const client = mqtt.connect(
-    process.env.MQTT_URL,
-    {
-      username: process.env.MQTT_USER,
-      password: process.env.MQTT_PASS,
-    }
-  );
+// module.exports = () => {
 
-  client.on("connect", () => {
+  // const client = mqtt.connect(
+  //   process.env.MQTT_URL,
+  //   {
+  //     username: process.env.MQTT_USER,
+  //     password: process.env.MQTT_PASS,
+  //   }
+  // );
 
-    console.log("MQTT connected");
+  // client.on("connect", () => {
 
-    client.subscribe(
-      process.env.MQTT_TOPIC
+  //   console.log("MQTT connected");
+
+  //   client.subscribe(
+  //     process.env.MQTT_TOPIC
+  //   );
+  // });
+
+
+const APP = process.env.MQTT_APP_VERSION;
+const SOLUTION = process.env.MQTT_SOLUTION;
+const DIRECTION = process.env.MQTT_DIRECTION;
+
+const SUBTOPICS =
+    process.env.MQTT_SUBTOPICS.split(",");
+
+client.on("connect", async () => {
+
+    console.log("Loading devices...");
+
+    const [devices] = await pool.execute(
+        "SELECT imei FROM devices"
     );
-  });
+
+//     devices.forEach(device => {
+
+//         SUBTOPICS.forEach(subTopic => {
+
+//             const topic =
+// `${APP}/${SOLUTION}/${device.imei}/${subTopic}/${DIRECTION}`;
+
+//             client.subscribe(topic);
+
+//             console.log("Subscribed:", topic);
+
+//         });
+
+//     });
+
+devices.forEach(device => {
+
+    const topic =
+`${APP}/${SOLUTION}/${device.imei}/#`;
+
+    client.subscribe(topic);
+
+    console.log("Subscribed:", topic);
+
+});
+
+});
+
 
   client.on("message", async (topic, message) => {
 
@@ -49,7 +97,20 @@ module.exports = (io) => {
       }
 
       // dynamically find ASN field
-      const asnKey =
+      // const asnKey =
+      //   Object.keys(parsed).find(
+      //     key => key.startsWith("ASN_")
+      //   );
+
+      // if (!asnKey) {
+
+      //   console.log("No ASN key found");
+
+      //   return;
+      // }
+
+
+        const asnKey =
         Object.keys(parsed).find(
           key => key.startsWith("ASN_")
         );
@@ -61,6 +122,7 @@ module.exports = (io) => {
         return;
       }
 
+      
       const [deviceRows] =
         await pool.execute(
           `SELECT * FROM devices
@@ -82,60 +144,90 @@ module.exports = (io) => {
 
 
 
-  await pool.execute(
-        `INSERT INTO messages
+  // await pool.execute(
+  //       `INSERT INTO messages
+  // (
+  //   imei,
+  //   app_version,
+  //   solution,
+  //   message_type,
+  //   direction,
+  //   topic,
+  //   payload
+  // )
+  // VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  //       [
+  //         topicInfo.imei,
+  //         topicInfo.appVersion,
+  //         topicInfo.solution,
+  //         topicInfo.messageType,
+  //         topicInfo.direction,
+  //         topic,
+  //         JSON.stringify(parsed),
+  //       ]
+  //     );
+
+
+  const encrypted = encrypt(JSON.stringify(parsed));
+
+await pool.execute(
+  `INSERT INTO messages
   (
     imei,
     app_version,
     solution,
     message_type,
     direction,
-    topic,
-    payload
+    payload,
+    iv,
+    auth_tag,
+    serial_number
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          topicInfo.imei,
-          topicInfo.appVersion,
-          topicInfo.solution,
-          topicInfo.messageType,
-          topicInfo.direction,
-          topic,
-          JSON.stringify(parsed),
-        ]
-      );
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  [
+    topicInfo.imei,
+    topicInfo.appVersion,
+    topicInfo.solution,
+    topicInfo.messageType,
+    topicInfo.direction,
+    encrypted.encryptedData,
+    encrypted.iv,
+    encrypted.authTag,
+    serial
+  ]
+);
 
       // LIVE SOCKET UPDATE
-      io.to(topicInfo.imei.toString())
-        .emit("inverterData", parsed);
+      // io.to(topicInfo.imei.toString())
+      //   .emit("inverterData", parsed);
 
-      console.log(
-        `Live emitted to ${topicInfo.imei}`
-      );
+      // console.log(
+      //   `Live emitted to ${topicInfo.imei}`
+      // );
 
 
-      io.on(
-  "connection",
-  (socket) => {
+//       io.on(
+//   "connection",
+//   (socket) => {
 
-    socket.on(
-      "joinDevice",
-      (imei) => {
+//     socket.on(
+//       "joinDevice",
+//       (imei) => {
 
-        socket.join(
-          imei.toString()
-        );
+//         socket.join(
+//           imei.toString()
+//         );
 
-        console.log(
-          "Joined room:",
-          imei
-        );
+//         console.log(
+//           "Joined room:",
+//           imei
+//         );
 
-      }
-    );
+//       }
+//     );
 
-  }
-);
+//   }
+// );
 
     } catch (err) {
 
@@ -145,4 +237,6 @@ module.exports = (io) => {
       );
     }
   });
-};
+// };
+
+

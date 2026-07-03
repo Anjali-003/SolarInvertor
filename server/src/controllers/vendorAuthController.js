@@ -70,6 +70,42 @@ exports.register = async (req, res) => {
     phone,
     password
   } = req.body;
+  const nameRegex = /^[A-Za-z\s.'-]{2,100}$/;
+
+    if (!nameRegex.test(name)) {
+        return res.status(400).json({
+            error: "Invalid name"
+        });
+    }
+
+    // Email
+    const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            error: "Invalid email"
+        });
+    }
+
+    // Phone
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (!phoneRegex.test(phone)) {
+        return res.status(400).json({
+            error: "Invalid phone number"
+        });
+    }
+
+    // Password
+    const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{8,20}$/;
+
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            error: "Weak password"
+        });
+    }
 
   const hash =
     await bcrypt.hash(

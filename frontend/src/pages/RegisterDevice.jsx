@@ -10,12 +10,13 @@ export default function RegisterDevice() {
 
   const [imei, setImei] =
     useState("");
+  const [deviceVersion, setDeviceVersion] = useState("");
 
   const [solutionType, setSolutionType] =
     useState("");
 
-  const [certData, setCertData] =
-    useState(null);
+  // const [certData, setCertData] =
+  //   useState(null);
 
   const [loading, setLoading] =
     useState(false);
@@ -23,30 +24,30 @@ export default function RegisterDevice() {
   const [error, setError] =
     useState("");
 
-  const handleDownload = async (url, filename) => {
-    try {
-      const token = localStorage.getItem("vendorToken");
-      const res = await fetch(`http://localhost:3000${url}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  // const handleDownload = async (url, filename) => {
+  //   try {
+  //     const token = localStorage.getItem("vendorToken");
+  //     const res = await fetch(`http://localhost:3000${url}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
 
-      if (!res.ok) throw new Error("Download failed");
+  //     if (!res.ok) throw new Error("Download failed");
 
-      const blob = await res.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-    } catch (err) {
-      console.error("Download error:", err);
-    }
-  };
+  //     const blob = await res.blob();
+  //     const downloadUrl = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = downloadUrl;
+  //     a.download = filename;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(downloadUrl);
+  //     document.body.removeChild(a);
+  //   } catch (err) {
+  //     console.error("Download error:", err);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,12 +77,11 @@ export default function RegisterDevice() {
                 `Bearer ${token}`,
             },
 
-            body:
-              JSON.stringify({
-                imei,
-                solution:
-                  solutionType,
-              }),
+            body: JSON.stringify({
+  imei,
+  solution: solutionType,
+  deviceVersion,
+}),
           }
         );
 
@@ -123,12 +123,18 @@ export default function RegisterDevice() {
         return;
       }
 
-      console.log(
-        "Certificate response:",
-        data
-      );
+      // console.log(
+      //   "Certificate response:",
+      //   data
+      // );
 
-      setCertData(data);
+      // setCertData(data);
+
+      console.log("Response:", data);
+
+alert("Device registered successfully.");
+
+navigate("/devices");
 
     } catch (err) {
 
@@ -156,60 +162,60 @@ export default function RegisterDevice() {
       `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
   };
 
-  const downloadFile = async (url, filename) => {
+  // const downloadFile = async (url, filename) => {
 
-    try {
+  //   try {
 
-      const token =
-        localStorage.getItem("vendorToken");
+  //     const token =
+  //       localStorage.getItem("vendorToken");
 
-      const res = await fetch(url, {
-        headers: {
-          Authorization:
-            `Bearer ${token}`
-        }
-      });
+  //     const res = await fetch(url, {
+  //       headers: {
+  //         Authorization:
+  //           `Bearer ${token}`
+  //       }
+  //     });
 
-      if (!res.ok) {
-        throw new Error(
-          `Download failed: ${res.status}`
-        );
-      }
+  //     if (!res.ok) {
+  //       throw new Error(
+  //         `Download failed: ${res.status}`
+  //       );
+  //     }
 
-      const blob =
-        await res.blob();
+  //     const blob =
+  //       await res.blob();
 
-      const blobUrl =
-        window.URL.createObjectURL(blob);
+  //     const blobUrl =
+  //       window.URL.createObjectURL(blob);
 
-      const a =
-        document.createElement("a");
+  //     const a =
+  //       document.createElement("a");
 
-      a.href = blobUrl;
-      a.download = filename;
+  //     a.href = blobUrl;
+  //     a.download = filename;
 
-      document.body.appendChild(a);
+  //     document.body.appendChild(a);
 
-      a.click();
+  //     a.click();
 
-      a.remove();
+  //     a.remove();
 
-      window.URL.revokeObjectURL(
-        blobUrl
-      );
+  //     window.URL.revokeObjectURL(
+  //       blobUrl
+  //     );
 
-    } catch (err) {
+  //   } catch (err) {
 
-      console.error(
-        "Download error:",
-        err
-      );
+  //     console.error(
+  //       "Download error:",
+  //       err
+  //     );
 
-      alert(
-        "Failed to download file"
-      );
-    }
-  };
+  //     alert(
+  //       "Failed to download file"
+  //     );
+  //   }
+  // };
 
   return (
     <div
@@ -337,6 +343,38 @@ export default function RegisterDevice() {
             </select>
           </div>
 
+          <div
+  style={{
+    marginBottom: 20,
+  }}
+>
+  <label
+    style={{
+      display: "block",
+      marginBottom: 8,
+      fontWeight: 600,
+    }}
+  >
+    Device Version
+  </label>
+
+  <input
+    type="text"
+    placeholder="Enter Device Version"
+    value={deviceVersion}
+    onChange={(e) => setDeviceVersion(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "14px 16px",
+      borderRadius: 12,
+      border: "1px solid #ddd",
+      fontSize: 16,
+      boxSizing: "border-box",
+    }}
+    required
+  />
+</div>
+
           <button
             type="submit"
             disabled={loading}
@@ -364,7 +402,7 @@ export default function RegisterDevice() {
         </form>
 
         {/* Certificate Result */}
-        {certData && (
+        {/* {certData && (
           <div
             style={{
               marginTop: 30,
@@ -389,10 +427,10 @@ export default function RegisterDevice() {
                   "column",
                 gap: 12,
               }}
-            >
+            > */}
 
 
-
+{/* 
 
               <button
                 style={downloadButton}
@@ -438,12 +476,12 @@ export default function RegisterDevice() {
                 }
               >
                 Show Credentials
-              </button>
-
+              </button> */}
+{/* 
 
             </div>
           </div>
-        )}
+        )} */}
       </div>
       {/* Back Button */}
 <div
