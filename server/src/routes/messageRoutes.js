@@ -28,43 +28,43 @@ const { decrypt } = require("../utils/encryption");
 //   controller.getVendorLatestMessage
 // );
 
-// router.get("/latest-message", auth, controller.getLatestMessage);
+router.get("/latest-message", auth, controller.getLatestMessage);
 
 
 
-router.get("/latest-message", async (req, res) => {
-  try {
-    const [rows] = await pool.execute(
-      `SELECT * FROM messages ORDER BY created_at DESC LIMIT 1`
-    );
+// router.get("/latest-message", async (req, res) => {
+//   try {
+//     const [rows] = await pool.execute(
+//       `SELECT * FROM messages ORDER BY created_at DESC LIMIT 1`
+//     );
 
-    if (rows.length === 0) {
-      return res.json({ error: "No data" });
-    }
+//     if (rows.length === 0) {
+//       return res.json({ error: "No data" });
+//     }
 
-    const row = rows[0];
+//     const row = rows[0];
 
-    // decrypt payload
-    const decrypted = decrypt(
-      row.payload,
-      row.iv,
-      row.auth_tag
-    );
+//     // decrypt payload
+//     const decrypted = decrypt(
+//       row.payload,
+//       row.iv,
+//       row.auth_tag
+//     );
 
-    const parsed = JSON.parse(decrypted);
+//     const parsed = JSON.parse(decrypted);
 
-    return res.json({
-      ...row,
-      payload: parsed,
-    });
+//     return res.json({
+//       ...row,
+//       payload: parsed,
+//     });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
-module.exports = router;
+// module.exports = router;
 
 // router.get(
 //   "/vendor/device/:deviceId/latest-message",

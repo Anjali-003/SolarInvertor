@@ -101,7 +101,7 @@ export default function VendorFault() {
     const getFaultText = (fault) => {
         const value = getParameterValue(fault.key);
         if (value == null) return "--";
-        return fault.meanings[value] || "Unknown";
+        return fault.meanings[value] || "--";
     };
 
     const isFaultActive = (fault) => {

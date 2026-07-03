@@ -34,6 +34,20 @@ export default function Login() {
     }
   }, [navigate]);
 
+  const loginUser = (data) => {
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("loginType", "user");
+  localStorage.setItem("imei", data.user.imei);
+  localStorage.setItem("username", data.user.name);
+  localStorage.setItem("email", data.user.email);
+  localStorage.setItem("phone", data.user.phone);
+
+    setLoading(false);
+
+
+  navigate("/");
+};
+
   // const handleLogin = async (e) => {
   //   e.preventDefault();
   //   setError("");
@@ -105,19 +119,19 @@ export default function Login() {
         return;
       }
 
-      console.log("✅ Login Response:", data);
+//       console.log("✅ Login Response:", data);
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
-localStorage.setItem(
-  "loginType",
-  "user"
-);
+//       localStorage.setItem(
+//         "token",
+//         data.token
+//       );
+// localStorage.setItem(
+//   "loginType",
+//   "user"
+// );
       // SAVE USER DATA
       console.log("👤 User data from response:", data.user);
-      console.log("🔑 Role value:", data.user.role);
+      // console.log("🔑 Role value:", data.user.role);
 
       // localStorage.setItem(
       //   "serial_number",
@@ -126,22 +140,24 @@ localStorage.setItem(
 
       //console.log("✅ Stored serial_number:", data.user.serial_number);
 
-      localStorage.setItem("imei", data.user.imei);
+      // localStorage.setItem("imei", data.user.imei);
 
-      localStorage.setItem(
-        "username",
-        data.user.name
-      );
+      // localStorage.setItem(
+      //   "username",
+      //   data.user.name
+      // );
 
-      localStorage.setItem(
-        "email",
-        data.user.email
-      );
+      // localStorage.setItem(
+      //   "email",
+      //   data.user.email
+      // );
 
-      localStorage.setItem(
-        "phone",
-        data.user.phone
-      );
+      // localStorage.setItem(
+      //   "phone",
+      //   data.user.phone
+      // );
+      // navigate("/");
+      loginUser(data);
 
       // localStorage.setItem(
       //   "role",
@@ -151,7 +167,7 @@ localStorage.setItem(
       //console.log("✅ Stored role:", localStorage.getItem("role"));
 
       // navigate("/");
-      navigate("/");
+      
 
     } catch (err) {
 
@@ -216,11 +232,54 @@ if (!/^\d{15}$/.test(imei)) {
       setSuccess("Device setup successful! Please login.");
 
       //setSerialNumber("");
-      setClientName("");
-      setPhone("");
-      setEmail("");
-      setSetupPassword("");
-      setConfirmPassword("");
+
+//       localStorage.setItem("token", data.token);
+// localStorage.setItem("loginType", "user");
+
+// localStorage.setItem("imei", data.user.imei);
+// localStorage.setItem("username", data.user.name);
+// localStorage.setItem("email", data.user.email);
+// localStorage.setItem("phone", data.user.phone);
+
+// setLoading(false);
+
+// navigate("/");
+//  loginUser(data);
+
+
+//       setClientName("");
+//       setPhone("");
+//       setEmail("");
+//       setSetupPassword("");
+//       setConfirmPassword("");
+// Signup successful, now automatically login
+
+const loginRes = await fetch(
+  "http://localhost:3000/api/auth/login",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      identifier: email,
+      password: setupPassword,
+    }),
+  }
+);
+
+const loginData = await loginRes.json();
+
+if (!loginRes.ok) {
+  setError(loginData.error || "Automatic login failed");
+  setLoading(false);
+  return;
+}
+
+loginUser(loginData);
+
+
+
     } catch (err) {
       console.log(err);
       setError("Server error");

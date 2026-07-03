@@ -139,7 +139,7 @@ export default function Fault() {
 
         if (value == null) return "--";
 
-        return fault.meanings[value] || "Unknown";
+        return fault.meanings[value] || "--";
     };
 
     // ACTIVE FAULT?
