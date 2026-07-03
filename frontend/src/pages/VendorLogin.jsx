@@ -549,8 +549,8 @@ export default function VendorLogin() {
 
           <div style={{ marginTop: 14, marginBottom: 14 }}>
             <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm Password"
               required
               inputStyle={inputStyle}
