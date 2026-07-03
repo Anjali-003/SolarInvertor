@@ -17,7 +17,7 @@ exports.setupDevice = async (req, res) => {
       password,
       confirm_password,
       imei,
-      solution
+      solution 
     } = req.body;
 
     // passwords match
@@ -131,7 +131,7 @@ exports.setupDevice = async (req, res) => {
     phone,
     password,
     imei,
-    solution
+    solution 
       )
       VALUES (?, ?, ?, ?, ?, ?)`,
       [
@@ -140,7 +140,7 @@ exports.setupDevice = async (req, res) => {
         phone,
         hashedPassword,
         imei,
-        solution
+        solution ?? null
       ]
     );
 
