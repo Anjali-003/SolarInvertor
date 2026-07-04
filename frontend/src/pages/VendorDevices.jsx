@@ -28,7 +28,8 @@ export default function VendorDevices() {
 
           const res =
             await fetch(
-              "http://localhost:3000/api/devices/my-devices",
+              // "http://localhost:3000/api/devices/my-devices",
+              "/api/devices/my-devices",
               {
                 headers: {
                   Authorization:

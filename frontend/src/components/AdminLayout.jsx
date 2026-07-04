@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import "../styles/admin.css";
+import logo from "../assets/logo.png";
 
 export default function AdminLayout() {
 
@@ -39,7 +40,7 @@ export default function AdminLayout() {
             <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
                 <div>
                     <div className="logo-section">
-                        <img src="/src/assets/logo.png" alt="Logo" />
+                        <img src={logo} alt="Logo" />
                         <h2>Solar Inverter</h2>
                         <p>ADMIN PANEL</p>
                     </div>

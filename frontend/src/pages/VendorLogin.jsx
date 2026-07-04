@@ -1,168 +1,10 @@
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// export default function VendorLogin() {
-
-//   const navigate = useNavigate();
-
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   const [loading, setLoading] = useState(false);
-
-//   const handleLogin = async (e) => {
-
-//     e.preventDefault();
-
-//     try {
-
-//       setLoading(true);
-
-//       const res = await fetch(
-//         "http://localhost:3000/api/vendor/login",
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json"
-//           },
-//           body: JSON.stringify({
-//             email,
-//             password
-//           })
-//         }
-//       );
-
-//       const data = await res.json();
-
-//       console.log("Vendor Login Response:", data);
-
-//       if (!res.ok) {
-
-//         alert(
-//           data.error || "Login failed"
-//         );
-
-//         return;
-//       }
-
-//       // Store vendor info
-//       localStorage.setItem(
-//         "vendorToken",
-//         data.token
-//       );
-
-//       localStorage.setItem(
-//         "vendorId",
-//         data.vendor.id
-//       );
-
-//       localStorage.setItem(
-//         "vendorName",
-//         data.vendor.name
-//       );
-
-//       localStorage.setItem(
-//         "vendorEmail",
-//         data.vendor.email
-//       );
-
-//       alert("Login successful");
-
-//       //navigate("/vendor-dashboard");
-//       navigate("/devices");
-
-//     } catch (err) {
-
-//       console.error(err);
-
-//       alert("Server error");
-
-//     } finally {
-
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div
-//       style={{
-//         maxWidth: 450,
-//         margin: "50px auto",
-//         padding: 25,
-//         border: "1px solid #ddd",
-//         borderRadius: 10
-//       }}
-//     >
-//       <h2>Vendor Login</h2>
-
-//       <form onSubmit={handleLogin}>
-
-//         <div style={{ marginBottom: 15 }}>
-//           <label>Email</label>
-
-//           <input
-//             type="email"
-//             value={email}
-//             onChange={(e) =>
-//               setEmail(e.target.value)
-//             }
-//             required
-//             style={{
-//               width: "100%",
-//               padding: 10
-//             }}
-//           />
-//         </div>
-
-//         <div style={{ marginBottom: 15 }}>
-//           <label>Password</label>
-
-//           <input
-//             type="password"
-//             value={password}
-//             onChange={(e) =>
-//               setPassword(e.target.value)
-//             }
-//             required
-//             style={{
-//               width: "100%",
-//               padding: 10
-//             }}
-//           />
-//         </div>
-
-//         <button
-//           type="submit"
-//           disabled={loading}
-//           style={{
-//             width: "100%",
-//             padding: 12,
-//             cursor: "pointer"
-//           }}
-//         >
-//           {
-//             loading
-//               ? "Logging in..."
-//               : "Login"
-//           }
-//         </button>
-
-//       </form>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import P from "../theme/colors";
 import PasswordInput from "../components/PasswordInput";
+import logo from "../assets/logo.png";
+
 
 export default function VendorLogin() {
 
@@ -197,7 +39,8 @@ export default function VendorLogin() {
       setError("");
 
       const res = await fetch(
-        "http://localhost:3000/api/vendor/login",
+        // "http://localhost:3000/api/vendor/login",
+        "/api/vendor/login",
         {
           method: "POST",
           headers: {
@@ -274,7 +117,11 @@ export default function VendorLogin() {
     setError("");
 
     // Register
-    const res = await fetch("http://localhost:3000/api/vendor/register", {
+    const res = await fetch(
+      // "http://localhost:3000/api/vendor/register",
+            "/api/vendor/register", 
+ 
+      {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, phone, password }),
@@ -303,70 +150,6 @@ export default function VendorLogin() {
     setLoading(false);
   }
 };
-
-  // const handleSignup = async (e) => {
-
-  //   e.preventDefault();
-
-  //   if (
-  //     password !== confirmPassword
-  //   ) {
-  //     setError(
-  //       "Passwords do not match"
-  //     );
-  //     return;
-  //   }
-
-  //   try {
-
-  //     setLoading(true);
-  //     setError("");
-
-  //     const res = await fetch(
-  //       "http://localhost:3000/api/vendor/register",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type":
-  //             "application/json"
-  //         },
-  //         body: JSON.stringify({
-  //           name,
-  //           email,
-  //           phone,
-  //           password
-  //         })
-  //       }
-  //     );
-
-  //     const data =
-  //       await res.json();
-
-  //     if (!res.ok) {
-
-  //       setError(
-  //         data.error ||
-  //         "Registration failed"
-  //       );
-
-  //       return;
-  //     }
-
-  //     alert(
-  //       "Vendor account created successfully"
-  //     );
-
-  //     setMode("login");
-
-  //   } catch {
-
-  //     setError("Server error");
-
-  //   } finally {
-
-  //     setLoading(false);
-  //   }
-  // };
 
   return (
 
@@ -407,7 +190,7 @@ export default function VendorLogin() {
           }}
         >
           <img
-            src="/src/assets/logo.png"
+            src={logo}
             alt="Logo"
             style={{
               width: 400,

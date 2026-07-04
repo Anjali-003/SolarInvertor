@@ -43,7 +43,8 @@ export default function useVendorDeviceData(deviceId) {
 
             const res =
                 await axios.get(
-                    `http://localhost:3000/api/vendor/devices/${deviceId}/latest`,
+                    // `http://localhost:3000/api/vendor/devices/${deviceId}/latest`,
+                    "/api/vendor/devices/" + deviceId + "/latest",
                     {
                         headers: {
                             Authorization:

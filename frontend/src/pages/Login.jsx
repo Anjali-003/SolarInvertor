@@ -4,6 +4,8 @@ import ErrorMessage from "../components/ErrorMessage";
 import ImeiInput from "../components/ImeiInput";
 import P from "../theme/colors";
 import PasswordInput from "../components/PasswordInput";
+import logo from "../assets/logo.png";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -48,43 +50,6 @@ export default function Login() {
   navigate("/");
 };
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setLoading(true);
-
-  //   try {
-  //     const res = await fetch(
-  //       "http://localhost:3000/api/auth/login",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           identifier,
-  //           password,
-  //         }),
-  //       }
-  //     );
-
-  //     const data = await res.json();
-
-  //     if (!res.ok) {
-  //       setError(data.error || "Login failed");
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     localStorage.setItem("token", data.token);
-  //     navigate("/");
-  //   } catch (err) {
-  //     console.log(err);
-  //     setError("Server error");
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -92,7 +57,9 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/login",
+        // "http://localhost:3000/api/auth/login",
+                "/api/auth/login",
+
         {
           method: "POST",
           headers: {
@@ -119,55 +86,9 @@ export default function Login() {
         return;
       }
 
-//       console.log("✅ Login Response:", data);
 
-//       localStorage.setItem(
-//         "token",
-//         data.token
-//       );
-// localStorage.setItem(
-//   "loginType",
-//   "user"
-// );
       // SAVE USER DATA
       console.log("👤 User data from response:", data.user);
-      // console.log("🔑 Role value:", data.user.role);
-
-      // localStorage.setItem(
-      //   "serial_number",
-      //   data.user.serial_number
-      // );
-
-      //console.log("✅ Stored serial_number:", data.user.serial_number);
-
-      // localStorage.setItem("imei", data.user.imei);
-
-      // localStorage.setItem(
-      //   "username",
-      //   data.user.name
-      // );
-
-      // localStorage.setItem(
-      //   "email",
-      //   data.user.email
-      // );
-
-      // localStorage.setItem(
-      //   "phone",
-      //   data.user.phone
-      // );
-      // navigate("/");
-      loginUser(data);
-
-      // localStorage.setItem(
-      //   "role",
-      //   data.user.role
-      // );
-
-      //console.log("✅ Stored role:", localStorage.getItem("role"));
-
-      // navigate("/");
-      
 
     } catch (err) {
 
@@ -200,7 +121,8 @@ if (!/^\d{15}$/.test(imei)) {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/setup-device",
+        // "http://localhost:3000/api/auth/setup-device",
+        "/api/auth/setup-device",
         {
           method: "POST",
           headers: {
@@ -231,31 +153,11 @@ if (!/^\d{15}$/.test(imei)) {
       setError("");
       setSuccess("Device setup successful! Please login.");
 
-      //setSerialNumber("");
-
-//       localStorage.setItem("token", data.token);
-// localStorage.setItem("loginType", "user");
-
-// localStorage.setItem("imei", data.user.imei);
-// localStorage.setItem("username", data.user.name);
-// localStorage.setItem("email", data.user.email);
-// localStorage.setItem("phone", data.user.phone);
-
-// setLoading(false);
-
-// navigate("/");
-//  loginUser(data);
-
-
-//       setClientName("");
-//       setPhone("");
-//       setEmail("");
-//       setSetupPassword("");
-//       setConfirmPassword("");
 // Signup successful, now automatically login
 
 const loginRes = await fetch(
-  "http://localhost:3000/api/auth/login",
+  // "http://localhost:3000/api/auth/login",
+  "/api/auth/login",
   {
     method: "POST",
     headers: {
@@ -301,11 +203,6 @@ loginUser(loginData);
       <div
         style={{
           width: "95%",
-          // maxWidth: 380,
-          // padding: "50px 40px",
-          // background: "#ffffff",
-          // borderRadius: 8,
-          // boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
           maxWidth: 460,
           padding: "55px 42px",
           background: "rgba(255,255,255,0.75)",
@@ -343,7 +240,7 @@ loginUser(loginData);
 >
   {/* LOGO */}
   <img
-    src="/src/assets/logo.png"
+    src= {logo}
     alt="Logo"
     style={{
       width: 400,

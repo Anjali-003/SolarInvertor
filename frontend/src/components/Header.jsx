@@ -1,5 +1,6 @@
 import React from "react";
 import P from "../theme/colors";
+import logo from "../assets/logo.png";
 
 export default function Header() {
   return (
@@ -28,7 +29,7 @@ export default function Header() {
         >
           {/* LOGO */}
           <img
-            src="/src/assets/logo.png"
+            src= {logo}
             alt="logo"
             style={{
               width: 500,

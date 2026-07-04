@@ -240,7 +240,11 @@ export default function Dashboard() {
     const { data, setData, lastUpdated } = useInverter();
 
     const [isLive, setIsLive] = useState(true);
-    const [apiUrl, setApiUrl] = useState("http://localhost:3000/api/latest");
+    const [apiUrl, setApiUrl] = useState(
+        // "http://localhost:3000/api/latest"
+                "/api/latest"
+
+    );
     const [showConfig, setShowConfig] = useState(false);
     const [refreshInterval, setRefreshInterval] = useState(15);
     const intervalRef = useRef(null);

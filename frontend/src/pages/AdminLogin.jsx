@@ -4,6 +4,8 @@ import api from "../utils/api";
 import P from "../theme/colors";
 import ErrorMessage from "../components/ErrorMessage";
 import PasswordInput from "../components/PasswordInput";
+import logo from "../assets/logo.png";
+
 
 export default function AdminLogin() {
 
@@ -69,7 +71,7 @@ export default function AdminLogin() {
                     }}
                 >
                     <img
-                        src="/src/assets/logo.png"
+                        src={logo}
                         alt="Logo"
                         style={{
                             width: 400,

@@ -41,7 +41,9 @@ export default function User() {
                         //     `http://localhost:3000/api/profile`
                         // );
                         await fetch(
-                            "http://localhost:3000/api/profile",
+                            // "http://localhost:3000/api/profile",
+                            "/api/profile",
+
                             {
                                 headers: {
                                     Authorization: `Bearer ${token}`

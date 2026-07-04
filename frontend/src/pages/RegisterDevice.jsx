@@ -65,7 +65,9 @@ export default function RegisterDevice() {
 
       const res =
         await fetch(
-          "http://localhost:3000/api/certs/generate",
+          // "http://localhost:3000/api/certs/generate",
+                    "/api/certs/generate",
+
           {
             method: "POST",
 
@@ -158,61 +160,6 @@ export default function RegisterDevice() {
     background:
       `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
   };
-
-  // const downloadFile = async (url, filename) => {
-
-  //   try {
-
-  //     const token =
-  //       localStorage.getItem("vendorToken");
-
-  //     const res = await fetch(url, {
-  //       headers: {
-  //         Authorization:
-  //           `Bearer ${token}`
-  //       }
-  //     });
-
-  //     if (!res.ok) {
-  //       throw new Error(
-  //         `Download failed: ${res.status}`
-  //       );
-  //     }
-
-  //     const blob =
-  //       await res.blob();
-
-  //     const blobUrl =
-  //       window.URL.createObjectURL(blob);
-
-  //     const a =
-  //       document.createElement("a");
-
-  //     a.href = blobUrl;
-  //     a.download = filename;
-
-  //     document.body.appendChild(a);
-
-  //     a.click();
-
-  //     a.remove();
-
-  //     window.URL.revokeObjectURL(
-  //       blobUrl
-  //     );
-
-  //   } catch (err) {
-
-  //     console.error(
-  //       "Download error:",
-  //       err
-  //     );
-
-  //     alert(
-  //       "Failed to download file"
-  //     );
-  //   }
-  // };
 
   return (
     <div
