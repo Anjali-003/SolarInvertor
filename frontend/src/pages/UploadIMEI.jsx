@@ -7,7 +7,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import SuccessMessage from "../components/SuccessMessage";
 
 import "../styles/admin.css";
-import "../styles/uploadIMEI.css";
+import "../styles/UploadIMEI.css";
 
 export default function UploadIMEI() {
 

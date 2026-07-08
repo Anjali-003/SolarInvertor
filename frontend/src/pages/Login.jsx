@@ -89,6 +89,7 @@ export default function Login() {
 
       // SAVE USER DATA
       console.log("👤 User data from response:", data.user);
+      loginUser(data);
 
     } catch (err) {
 
