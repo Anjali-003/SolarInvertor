@@ -136,7 +136,7 @@ const inputStyle = {
     width: "100%",
     padding: "14px 16px",
     border: "none",
-    background: "#F0F0F0",
+    background: P.surfaceFaded,
     borderRadius: 8,
     boxSizing: "border-box",
     fontSize: 15,
@@ -145,12 +145,12 @@ const inputStyle = {
 const buttonStyle = {
     width: "100%",
     padding: 14,
-    background: `linear-gradient(135deg, #FFB74D 0%, #F97316 100%)`,
+    background: P.btnPrimary,
     border: "none",
     color: "white",
     fontWeight: 700,
     fontSize: 15,
-    borderRadius: 8,
+    borderRadius: 50,
     cursor: "pointer",
     marginBottom: 20,
 };

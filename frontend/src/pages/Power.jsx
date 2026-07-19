@@ -1,16 +1,151 @@
 import { useInverter } from "../context/Context";
-
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
 import { PARAMETER_MAP } from "../constants/parameterMap";
 import { parseKeyword } from "../utils/parseKeyword";
+import PageHeader from "../components/PageHeader";
 
 export default function Power() {
 
     const { data, lastUpdated } = useInverter();
     // GET PARAMETER VALUE DYNAMICALLY
+
+// ── Style objects ─────────────────────────────────────
+    const statCard = {
+        background: P.surface,
+        borderRadius: 14,
+        padding: "14px 10px",
+        textAlign: "center",
+        boxShadow: P.shadowCard,
+        border: "1px solid ${P.border}",
+    };
+
+    const statIconWrap = {
+        width: 36,
+        height: 36,
+        borderRadius: "50%",
+        background: P.surfaceAmber,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "0 auto 8px",
+    };
+
+    const statSubLabel = {
+        fontSize: 9,
+        fontWeight: 700,
+        color: P.textLight,
+        letterSpacing: 0.5,
+        fontFamily: "'Inter', sans-serif",
+        marginBottom: 4,
+        textTransform: "uppercase",
+    };
+
+    const statValue = {
+        fontSize: 20,
+        fontWeight: 800,
+        color: P.textPrimary,
+        fontFamily: "'DM Sans', sans-serif",
+        lineHeight: 1.1,
+    };
+
+    const statUnit = {
+        fontSize: 11,
+        fontWeight: 500,
+        color: P.textMuted,
+        fontFamily: "'Inter', sans-serif",
+        marginTop: 2,
+    };
+
+    const chartCard = {
+        background: P.surface,
+        borderRadius: 16,
+        padding: "16px",
+        marginBottom: 14,
+        boxShadow: P.shadowCard,
+        border: "1px solid ${P.border}",
+    };
+
+    const chartHeader = {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16,
+    };
+
+    const chartTitle = {
+        fontSize: 14,
+        fontWeight: 600,
+        color: P.textPrimary,
+        fontFamily: "'DM Sans', sans-serif",
+    };
+
+    const chartBadge = {
+        background: P.amber,
+        color: P.surface,
+        fontSize: 12,
+        fontWeight: 700,
+        padding: "4px 12px",
+        borderRadius: 20,
+        fontFamily: "'Inter', sans-serif",
+    };
+
+    // ── Bar Chart Component ───────────────────────────────
+    const BarChart = ({ value, maxValue, color }) => {
+        const numBars = 10;
+        const filledBars = Math.round((Math.min(value || 0, maxValue) / maxValue) * numBars);
+        const heights = [40, 55, 35, 70, 85, 60, 90, 75, 65, 80];
+
+        return (
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 80, padding: "0 4px" }}>
+                {heights.map((h, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            flex: 1,
+                            height: `${h}%`,
+                            borderRadius: "4px 4px 0 0",
+                            background: i < filledBars
+                                ? color
+                                : `${color}33`,
+                            transition: "height 0.4s ease",
+                        }}
+                    />
+                ))}
+            </div>
+        );
+    };
+
+    // ── Line Chart Component ──────────────────────────────
+    const LineChart = ({ value, maxValue, color }) => {
+        const points = [10, 15, 12, 18, 20, 16, 22, 25, 21, 28, 24, 30];
+        const w = 280;
+        const h = 70;
+        const max = Math.max(...points);
+        const coords = points.map((p, i) => ({
+            x: (i / (points.length - 1)) * w,
+            y: h - (p / max) * (h - 10),
+        }));
+        const pathD = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
+        const areaD = `${pathD} L ${w} ${h} L 0 ${h} Z`;
+
+        return (
+            <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ overflow: "visible" }}>
+                <defs>
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+                        <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+                    </linearGradient>
+                </defs>
+                <path d={areaD} fill="url(#lineGrad)" />
+                <path d={pathD} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {/* End dot */}
+                <circle cx={coords[coords.length - 1].x} cy={coords[coords.length - 1].y} r="5" fill={color} />
+            </svg>
+        );
+    };
+
     const getParameterValue = (parameter) => {
         const entry = Object.entries(data || {}).find(([key]) => {
 
@@ -105,190 +240,119 @@ export default function Power() {
     ];
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
+        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
 
-                paddingBottom: "90px",
-
-                background: P.bg,
-            }}
-        >
+        <PageHeader
+            title="POWER"
+            backPath="/"
+        />
 
             {/* HEADER */}
             {/* <Header
                 data={data}
                 lastUpdated={lastUpdated}
             /> */}
-            <Header />
 
-            <DeviceInfo
-                data={data}
-                lastUpdated={lastUpdated}
-            />
+            {/* DEVICE STRIP */}
+            <div style={{ margin: "20px 20px 16px", background: P.surface, borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, boxShadow: P.shadowCard }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, background: P.surfaceGreen, border: `1px solid ${P.borderGreen}`, borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>SERIAL NUMBER</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                        {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                            ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                            : "--"}
+                    </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>LAST UPDATED</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>{lastUpdated || "--"}</div>
+                </div>
+            </div>
 
             {/* PAGE CONTENT */}
-            <div
-                style={{
-                    paddingTop: "4px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingBottom: "12px",
-                    maxWidth: "100%",
-                    margin: "0px 24px 28px",
-                    boxSizing: "border-box",
-                }}
-            >
+            <div style={{ padding: "0 20px 20px" }}>
 
                 {/* HEADING */}
                 <h2
                     style={{
-                        fontSize: 18,
-                        fontWeight: 700,
-
-                        color: P.textPrimary,
-
-                        marginBottom: "10px",
-                        marginTop: "10px",
-
-                        letterSpacing: "-0.3px",
-
-                        fontFamily:
-                            "'Space Mono', monospace",
+                        fontSize: 15,
+                        fontWeight: 800,
+                        color: P.textAmber,
+                        marginBottom: 14,
+                        marginTop: 4,
+                        letterSpacing: 0.5,
+                        fontFamily: "'DM Sans', sans-serif",
                     }}
                 >
                     POWER GENERATED DETAILS
                 </h2>
 
-                {/* CONTAINER */}
+                {/* TOP 3 STAT CARDS */}
                 <div
                     style={{
-                        background: P.surface,
-
-                        border:
-                            `1px solid ${P.border}`,
-
-                        borderRadius: 12,
-
-                        padding: "24px",
-                        paddingLeft: "16px",
-
-                        marginBottom: "28px",
-
-                        boxShadow:
-                            "0 2px 8px rgba(0,0,0,0.06)",
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr 1fr",
+                        gap: 10,
+                        marginBottom: 16,
                     }}
                 >
-
-                    {/* DETAILS LIST */}
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-
-                            gap: "10px",
-                        }}
-                    >
-
-                        {powerDetails.map((item) => (
-
-                            <div
-                                key={item.key}
-
-                                style={{
-                                    display: "flex",
-
-                                    justifyContent:
-                                        "space-between",
-
-                                    alignItems: "flex-start",
-                                    paddingBottom: "16px",
-                                    gap: "12px",
-                                }}
-                            >
-
-                                {/* LABEL + DESCRIPTION */}
-                                <div
-                                    style={{
-                                        flex: 1,
-                                        display: "flex",
-                                        alignItems: "flex-start",
-                                        gap: "10px",
-                                    }}
-                                >
-                                    {/* ICON */}
-                                    <div
-                                        style={{
-                                            color: P.deepAmber,
-                                            marginTop: "2px",
-                                            flexShrink: 0,
-                                        }}
-                                    >
-                                        {item.icon}
-                                    </div>
-
-                                    {/* TEXT */}
-                                    <div>
-                                        <div
-                                            style={{
-                                                fontSize: 16,
-
-                                                fontWeight: 600,
-
-                                                color: P.textPrimary,
-                                                marginBottom: "4px",
-
-                                                fontFamily:
-                                                    "'Source Sans Pro', sans-serif",
-                                            }}
-                                        >
-                                            {item.label}
-                                        </div>
-                                        <div
-                                            style={{
-                                                fontSize: 12,
-
-                                                fontWeight: 400,
-
-                                                color: P.textMuted,
-
-                                                fontFamily:
-                                                    "'Source Sans Pro', sans-serif",
-                                            }}
-                                        >
-                                            {item.description}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* VALUE BOX */}
-                                <div
-                                    style={{
-                                        minWidth: 80,
-
-                                        padding: "8px 12px",
-
-                                        textAlign: "center",
-
-                                        background: P.box,
-
-                                        borderRadius: 10,
-
-                                        fontSize: 16,
-                                        fontWeight: 700,
-
-                                        color: P.bg,
-                                        flexShrink: 0,
-
-                                        fontFamily: "'Source Sans Pro', sans-serif",
-                                    }}
-                                >
-                                    {item.value ?? "--"}{" "}
-                                    {item.unit}
-                                </div>
-                            </div>
-                        ))}
+                    {/* Active Power */}
+                    <div style={statCard}>
+                        <div style={statIconWrap}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={P.borderStrong} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                            </svg>
+                        </div>
+                        <div style={statSubLabel}>ACTIVE POWER</div>
+                        <div style={statValue}>{getParameterValue("POW")}</div>
+                        <div style={statUnit}>W</div>
                     </div>
+
+                    {/* Lifetime Energy */}
+                    <div style={statCard}>
+                        <div style={statIconWrap}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={P.borderStrong} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                            </svg>
+                        </div>
+                        <div style={statSubLabel}>LIFETIME ENERGY</div>
+                        <div style={{ ...statValue, color: P.textAmberBright }}>{getParameterValue("LKWH")}</div>
+                        <div style={statUnit}>kWh</div>
+                    </div>
+
+                    {/* Lifetime Running */}
+                    <div style={statCard}>
+                        <div style={statIconWrap}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={P.borderStrong} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <div style={statSubLabel}>LIFETIME RUNNING</div>
+                        <div style={{ ...statValue, color: P.textAmberBright }}>{getParameterValue("LON")}</div>
+                        <div style={statUnit}>hrs</div>
+                    </div>
+                </div>
+
+                {/* TODAY ENERGY — BAR CHART */}
+                <div style={chartCard}>
+                    <div style={chartHeader}>
+                        <span style={chartTitle}>Today Energy</span>
+                        <span style={chartBadge}>{getParameterValue("TKWH")} kWh</span>
+                    </div>
+                    <BarChart value={getParameterValue("TKWH")} maxValue={50} color= {P.textAmberBright} />
+                </div>
+
+                {/* TODAY ON TIME — LINE CHART */}
+                <div style={chartCard}>
+                    <div style={chartHeader}>
+                        <span style={chartTitle}>Today On Time</span>
+                        <span style={chartBadge}>{getParameterValue("TON")} hrs</span>
+                    </div>
+                    <LineChart value={getParameterValue("TON")} maxValue={24} color={P.textAmber} />
                 </div>
             </div>
 

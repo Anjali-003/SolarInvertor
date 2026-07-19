@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInverter } from "../context/Context";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
+import PageHeader from "../components/PageHeader";
 
 export default function User() {
 
     const navigate = useNavigate();
+    const username        = localStorage.getItem("username");
+    const email           = localStorage.getItem("email");
+    const phone           = localStorage.getItem("phone");
+    const registeredSince = localStorage.getItem("registeredSince");
 
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/login");
+    };
     const { data, lastUpdated } = useInverter();
 
     const [userProfile, setUserProfile] = useState(null);
@@ -80,14 +88,6 @@ export default function User() {
 
     }, []);
 
-    // LOGOUT
-    const handleLogout = () => {
-
-        localStorage.clear();
-
-        navigate("/login");
-    };
-
     // DEBUG: Log profile state
     useEffect(() => {
         console.log("👤 User Profile State:", userProfile);
@@ -99,191 +99,211 @@ export default function User() {
                 minHeight: "100vh",
                 paddingBottom: "90px",
                 background: P.bg,
+                fontFamily: "'Inter', sans-serif",
             }}
         >
-
+        <PageHeader
+            title="PROFILE"
+            backPath="/"
+        />
             {/* HEADER */}
             {/* <Header
                 data={data}
                 lastUpdated={lastUpdated}
             /> */}
-            <Header />
 
-            <DeviceInfo
-                data={data}
-                lastUpdated={lastUpdated}
-            />
-
-            {/* PAGE CONTENT */}
-            <div
-                style={{
-                    paddingTop: 12,
-                    paddingLeft: 24,
-                    paddingRight: 24,
-                }}
-            >
-
-                {/* USER CONTAINER */}
+            {/* AMBER BANNER + AVATAR */}
+            <div style={{ position: "relative", marginBottom: 60 }}>
+                {/* Amber banner */}
                 <div
                     style={{
-                        background: P.surface,
-                        border: `1px solid ${P.border}`,
-                        borderRadius: 18,
-                        padding: "24px 24px 24px 24px",
-                        boxShadow:
-                            "0 2px 8px rgba(0,0,0,0.06)",
+                        background: P.btnPrimary,
+                        height: 130,
+                        margin: "20px 20px 0",
+                        borderRadius: 16,
+                    }}
+                />
+                {/* Avatar circle — overlaps the banner */}
+                <div
+                    style={{
+                        position: "absolute",
+                        bottom: -50,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: 90,
+                        height: 90,
+                        borderRadius: "50%",
+                        background: P.borderAdmin,
+                        border: "4px solid P.surface",
+                        overflow: "hidden",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                     }}
                 >
+                    {/* Default person icon if no photo */}
+                    <svg
+                        width="48"
+                        height="48"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={P.textAdminFaint}
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
+                    </svg>
+                </div>
+            </div>
 
-                    {/* TITLE */}
+            {/* USER NAME */}
+            <div
+                style={{
+                    textAlign: "center",
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: P.textPrimary,
+                    fontFamily: "'DM Sans', sans-serif",
+                    marginBottom: 24,
+                    paddingTop: 8,
+                }}
+            >
+                {username || "--"}
+            </div>
+
+            {/* INFO CARD */}
+            <div
+                style={{
+                    margin: "0 20px",
+                    background: P.surface,
+                    borderRadius: 16,
+                    padding: "4px 0",
+                    boxShadow: P.shadowCard,
+                    marginBottom: 24,
+                }}
+            >
+                {/* Email Row */}
+                <div
+                    style={{
+                        padding: "16px 20px",
+                        borderBottom: "1px solid #F5F5F5",
+                    }}
+                >
                     <div
                         style={{
-                            fontSize: 24,
-                            fontWeight: 700,
-                            color: P.textPrimary,
-                            marginBottom: 24,
-                            fontFamily:
-                                "'Source Sans Pro', sans-serif",
+                            fontSize: 12,
+                            color: "#",
+                            fontWeight: 600,
+                            fontFamily: "'Inter', sans-serif",
+                            marginBottom: 4,
                         }}
                     >
-                        User Profile
+                        Email :
                     </div>
-
-                    {/* USER NAME */}
-                    <div style={{ marginBottom: 20 }}>
-                        <div
-                            style={{
-                                fontSize: 14,
-                                color: P.textMuted,
-                                marginBottom: 6,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            User Name
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: 20,
-                                fontWeight: 700,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            {userProfile?.name
-                                || "--"}
-                        </div>
-                    </div>
-
-                    {/* EMAIL */}
-                    <div style={{ marginBottom: 20 }}>
-                        <div
-                            style={{
-                                fontSize: 14,
-                                color: P.textMuted,
-                                marginBottom: 6,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            Email
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: 18,
-                                fontWeight: 600,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            {userProfile?.email
-                                || "--"}
-                        </div>
-                    </div>
-
-                    {/* PHONE */}
-                    <div style={{ marginBottom: 20 }}>
-                        <div
-                            style={{
-                                fontSize: 14,
-                                color: P.textMuted,
-                                marginBottom: 6,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            Phone Number
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: 18,
-                                fontWeight: 600,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            {userProfile?.phone
-                                || "--"}
-                        </div>
-                    </div>
-
-                    {/* REGISTERED SINCE */}
-                    <div style={{ marginBottom: 30 }}>
-                        <div
-                            style={{
-                                fontSize: 14,
-                                color: P.textMuted,
-                                marginBottom: 6,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            Registered Since
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: 18,
-                                fontWeight: 600,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
-                            }}
-                        >
-                            {userProfile?.created_at
-                                ? new Date(
-                                    userProfile.created_at
-                                ).toLocaleDateString('en-GB')
-                                : "--"}
-                        </div>
-                    </div>
-
-                    {/* LOGOUT BUTTON */}
-                    <button
-                        onClick={handleLogout}
+                    <div
                         style={{
-                            width: "100%",
-                            padding: "14px",
-                            background: P.errorRed,
-                            border: "none",
-                            borderRadius: 12,
-                            color: P.surface,
-                            fontSize: 16,
-                            fontWeight: 700,
-                            cursor: "pointer",
-                            fontFamily:
-                                "'Source Sans Pro', sans-serif",
+                            fontSize: 15,
+                            fontWeight: 500,
+                            color: P.textPrimary,
+                            fontFamily: "'Inter', sans-serif",
                         }}
                     >
-                        Logout
-                    </button>
+                        {email || "--"}
+                    </div>
                 </div>
+
+                {/* Phone Row */}
+                <div
+                    style={{
+                        padding: "16px 20px",
+                        borderBottom: "1px solid #F5F5F5",
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: 12,
+                            color: "#",
+                            fontWeight: 600,
+                            fontFamily: "'Inter', sans-serif",
+                            marginBottom: 4,
+                        }}
+                    >
+                        Phone Number :
+                    </div>
+                    <div
+                        style={{
+                            fontSize: 15,
+                            fontWeight: 500,
+                            color: P.textPrimary,
+                            fontFamily: "'Inter', sans-serif",
+                        }}
+                    >
+                        {phone || "--"}
+                    </div>
+                </div>
+
+                {/* Registered Since Row */}
+                <div
+                    style={{
+                        padding: "16px 20px",
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: 12,
+                            color: "#",
+                            fontWeight: 600,
+                            fontFamily: "'Inter', sans-serif",
+                            marginBottom: 4,
+                        }}
+                    >
+                        Registered Since
+                    </div>
+                    <div
+                        style={{
+                            fontSize: 15,
+                            fontWeight: 500,
+                            color: P.textPrimary,
+                            fontFamily: "'Inter', sans-serif",
+                        }}
+                    >
+                        {registeredSince || "--"}
+                    </div>
+                </div>
+            </div>
+
+            {/* LOGOUT BUTTON */}
+            <div style={{ margin: "20px 20px" }}>
+                <button
+                    onClick={handleLogout}
+                    style={{
+                        width: "100%",
+                        padding: "15px",
+                        background: P.redLogout,
+                        border: "none",
+                        borderRadius: 50,
+                        color: P.surface,
+                        fontSize: 16,
+                        fontWeight: 700,
+                        fontFamily: "'DM Sans', sans-serif",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        boxShadow: P.shadowBtnRed,
+                    }}
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Logout
+                </button>
             </div>
 
             {/* FOOTER */}

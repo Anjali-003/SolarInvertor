@@ -16,6 +16,7 @@ import RegisterDevice from "./pages/RegisterDevice";
 import DeviceCredentials from "./pages/DeviceCredentials";
 import VendorDevices from "./pages/VendorDevices";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VendorProfile from "./pages/VendorProfile";
 import VendorProtectedRoute from "./components/VendorProtectedRoutes";
 import VendorHome from "./pages/VendorHome";
 import VendorPower from "./pages/VendorPower";
@@ -24,7 +25,6 @@ import AdminLogin from "./pages/AdminLogin";
 import PendingVendors from "./pages/PendingVendors";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
-import VendorProfile from "./pages/VendorProfile";
 import { InverterProvider } from "./context/Context";
 
 function App() {
@@ -65,6 +65,15 @@ function App() {
             <VendorProtectedRoute>
               <RegisterDevice />
             </VendorProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vendor/profile"
+          element={
+              <VendorProtectedRoute>
+                <VendorProfile />
+              </VendorProtectedRoute>
           }
         />
 
@@ -148,15 +157,6 @@ function App() {
     element={
         <VendorProtectedRoute>
             <VendorFault />
-        </VendorProtectedRoute>
-    }
-/>
-
-<Route
-    path="/vendor/profile"
-    element={
-        <VendorProtectedRoute>
-            <VendorProfile />
         </VendorProtectedRoute>
     }
 />

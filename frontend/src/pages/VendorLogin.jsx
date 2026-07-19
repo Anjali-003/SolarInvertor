@@ -1,33 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import P from "../theme/colors";
 import PasswordInput from "../components/PasswordInput";
 import logo from "../assets/logo.png";
 
-
 export default function VendorLogin() {
 
   const navigate = useNavigate();
 
   const [mode, setMode] = useState("login");
-
   const [name, setName] = useState("");
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
   const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+const [loginPassword, setLoginPassword] = useState("");
 
-  const [confirmPassword,
-    setConfirmPassword] = useState("");
+// Signup fields
+const [signupPassword, setSignupPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
 
   const [loading, setLoading] =
     useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const resetForm = () => {
+  // Login fields
+  setLogin("");
+  setLoginPassword("");
+
+  // Signup fields
+  setName("");
+  setEmail("");
+  setPhone("");
+  setSignupPassword("");
+  setConfirmPassword("");
+
+  // Messages
+  setError("");
+  setSuccess("");
+};
+
+useEffect(() => {
+  resetForm();
+}, []);
 
   const handleLogin = async (e) => {
 
@@ -49,7 +68,7 @@ export default function VendorLogin() {
           },
           body: JSON.stringify({
             login,
-            password
+            password: loginPassword
           })
         }
       );
@@ -107,7 +126,7 @@ export default function VendorLogin() {
   const handleSignup = async (e) => {
   e.preventDefault();
 
-  if (password !== confirmPassword) {
+  if (signupPassword !== confirmPassword) {
     setError("Passwords do not match");
     return;
   }
@@ -124,7 +143,7 @@ export default function VendorLogin() {
       {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, password }),
+      body: JSON.stringify({name, email, phone, password: signupPassword,}),
     });
 
     const data = await res.json();
@@ -135,14 +154,9 @@ export default function VendorLogin() {
     }
 
     // Auto-login after successful registration
-    setMode("login");
-    setName("");
-    setEmail("");
-    setPhone("");
-    setPassword("");
-    setConfirmPassword("");
-    setError("");
-    setSuccess("Registration submitted! Please wait for admin approval before logging in.");
+    resetForm();
+setMode("login");
+setSuccess("Registration submitted! Please wait for admin approval before logging in.");
 
   } catch {
     setError("Server error");
@@ -157,66 +171,68 @@ export default function VendorLogin() {
       style={{
         minHeight: "100vh",
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        fontFamily:
-          "'Segoe UI', sans-serif",
+        background: P.bgGradient,
+        fontFamily: "'Inter', sans-serif",
+        padding: "24px 16px",
       }}
     >
 
       <div
         style={{
           width: "95%",
-          maxWidth: 460,
-          padding: "55px 42px",
-          background:
-            "rgba(255,255,255,0.75)",
-          backdropFilter:
-            "blur(20px)",
-          borderRadius: 28,
-          border:
-            "1px solid rgba(255,184,77,0.12)",
-          boxShadow:
-            "0 18px 45px rgba(255,184,77,0.12)",
+          maxWidth: 400,
+          padding: "36px 28px 32px",
+          background: P.surface,
+          borderRadius: 24,
+          border: `1px solid ${P.border}`,
+          boxShadow: P.shadowCardLg,
         }}
       >
 
 {/* BRAND */}
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: 14,
-          }}
-        >
+  style={{
+    background: P.surfaceFaded,
+    borderRadius: 16,
+    padding: "20px 16px",
+    marginBottom: 24,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  }}
+>
           <img
-            src={logo}
-            alt="Logo"
-            style={{
-              width: 400,
-              height: 120,
-              objectFit: "contain",
-            }}
-          />
+  src={logo}
+  alt="Logo"
+  style={{
+    width: 120,
+    height: 72,
+    objectFit: "contain",
+  }}
+/>
         </div>
 
         <ErrorMessage message={error} />
         {success && (
           <div
             style={{
-              background: "#DCFCE7",
-              border: "1px solid #BBF7D0",
-              color: "#166534",
+              background: P.surfaceSuccess,
+              border: `1px solid ${P.borderSuccess}`,
+              color: P.textSuccessMsg,
               padding: "10px 14px",
-              borderRadius: 8,
-              marginBottom: 20,
+              borderRadius: 12,
+              marginBottom: 14,
               fontSize: 13,
               display: "flex",
               alignItems: "center",
               gap: 8,
+              fontFamily: "'Inter', sans-serif",
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={P.textSuccessMsg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <polyline points="20 6 9 17 4 12"/>
             </svg>
             {success}
@@ -225,40 +241,36 @@ export default function VendorLogin() {
 
         <div
           style={{
+            fontSize: 22,
+            fontWeight: 700,
+            color: P.textPrimary,
+            marginBottom: 24,
             textAlign: "center",
-            fontSize: 20,
-            fontWeight: 600,
-            marginBottom: 10
+            fontFamily: "'DM Sans', sans-serif",
           }}
         >
-          {
-            mode === "login"
-              ? "Login"
-              : "Registration"
-          }
+          {mode === "login" ? "Vendor Login" : "Vendor Registration"}
         </div>
 
         {mode === "login" ? (
 
           <form onSubmit={handleLogin}>
 
-            <input
-              type="text"
-              placeholder="Email or Phone Number"
-              value={login}
-              onChange={(e) =>
-                setLogin(
-                  e.target.value
-                )
-              }
-              required
-              style={inputStyle}
-            />
+            <div style={{ marginBottom: 14 }}>
+  <input
+    type="email"
+    placeholder="Email"
+    value={login}
+    onChange={(e) => setLogin(e.target.value)}
+    required
+    style={inputStyle}
+  />
+</div>
 
            <div style={{ marginBottom: 14 }}>
             <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
               placeholder="Password"
               required
               inputStyle={inputStyle}
@@ -273,19 +285,11 @@ export default function VendorLogin() {
               {loading ? "Logging In..." : "Login"}
             </button>
 
-            <p
-              style={{
-                textAlign: "center"
-              }}
-            >
+            <p style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
               Don't have an account?{" "}
-
               <span
-                style={{
-                  color: P.blueAccent,
-                  cursor: "pointer"
-                }}
-                onClick={() => { setMode("signup"); setSuccess(""); setError(""); }}
+                style={{ color: P.textAmberBright, fontWeight: 600, cursor: "pointer" }}
+                onClick={() => { resetForm(); setMode("signup"); }}
               >
                 Sign Up
               </span>
@@ -297,66 +301,60 @@ export default function VendorLogin() {
 
           <form onSubmit={handleSignup}>
 
-            <input
-              type="text"
-              placeholder="Vendor Name"
-              value={name}
-              onChange={(e) =>
-                setName(
-                  e.target.value
-                )
-              }
-              required
-              style={inputStyle}
-            />
+            <div style={{ marginBottom: 14 }}>
+  <input
+    type="text"
+    placeholder="Vendor Name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    required
+    style={inputStyle}
+  />
+</div>
 
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) =>
-                setEmail(
-                  e.target.value
-                )
-              }
-              required
-              style={inputStyle}
-            />
+<div style={{ marginBottom: 14 }}>
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    required
+    style={inputStyle}
+  />
+</div>
 
-            <input
-              type="text"
-              placeholder="Phone"
-              value={phone}
-              onChange={(e) =>
-                setPhone(
-                  e.target.value
-                )
-              }
-              required
-              style={inputStyle}
-            />
+<div style={{ marginBottom: 14 }}>
+  <input
+    type="text"
+    placeholder="Phone"
+    value={phone}
+    onChange={(e) => setPhone(e.target.value)}
+    required
+    style={inputStyle}
+  />
+</div>
 
-          <div style={{ marginTop: 14, marginBottom: 14 }}>
-            <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              autoComplete="new-password"
-              required
-              inputStyle={inputStyle}
-            />
-          </div>
+<div style={{ marginBottom: 14 }}>
+  <PasswordInput
+    value={signupPassword}
+    onChange={(e) => setSignupPassword(e.target.value)}
+    placeholder="Password"
+    autoComplete="new-password"
+    required
+    inputStyle={inputStyle}
+  />
+</div>
 
-          <div style={{ marginTop: 14, marginBottom: 14 }}>
-            <PasswordInput
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              autoComplete="new-password"
-              required
-              inputStyle={inputStyle}
-            />
-          </div>
+<div style={{ marginBottom: 14 }}>
+  <PasswordInput
+    value={confirmPassword}
+    onChange={(e) => setConfirmPassword(e.target.value)}
+    placeholder="Confirm Password"
+    autoComplete="new-password"
+    required
+    inputStyle={inputStyle}
+  />
+</div>
 
             <button
               type="submit"
@@ -370,19 +368,11 @@ export default function VendorLogin() {
               }
             </button>
 
-            <p
-              style={{
-                textAlign: "center"
-              }}
-            >
+            <p style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
               Already have an account?{" "}
-
               <span
-                style={{
-                  color: P.blueAccent,
-                  cursor: "pointer"
-                }}
-                onClick={() => { setMode("login"); setSuccess(""); setError(""); }}
+                style={{ color: P.textAmberBright, fontWeight: 600, cursor: "pointer" }}
+                onClick={() => { resetForm(); setMode("login");}}
               >
                 Login
               </span>
@@ -399,30 +389,29 @@ export default function VendorLogin() {
 
 const inputStyle = {
   width: "100%",
-  padding: "14px 16px",
-  marginBottom: 14,
+  padding: "15px 20px",
   border: "none",
-  background: P.surfaceLight,
-  borderRadius: 8,
-  boxSizing: "border-box"
+  background: P.surfaceForm,
+  borderRadius: 10,
+  boxSizing: "border-box",
+  fontSize: 14,
+  fontFamily: "'Inter', sans-serif",
+  color: P.textPrimary,
+  outline: "none",
 };
 
 const buttonStyle = {
   width: "100%",
-  padding: 14,
-
-  background:
-    `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
-
+  padding: "15px 16px",
+  background: P.btnPrimary,
   border: "none",
-
-  color: P.surface,
-
+  color: P.textWhite,
+  fontSize: 16,
   fontWeight: 700,
-
-  borderRadius: 8,
-
+  borderRadius: 50,
   cursor: "pointer",
-
-  marginBottom: 20
+  marginBottom: 14,
+  boxShadow: P.shadowBtn,
+  fontFamily: "'DM Sans', sans-serif",
+  letterSpacing: 0.3,
 };

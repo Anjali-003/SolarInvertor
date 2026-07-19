@@ -6,6 +6,7 @@ import P from "../theme/colors";
 import { PARAMETER_MAP } from "../constants/parameterMap";
 import { parseKeyword } from "../utils/parseKeyword";
 import useVendorDeviceData from "../hooks/useVendorDeviceData";
+import PageHeader from "../components/PageHeader";
 
 export default function VendorHome() {
 
@@ -52,52 +53,51 @@ export default function VendorHome() {
         PF: powerIcon, APOW: powerIcon, RPOW: powerIcon,
     };
 
-    const renderMetric = (key, label, unit, description) => (
-        <div style={{
-            display: "flex", justifyContent: "space-between",
-            alignItems: "flex-start", gap: "12px",
-            paddingTop: "4px",
-            paddingLeft: "12px",
-            paddingRight: "12px",
-            paddingBottom: "12px",
-            maxWidth: "100%",
-            margin: "0px 24px 28px",
-            boxSizing: "border-box",
-        }}>
-            <div style={{ flex: 1, display: "flex", alignItems: "flex-start", gap: "10px" }}>
-                <div style={{ color: P.deepAmber, marginTop: "2px", flexShrink: 0 }}>
-                    {iconMap[key]}
-                </div>
-                <div>
-                    <div style={{
-                        fontSize: 16, fontWeight: 600, color: P.textPrimary,
-                        fontFamily: "'Source Sans Pro', sans-serif", marginBottom: "4px",
-                    }}>
-                        {label}
-                    </div>
-                    <div style={{
-                        fontSize: 12, fontWeight: 400, color: P.textMuted,
-                        fontFamily: "'Source Sans Pro', sans-serif",
-                    }}>
-                        {description}
-                    </div>
-                </div>
-            </div>
+    const metricCard = {
+        background: P.surfaceWarm,
+        border: "1px solid ${P.borderAmber}",
+        borderRadius: 12,
+        padding: "12px 14px",
+    };
 
-            <div style={{
-                minWidth: 80, padding: "8px 12px", textAlign: "center",
-                background: P.box, borderRadius: 10, fontSize: 16,
-                fontWeight: 700, color: P.bg,
-                fontFamily: "'Source Sans Pro', sans-serif", flexShrink: 0,
-            }}>
-                {getParameterValue(key)} {unit}
-            </div>
-        </div>
-    );
+    const metricIconRow = {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 6,
+    };
+
+    const metricValue = {
+        fontSize: 20,
+        fontWeight: 800,
+        color: P.textPrimary,
+        fontFamily: "'DM Sans', sans-serif",
+    };
+
+    const metricUnit = {
+        fontSize: 14,
+        fontWeight: 600,
+        color: P.textMuted,
+        fontFamily: "'Inter', sans-serif",
+    };
+
+    const metricLabel = {
+        fontSize: 13,
+        fontWeight: 600,
+        color: P.textSecond,
+        fontFamily: "'Inter', sans-serif",
+        marginBottom: 2,
+    };
+
+    const metricDesc = {
+        fontSize: 11,
+        color: P.textLight,
+        fontFamily: "'Inter', sans-serif",
+    };
 
     if (!device) {
         return (
-            <div style={{ minHeight: "100vh", background: P.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
                 <p style={{ color: P.textMuted }}>No device selected. Go back and pick a device.</p>
             </div>
         );
@@ -105,122 +105,210 @@ export default function VendorHome() {
 
     return (
         <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg }}>
+            <div
+    style={{
+        height: 64,
+        background: P.surface,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 18px",
+        borderBottom: "1px solid #ECECEC",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+    }}
+>
+    {/* Back Pill */}
+    <button
+        onClick={() => navigate("/my-devices")}
+        style={{
+            border: `1px solid ${P.borderStrong}`,
+            background: P.amberWarm,
+            color: P.textAmber,
+            borderRadius: 20,
+            padding: "8px 14px",
+            fontSize: 14,
+            fontWeight: 600,
+            fontFamily: "'Inter', sans-serif",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            boxShadow: "0 2px 6px rgba(245,158,11,0.15)",
+        }}
+    >
+        ← Devices
+    </button>
 
-            <Header />
+    {/* Title */}
+    <div
+        style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontSize: 18,
+            fontWeight: 700,
+            color: P.textAmber,
+            letterSpacing: 2,
+            fontFamily: "'DM Sans', sans-serif",
+        }}
+    >
+        HOME
+    </div>
+</div>
 
-            <div style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "4px" }}>
-                <button
-                    onClick={() => navigate("/my-devices")}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 8,
-                        width: "15%",
-                        minWidth: 140,
-                        background: P.surface,
-                        border: `1px solid ${P.borderStrong}`,
-                        borderRadius: 12,
-                        padding: "12px 16px",
-                        marginBottom: 16,
-                        fontSize: 15,
-                        fontWeight: 700,
-                        color: P.textPrimary,
-                        cursor: "pointer",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                        fontFamily: "'Source Sans Pro', sans-serif",
-                    }}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="19" y1="12" x2="5" y2="12"/>
-                        <polyline points="12 19 5 12 12 5"/>
-                    </svg>
-                    Back to My Devices
-                </button>
+            {/* DEVICE INFO CARD */}
+            <div style={{
+                margin: "20px 20px 16px",
+                background: P.surface,
+                borderRadius: 16,
+                padding: "16px 18px",
+                boxShadow: P.shadowCard,
+            }}>
+
+                {/* STATUS BADGE */}
+                <div style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background: P.surfaceGreen,
+                    border: `1px solid ${P.borderGreen}`,
+                    borderRadius: 20,
+                    padding: "4px 10px",
+                }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
+                </div>
             </div>
 
-            <DeviceInfo data={data} lastUpdated={lastUpdated} />
-
-            <div style={{ paddingTop: "4px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "12px" }}>
+            <div style={{ padding: "0 20px 20px" }}>
 
                 <h2 style={{
-                    fontSize: 18, fontWeight: 700, color: P.textPrimary,
-                    marginBottom: "16px", marginTop: "10px", letterSpacing: "-0.3px",
-                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 15,
+                    fontWeight: 800,
+                    color: P.textAmber,
+                    marginBottom: 12,
+                    marginTop: 4,
+                    letterSpacing: 0.5,
+                    fontFamily: "'DM Sans', sans-serif",
                 }}>
                     SOLAR PANEL DETAILS
                 </h2>
 
                 <div style={{
-                    background: P.surface, border: `1px solid ${P.border}`,
-                    borderRadius: 12, padding: "20px", marginBottom: "28px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                    background: P.amber,
+                    border: `1.5px solid ${P.borderDark}`,
+                    borderRadius: 16,
+                    padding: "16px",
+                    marginBottom: 20,
+                    boxShadow: P.shadowCardAmber,
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 12,
                 }}>
-                    {renderMetric("DCV1",  PARAMETER_MAP.DCV1.label,  "V",  PARAMETER_MAP.DCV1.desc)}
-                    {renderMetric("DCI1",  PARAMETER_MAP.DCI1.label,  "A",  PARAMETER_MAP.DCI1.desc)}
-                    {renderMetric("DCKW1", PARAMETER_MAP.DCKW1.label, "kW", PARAMETER_MAP.DCKW1.desc)}
+                    {/* DC Voltage */}
+                    <div style={metricCard}>
+                        <div style={metricIconRow}>
+                            <span style={{ fontSize: 16, color: P.textAmberBright }}>⚡</span>
+                            <span style={metricValue}>{getParameterValue("DCV1")} <span style={metricUnit}>V</span></span>
+                        </div>
+                        <div style={metricLabel}>DC Voltage</div>
+                        <div style={metricDesc}>Input voltage</div>
+                    </div>
+
+                    {/* DC Current */}
+                    <div style={metricCard}>
+                        <div style={metricIconRow}>
+                            <span style={{ fontSize: 16, color: P.textAmberBright }}>⚡</span>
+                            <span style={metricValue}>{getParameterValue("DCI1")} <span style={metricUnit}>A</span></span>
+                        </div>
+                        <div style={metricLabel}>DC Current</div>
+                        <div style={metricDesc}>Input current</div>
+                    </div>
+
+                    {/* DC Power — full width */}
+                    <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                            <div style={{ fontSize: 16, color: P.textAmberBright, marginBottom: 6 }}>🔲</div>
+                            <div style={metricLabel}>DC Power</div>
+                            <div style={metricDesc}>Total output</div>
+                        </div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                            {getParameterValue("DCKW1")} <span style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>kW</span>
+                        </div>
+                    </div>
                 </div>
 
                 <h2 style={{
-                    fontSize: 18, fontWeight: 700, color: P.textPrimary,
-                    marginBottom: "10px", marginTop: "10px", letterSpacing: "-0.3px",
-                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 15,
+                    fontWeight: 800,
+                    color: P.textAmber,
+                    marginBottom: 12,
+                    marginTop: 4,
+                    letterSpacing: 0.5,
+                    fontFamily: "'DM Sans', sans-serif",
                 }}>
                     INVERTER DETAILS
                 </h2>
 
-                {/* TEMP + FREQUENCY ROW */}
+                {/* TEMP + FREQ */}
                 <div style={{
-                    display: "flex", justifyContent: "space-between",
-                    gap: 10, marginBottom: "15px", marginTop: "10px",
+                    background: P.amber,
+                    border: `1.5px solid ${P.borderDark}`,
+                    borderRadius: 16,
+                    padding: "16px",
+                    marginBottom: 12,
+                    boxShadow: P.shadowCardAmber,
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 12,
                 }}>
-                    <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{
-                            fontSize: 16, fontWeight: 600, color: P.textPrimary,
-                            fontFamily: "'Source Sans Pro', sans-serif", whiteSpace: "nowrap",
-                        }}>
-                            {PARAMETER_MAP.TEMP.label} :-
-                        </div>
-                        <div style={{
-                            fontSize: 16, fontWeight: 700,
-                            fontFamily: "'Source Sans Pro', sans-serif", whiteSpace: "nowrap",
-                        }}>
-                            {getParameterValue("TEMP")} °C
+                    <div style={metricCard}>
+                        <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>🌡 Temp</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                            {getParameterValue("TEMP")} <span style={{ fontSize: 14, color: P.textMuted, fontWeight: 500 }}>°C</span>
                         </div>
                     </div>
-
-                    <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{
-                            fontSize: 16, fontWeight: 600, color: P.textPrimary,
-                            fontFamily: "'Source Sans Pro', sans-serif", whiteSpace: "nowrap",
-                        }}>
-                            {PARAMETER_MAP.FREQ.label} :-
+                    <div style={metricCard}>
+                        <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>≋ Freq</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                            {getParameterValue("FREQ")} <span style={{ fontSize: 14, color: P.textMuted, fontWeight: 500 }}>Hz</span>
                         </div>
-                        <div style={{
-                            fontSize: 16, fontWeight: 700,
-                            fontFamily: "'Source Sans Pro', sans-serif", whiteSpace: "nowrap",
-                        }}>
-                            {getParameterValue("FREQ")} Hz
-                        </div>
-                    </div>
                 </div>
+            </div>
 
                 <div style={{
-                    background: P.surface, border: `1px solid ${P.border}`,
-                    borderRadius: 12, padding: "20px", marginBottom: "28px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 12,
+                    marginBottom: 20,
                 }}>
-                    {renderMetric("VN",   PARAMETER_MAP.VN.label,   "V",  PARAMETER_MAP.VN.desc)}
-                    {renderMetric("I",    PARAMETER_MAP.I.label,    "A",  PARAMETER_MAP.I.desc)}
-                    {renderMetric("POW",  PARAMETER_MAP.POW.label,  "W",  PARAMETER_MAP.POW.desc)}
-                    {renderMetric("PF",   PARAMETER_MAP.PF.label,   "",   PARAMETER_MAP.PF.desc)}
-                    {renderMetric("APOW", PARAMETER_MAP.APOW.label, "kW", PARAMETER_MAP.APOW.desc)}
-                    {renderMetric("RPOW", PARAMETER_MAP.RPOW.label, "kW", PARAMETER_MAP.RPOW.desc)}
+                    {[
+                        { key: "VN",   label: "AC Voltage",     desc: "VN",   unit: "V"    },
+                        { key: "I",    label: "AC Current",     desc: "I",    unit: "A"    },
+                        { key: "POW",  label: "Active Power",   desc: "POW",  unit: "kW"   },
+                        { key: "PF",   label: "Power Factor",   desc: "PF",   unit: ""     },
+                        { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
+                        { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
+                    ].map((item) => (
+                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}" }}>
+                            <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
+                                ⚡ {item.label}
+                                <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span>
+                            </div>
+                            <div style={{ fontSize: 20, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                                {getParameterValue(item.key)}{" "}
+                                <span style={{ fontSize: 12, fontWeight: 500, color: P.textMuted }}>{item.unit}</span>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>
 
-            <VendorFooter data={data} />
+            <VendorFooter />
         </div>
     );
 }

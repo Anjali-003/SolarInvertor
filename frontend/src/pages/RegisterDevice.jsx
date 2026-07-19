@@ -157,37 +157,60 @@ export default function RegisterDevice() {
     cursor: "pointer",
     fontWeight: 700,
     color: P.surface,
-    background:
-      `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
+    background: P.btnPrimary,
   };
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: P.bg,
-        padding: "40px 20px",
-      }}
+  minHeight: "100vh",
+  background: P.bgGradient,
+  padding: "160px 40px 20px",
+  fontFamily: "'Inter', sans-serif",
+}}
     >
       <div
         style={{
-          maxWidth: 500,
+          maxWidth: 420,
           margin: "0 auto",
           background: P.surface,
           borderRadius: 24,
-          padding: 40,
-          boxShadow:
-            "0 10px 30px rgba(0,0,0,0.08)",
+          padding: "32px 28px",
+          boxShadow: "P.shadowCardLg, P.shadowCard",
+          border: "1px solid ${P.border}",
         }}
       >
 
-        <Header />
+        <div
+          style={{
+            background: P.surfaceFaded,
+            borderRadius: 16,
+            padding: "20px 16px",
+            marginBottom: 24,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="/src/assets/logo.png"
+            alt="Logo"
+            style={{
+              width: 120,
+              height: 72,
+              objectFit: "contain",
+            }}
+          />
+        </div>
 
         <h1
           style={{
-            fontSize: 30,
-            fontWeight: 800,
-            marginBottom: 8,
+            fontSize: 22,
+            fontWeight: 700,
+            color: P.textPrimary,
+            marginBottom: 6,
+            fontFamily: "'DM Sans', sans-serif",
+            textAlign: "center",
           }}
         >
           Register Device
@@ -195,8 +218,11 @@ export default function RegisterDevice() {
 
         <p
           style={{
-            color: P.textLight,
-            marginBottom: 30,
+            color: P.textMuted,
+            marginBottom: 24,
+            fontSize: 13,
+            textAlign: "center",
+            fontFamily: "'Inter', sans-serif",
           }}
         >
           Add a new inverter device
@@ -209,29 +235,24 @@ export default function RegisterDevice() {
           {/* IMEI */}
           <div
             style={{
-              marginBottom: 20,
+              marginBottom: 14,
             }}
           >
-            <label
-              style={{
-                display: "block",
-                marginBottom: 8,
-                fontWeight: 600,
-              }}
-            >
-              IMEI Number
-            </label>
 
             <ImeiInput
               value={imei}
               onChange={(e) => setImei(e.target.value)}
-              placeholder="Enter IMEI"
+              placeholder="IMEI Number"
               required
               inputStyle={{
-                padding: "14px 16px",
-                borderRadius: 12,
-                border: `1px solid ${P.border}`,
-                fontSize: 16,
+                padding: "15px 20px",
+                borderRadius: 10,
+                border: "none",
+                background: P.surfaceForm,
+                fontSize: 14,
+                fontFamily: "'Inter', sans-serif",
+                color: P.textPrimary,
+                outline: "none",
               }}
             />
           </div>
@@ -239,33 +260,41 @@ export default function RegisterDevice() {
           {/* Solution Type */}
           <div
             style={{
-              marginBottom: 30,
+              marginBottom: 14,
+              position: "relative",
             }}
           >
-            <label
+            {/* Custom dropdown arrow */}
+            <svg
               style={{
-                display: "block",
-                marginBottom: 8,
-                fontWeight: 600,
+                position: "absolute",
+                right: 18,
+                top: "50%",
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+                color: P.textMuted,
               }}
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
             >
-              Solution Type
-            </label>
-
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
             <select
+
               value={solutionType}
-              onChange={(e) =>
-                setSolutionType(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setSolutionType(e.target.value)}
               style={{
                 width: "100%",
-                padding: "14px 16px",
-                borderRadius: 12,
-                border:
-                  `1px solid ${P.border}`,
-                fontSize: 16,
+                padding: "15px 20px",
+                borderRadius: 10,
+                border: "none",
+                background: P.surfaceForm,
+                fontSize: 14,
+                fontFamily: "'Inter', sans-serif",
+                color: solutionType ? P.textPrimary : P.textMuted,
+                outline: "none",
+                appearance: "none",
+                WebkitAppearance: "none",
+                cursor: "pointer",
               }}
               required
             >
@@ -289,31 +318,25 @@ export default function RegisterDevice() {
 
           <div
   style={{
-    marginBottom: 20,
+    marginBottom: 24,
   }}
 >
-  <label
-    style={{
-      display: "block",
-      marginBottom: 8,
-      fontWeight: 600,
-    }}
-  >
-    Device Version
-  </label>
-
   <input
     type="text"
-    placeholder="Enter Device Version"
+    placeholder="Device Version"
     value={deviceVersion}
     onChange={(e) => setDeviceVersion(e.target.value)}
     style={{
       width: "100%",
-      padding: "14px 16px",
-      borderRadius: 12,
-      border: `1px solid ${P.border}`,
-      fontSize: 16,
+      padding: "15px 20px",
+      borderRadius: 10,
+      border: "none",
+      background: P.surfaceForm,
+      fontSize: 14,
+      fontFamily: "'Inter', sans-serif",
+      color: P.textPrimary,
       boxSizing: "border-box",
+      outline: "none",
     }}
     required
   />
@@ -324,24 +347,21 @@ export default function RegisterDevice() {
             disabled={loading}
             style={{
               width: "100%",
-              padding: 16,
+              padding: "15px 16px",
               border: "none",
-              borderRadius: 14,
+              borderRadius: 50,
               fontWeight: 700,
               fontSize: 16,
-              cursor: "pointer",
+              cursor: loading ? "not-allowed" : "pointer",
               color: P.surface,
-              opacity:
-                loading
-                  ? 0.7
-                  : 1,
-              background:
-                `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
+              opacity: loading ? 0.7 : 1,
+              background: P.btnPrimary,
+              boxShadow: P.shadowBtn,
+              fontFamily: "'DM Sans', sans-serif",
+              letterSpacing: 0.3,
             }}
           >
-            {loading
-              ? "Generating..."
-              : "Register Device"}
+            {loading ? "Registering..." : "Register Device"}
           </button>
         </form>
 
@@ -430,23 +450,24 @@ export default function RegisterDevice() {
       {/* Back Button */}
 <div
   style={{
-    maxWidth: 500,
-    margin: "20px auto 0",
+    maxWidth: 420,
+    margin: "16px auto 0",
   }}
 >
   <button
     onClick={() => navigate("/devices")}
     style={{
       width: "100%",
-      padding: 14,
-      border: "none",
-      borderRadius: 14,
+      padding: "14px 16px",
+      border: "1px solid #E8E8E8",
+      borderRadius: 50,
       cursor: "pointer",
-      fontWeight: 700,
-      fontSize: 16,
-      color: P.textSubtle,
+      fontWeight: 600,
+      fontSize: 14,
+      color: P.textSecond,
       background: P.surface,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+      fontFamily: "'Inter', sans-serif",
+      boxShadow: P.shadowCard,
     }}
   >
     ← Back to Device Hub

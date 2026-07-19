@@ -4,6 +4,10 @@ import "../styles/admin.css";
 
 export default function PendingVendors() {
 
+
+    console.log("PendingVendors rendered");
+
+
     const [vendors, setVendors] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -155,9 +159,9 @@ export default function PendingVendors() {
 
                     style={{
 
-                        background: "#DCFCE7",
+                        background: P.surfaceSuccess,
 
-                        color: "#166534",
+                        color: P.textSuccessMsg,
 
                         padding: 15,
 

@@ -195,25 +195,23 @@ loginUser(loginData);
       style={{
         minHeight: "100vh",
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        //background: P.surfaceLight,
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        background: P.bgGradient,
+        fontFamily: "'Inter', sans-serif",
+        padding: "24px 16px",
       }}
     >
       <div
         style={{
-          width: "95%",
-          maxWidth: 460,
-          padding: "55px 42px",
-          background: "rgba(255,255,255,0.75)",
-          backdropFilter: "blur(20px)",
-          borderRadius: 28,
-
-          border: "1px solid rgba(255,184,77,0.12)",
-
-          boxShadow:
-            "0 18px 45px rgba(255,184,77,0.12)",
+          width: "100%",
+          maxWidth: 400,
+          padding: "36px 28px 32px",
+          background: P.surface,
+          borderRadius: 24,
+          border: `1px solid ${P.border}`,
+          boxShadow: `P.shadowCardLg, ${P.shadowCard}`,
         }}
       >
         {/* HEADING */}
@@ -232,42 +230,40 @@ loginUser(loginData);
 
 
         {/* BRAND HEADER */}
-<div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    marginBottom: 14,
-  }}
->
-  {/* LOGO */}
-  <img
-    src= {logo}
-    alt="Logo"
-    style={{
-      width: 400,
-      height: 120,
-      objectFit: "contain",
-      justifyContent: "center",
-      alignItems: "center",
-
-    }}
-  />
-</div>
+        <div
+          style={{
+            background: P.surfaceFaded,
+            borderRadius: 16,
+            padding: "20px 16px",
+            marginBottom: 24,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={logo}
+            alt="Logo"
+            style={{
+              width: 120,
+              height: 72,
+              objectFit: "contain",
+            }}
+          />
+        </div>
 
         {/* PAGE MODE */}
         <div
           style={{
-            marginTop: 20,
-            fontSize: 20,
-            fontWeight: 600,
-            color: P.textBlue,
-            marginBottom: 28,
+            fontSize: 22,
+            fontWeight: 700,
+            color: P.textPrimary,
+            marginBottom: 24,
             textAlign: "center",
+            fontFamily: "'DM Sans', sans-serif",
           }}
         >
-          {mode === "login"
-            ? "Login to your dashboard"
-            : "Sign Up"}
+          {mode === "login" ? "User Login" : "User Registration"}
         </div>
 
 {/* ERROR MESSAGE */}
@@ -275,9 +271,9 @@ loginUser(loginData);
         {success && (
           <div
             style={{
-              background: "#DCFCE7",
-              border: "1px solid #BBF7D0",
-              color: "#166534",
+              background: P.surfaceSuccess,
+              border: `1px solid ${P.borderSuccess}`,
+              color: P.textSuccessMsg,
               padding: "10px 14px",
               borderRadius: 8,
               marginBottom: 20,
@@ -287,7 +283,7 @@ loginUser(loginData);
               gap: 8,
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={P.textSuccessMsg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <polyline points="20 6 9 17 4 12"/>
             </svg>
             {success}
@@ -297,7 +293,7 @@ loginUser(loginData);
         {/* LOGIN FORM */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
                 placeholder="Email"
@@ -305,31 +301,38 @@ loginUser(loginData);
                 onChange={(e) => setIdentifier(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "14px 16px",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
+                  borderRadius: 10,
                   fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
                   boxSizing: "border-box",
+                  outline: "none",
                 }}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <PasswordInput
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                inputStyle={{
-                  padding: "14px 16px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 14,
-                }}
-              />
+            <div style={{ marginBottom: 20 }}>
+
+    <PasswordInput
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Password"
+    required
+    inputStyle={{
+        width: "100%",
+        padding: "15px 20px",
+        border: "none",
+        background: P.surfaceForm,
+        borderRadius: 10,
+        fontSize: 14,
+        fontFamily: "'Inter', sans-serif",
+        color: P.textPrimary,
+    }}
+/>
             </div>
 
             <button
@@ -338,12 +341,12 @@ loginUser(loginData);
               style={{
                 width: "100%",
                 padding: "14px 16px",
-                background:`linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)`,
+                background: P.btnPrimary,
                 border: "none",
-                color: P.surface,
+                color: P.textWhite,
                 fontSize: 15,
                 fontWeight: 600,
-                borderRadius: 6,
+                borderRadius: 50,
                 cursor: loading ? "not-allowed" : "pointer",
                 marginBottom: 18,
                 opacity: loading ? 0.7 : 1,
@@ -366,8 +369,8 @@ loginUser(loginData);
               </a>
             </div> */}
 
-            <div style={{ fontSize: 18, color: P.textHint, textAlign: "center" }}>
-              Not a member?{" "}
+            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
+              Don't have an Account?{" "}
               <a
                 href="#"
                 onClick={(e) => {
@@ -377,13 +380,13 @@ loginUser(loginData);
                   setSuccess("");
                 }}
                 style={{
-                  color: P.blueLight,
+                  color: P.amber,
                   textDecoration: "none",
-                  fontWeight: 500,
+                  fontWeight: 600,
                   cursor: "pointer",
                 }}
               >
-                Sign Up now
+                Sign Up
               </a>
             </div>
           </form>
@@ -399,11 +402,16 @@ loginUser(loginData);
                 placeholder="IMEI Number"
                 required
                 inputStyle={{
-                  padding: "12px 14px",
+                  width: "100%",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
+                  boxSizing: "border-box",
+                  outline: "none",
                 }}
               />
             </div>
@@ -416,12 +424,15 @@ loginUser(loginData);
                 onChange={(e) => setClientName(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "12px 14px",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
                   boxSizing: "border-box",
+                  outline: "none",
                 }}
                 required
               />
@@ -435,12 +446,15 @@ loginUser(loginData);
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "12px 14px",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
                   boxSizing: "border-box",
+                  outline: "none",
                 }}
                 required
               />
@@ -454,12 +468,15 @@ loginUser(loginData);
                 onChange={(e) => setPhone(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "12px 14px",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
                   boxSizing: "border-box",
+                  outline: "none",
                 }}
                 required
               />
@@ -477,60 +494,69 @@ loginUser(loginData);
   </select>
 </div> */}
 
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 20 }}>
               <PasswordInput
                 value={setupPassword}
                 onChange={(e) => setSetupPassword(e.target.value)}
                 placeholder="Password"
                 required
                 inputStyle={{
-                  padding: "12px 14px",
+                  width: "100%",
+                  padding: "15px 20px",
                   border: "none",
                   background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontFamily: "'Inter', sans-serif",
+                  color: P.textPrimary,
                 }}
               />
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <PasswordInput
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm Password"
-                required
-                inputStyle={{
-                  padding: "12px 14px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 6,
-                  fontSize: 13,
-                }}
-              />
-            </div>
+              <div style={{ marginBottom: 20 }}>
+  <PasswordInput
+    value={confirmPassword}
+    onChange={(e) => setConfirmPassword(e.target.value)}
+    placeholder="Confirm Password"
+    required
+    inputStyle={{
+      width: "100%",
+      padding: "15px 20px",
+      border: "none",
+      background: P.surfaceForm,
+      borderRadius: 10,
+      fontSize: 14,
+      fontFamily: "'Inter', sans-serif",
+      color: P.textPrimary,
+    }}
+  />
+</div>
 
             <button
               type="submit"
               disabled={loading}
               style={{
                 width: "100%",
-                padding: "14px 16px",
-                background: `linear-gradient(135deg, ${P.amber} 0%, ${P.orange} 100%)`,
+                padding: "15px 16px",
+                background: P.btnPrimary,
                 border: "none",
-                color: P.surface,
-                fontSize: 15,
-                fontWeight: 600,
-                borderRadius: 6,
+                color: P.textWhite,
+                fontSize: 16,
+                fontWeight: 700,
+                borderRadius: 50,
                 cursor: loading ? "not-allowed" : "pointer",
-                marginBottom: 18,
+                marginBottom: 16,
                 opacity: loading ? 0.7 : 1,
                 transition: "opacity 0.2s",
+                boxShadow: P.shadowBtn,
+                fontFamily: "'DM Sans', sans-serif",
+                letterSpacing: 0.3,
               }}
             >
-              {loading ? "SIGNING..." : "SIGN UP"}
+              {loading ? "Signing up..." : "Sign Up"}
             </button>
 
-            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center" }}>
+            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
               Already have an account?{" "}
               <a
                 href="#"
@@ -540,9 +566,9 @@ loginUser(loginData);
                   setError("");
                 }}
                 style={{
-                  color: P.blueLight,
+                  color: P.amber,
                   textDecoration: "none",
-                  fontWeight: 500,
+                  fontWeight: 600,
                   cursor: "pointer",
                 }}
               >

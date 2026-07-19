@@ -99,16 +99,16 @@ export default function Footer() {
             style={{
                 background: P.surface,
                 position: "fixed",
-                bottom: 5,
-                left: 16,
-                right: 16,
-                borderRadius: 18,
-                height: 72,
-                boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-                borderTop: `1px solid ${P.border}`,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 68,
+                boxShadow: P.shadowNav,
+                borderTop: "1px solid ${P.border}",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "space-around",
                 alignItems: "center",
+                fontFamily: "'Inter', sans-serif",
             }}
         >
 
@@ -123,20 +123,13 @@ export default function Footer() {
                         onClick={() => navigate(item.path)}
                         style={{
                             flex: 1,
-
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-
-                            gap: 4,
-
+                            gap: 3,
                             cursor: "pointer",
-
-                            color: isActive
-                                ? P.deepAmber
-                                : P.textMuted,
-
+                            color: isActive ? P.amberDark : P.textLight,
                             transition: "0.2s",
                         }}
                     >
@@ -155,13 +148,9 @@ export default function Footer() {
                         {/* LABEL */}
                         <div
                             style={{
-                                fontSize: 12,
-                                fontWeight: isActive
-                                    ? 700
-                                    : 600,
-
-                                fontFamily:
-                                    "'Source Sans Pro', sans-serif",
+                                fontSize: 11,
+                                fontWeight: isActive ? 700 : 500,
+                                fontFamily: "'Inter', sans-serif",
                             }}
                         >
                             {item.label}

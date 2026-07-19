@@ -97,7 +97,7 @@ export default function ImeiInput({ value, onChange, onValidationError, placehol
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: scanning ? P.errorRed : P.textIcon,
+            color: scanning ? P.red : P.textLight,
           }}
         >
           {scanning ? (

@@ -7,7 +7,7 @@ export default function Header() {
     <div
       style={{
         background: "transparent",
-        padding: "20px 24px",
+        padding: "10px 24px",
       }}
     >
       <div

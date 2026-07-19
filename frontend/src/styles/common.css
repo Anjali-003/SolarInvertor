@@ -48,9 +48,9 @@
 
 .success-message {
 
-    background: #DCFCE7;
+    background: P.surfaceSuccess;
 
-    color: #166534;
+    color: P.textSuccessMsg;
 
     padding: 15px;
 

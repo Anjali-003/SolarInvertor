@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
-import Header from "../components/Header";
 import VendorFooter from "../components/VendorFooter";
 import DeviceInfo from "../components/DeviceInfo";
 import useVendorDeviceData from "../hooks/useVendorDeviceData";
 import { parseKeyword } from "../utils/parseKeyword";
 import P from "../theme/colors";
+import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 
 export default function VendorFault() {
 
@@ -109,19 +110,45 @@ export default function VendorFault() {
         return value !== 0 && value != null;
     };
 
+    const navigate = useNavigate();
+
     return (
-        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg }}>
+        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
 
-            <Header />
+        <PageHeader
+            title="FAULT"
+            backPath="/vendor"
+        />
 
-            <DeviceInfo data={data} lastUpdated={lastUpdated} />
+            {/* DEVICE STRIP */}
+            <div style={{ margin: "20px 20px 16px", background: P.surface, borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, boxShadow: P.shadowCard }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, background: P.surfaceGreen, border: `1px solid ${P.borderGreen}`, borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>SERIAL NUMBER</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                        {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                            ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                            : "--"}
+                    </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>LAST UPDATED</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>{lastUpdated || "--"}</div>
+                </div>
+            </div>
 
-            <div style={{ paddingTop: "4px", paddingLeft: "24px", paddingRight: "24px", paddingBottom: "12px" }}>
+            <div style={{ padding: "0 20px 20px" }}>
 
                 <h2 style={{
-                    fontSize: 18, fontWeight: 700, color: P.textPrimary,
-                    marginBottom: "10px", marginTop: "10px", letterSpacing: "-0.3px",
-                    fontFamily: "'Space Mono', monospace",
+                    fontSize: 18,
+                    fontWeight: 800,
+                    color: P.textPrimary,
+                    marginBottom: 14,
+                    marginTop: 4,
+                    fontFamily: "'DM Sans', sans-serif",
                 }}>
                     FAULT DETAILS
                 </h2>
@@ -135,52 +162,41 @@ export default function VendorFault() {
                     {faultDefs.map((fault) => {
                         const active = isFaultActive(fault);
                         return (
-                            <div key={fault.key} style={{
-                                background: P.surface,
-                                borderRadius: 14,
-                                padding: "18px",
-                                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                            }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-
-                                    {/* ICON + TITLE */}
-                                    <div style={{ display: "flex", gap: "12px", flex: 1, alignItems: "flex-start" }}>
-                                        <div style={{ color: active ? P.red : P.green, flexShrink: 0, marginTop: "2px" }}>
-                                            {fault.icon}
-                                        </div>
-                                        <div>
-                                            <div style={{
-                                                fontSize: 18, fontWeight: 700, color: P.textPrimary,
-                                                fontFamily: "'Source Sans Pro', sans-serif",
-                                            }}>
-                                                {fault.title}
-                                            </div>
-                                            <div style={{
-                                                fontSize: 13, color: P.textMuted, marginTop: 2,
-                                                fontFamily: "'Source Sans Pro', sans-serif",
-                                            }}>
-                                                {fault.desc}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* STATUS BOX */}
+                            <div
+                                key={fault.key}
+                                style={{
+                                    background: P.surface,
+                                    borderRadius: 14,
+                                    overflow: "hidden",
+                                    boxShadow: P.shadowCard,
+                                }}
+                            >
+                                {/* ICON + TITLE ROW */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px 10px" }}>
                                     <div style={{
-                                        minWidth: 90, padding: "8px 12px", borderRadius: 10,
-                                        background: active ? P.red : P.green,
+                                        width: 40, height: 40, borderRadius: 10,
+                                        background: active ? P.surfaceRed : P.surfaceGreen,
                                         display: "flex", alignItems: "center", justifyContent: "center",
-                                        boxShadow: `0 0 10px ${active ? P.red : P.green}55`,
                                         flexShrink: 0,
+                                        color: active ? P.textRed : P.textGreen,
                                     }}>
-                                        <span style={{
-                                            fontSize: 13, fontWeight: 700, color: P.surface,
-                                            fontFamily: "'Source Sans Pro', sans-serif",
-                                            letterSpacing: 0.5, wordWrap: "break-word",
-                                            whiteSpace: "normal", textAlign: "center",
-                                        }}>
-                                            {getFaultText(fault)}
-                                        </span>
+                                        {fault.icon}
                                     </div>
+                                    <div>
+                                        <div style={{ fontSize: 15, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
+                                            {fault.title}
+                                        </div>
+                                        <div style={{ fontSize: 12, color: P.textMuted, marginTop: 2, fontFamily: "'Inter', sans-serif" }}>
+                                            {fault.desc}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* STATUS BANNER */}
+                                <div style={{ background: active ? P.red : P.green, padding: "8px 16px", textAlign: "left" }}>
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: P.surface, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.3 }}>
+                                        {getFaultText(fault)}
+                                    </span>
                                 </div>
                             </div>
                         );

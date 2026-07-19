@@ -1,4 +1,4 @@
-﻿* { box-sizing: border-box; }
+﻿/* * { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -299,4 +299,377 @@ body {
         margin-bottom: 2px;
     }
     .action-buttons { justify-content: flex-start; margin-top: 8px; }
+} */
+
+/* ==========================================
+   ADMIN PANEL THEME
+========================================== */
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #F4F6F9;
+}
+
+/* ==========================================
+   LAYOUT
+========================================== */
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background: #F4F6F9;
+}
+
+/* ==========================================
+   SIDEBAR — permanent on desktop
+========================================== */
+
+.sidebar {
+    width: 240px;
+    background: #1F2937;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 28px 20px;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.12);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* ==========================================
+   LOGO
+========================================== */
+
+.logo-box {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    background: #ffffff;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.logo-box img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+/* ==========================================
+   SIDEBAR MENU
+========================================== */
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-link {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: 0.2s;
+    font-weight: 500;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.08);
+    color: white;
+}
+
+.sidebar-link.active {
+    background: P.btnPrimary;
+    color: white;
+    font-weight: 600;
+}
+
+.sidebar-link.active:hover {
+    background: P.btnPrimary;
+}
+
+.logout-btn {
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    width: 100%;
+    background: #DC2626;
+    transition: 0.2s;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.logout-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* ==========================================
+   MAIN CONTENT
+========================================== */
+
+.admin-content {
+    flex: 1;
+    padding: 32px;
+    min-width: 0;
+    padding-bottom: 100px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 26px;
+    color: #1F2937;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800;
+}
+
+.page-subtitle {
+    margin-top: 6px;
+    color: #6B7280;
+    margin-bottom: 28px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ==========================================
+   CARD
+========================================== */
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow-x: auto;
+}
+
+/* ==========================================
+   TABLE
+========================================== */
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table thead {
+    background: #F9FAFB;
+}
+
+.admin-table th {
+    padding: 14px 16px;
+    text-align: left;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-table td {
+    padding: 14px 16px;
+    border-top: 1px solid #F3F4F6;
+    font-size: 14px;
+    word-break: break-word;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+}
+
+.admin-table tbody tr {
+    transition: 0.15s;
+}
+
+.admin-table tbody tr:hover {
+    background: #FFFBF2;
+}
+
+/* ==========================================
+   ACTION BUTTONS
+========================================== */
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.approve-btn,
+.reject-btn {
+    border: none;
+    cursor: pointer;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: 0.2s;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+}
+
+.approve-btn {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.reject-btn {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.approve-btn:hover,
+.reject-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.empty {
+    text-align: center;
+    padding: 48px;
+    color: #9CA3AF;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ==========================================
+   SUCCESS / ERROR
+========================================== */
+
+.success-message {
+    background: P.surfaceSuccess;
+    color: P.textSuccessMsg;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+.error-message {
+    background: #FEE2E2;
+    color: #B91C1C;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ==========================================
+   BOTTOM NAV — mobile/tablet only (hidden on desktop)
+========================================== */
+
+.admin-bottom-nav {
+    display: none;
+}
+
+/* ==========================================
+   TABLET (≤1024px) — sidebar hidden, bottom nav shown
+========================================== */
+
+@media (max-width: 1024px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .admin-content {
+        padding: 24px 20px 90px;
+        width: 100%;
+    }
+
+    .admin-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 68px;
+        background: #1F2937;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        z-index: 100;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+    }
+
+    .admin-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        cursor: pointer;
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        transition: 0.2s;
+        padding: 8px 0;
+    }
+
+    .admin-nav-item.active {
+        color: #F59E0B;
+    }
+
+    .admin-nav-item span {
+        font-size: 11px;
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 12px 14px;
+    }
+}
+
+/* ==========================================
+   MOBILE (≤640px) — stacked table cards
+========================================== */
+
+@media (max-width: 640px) {
+
+    .admin-content {
+        padding: 20px 16px 90px;
+    }
+
+    .page-title { font-size: 22px; }
+
+    .card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .action-buttons {
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
 }

@@ -1,0 +1,40 @@
+/* ---------- Mobile ---------- */
+.cards-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 220px;
+    gap: 18px;
+    justify-content: end;
+}
+
+.cards-container button {
+    width: 100%;
+}
+
+/* ---------- Tablet ---------- */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .cards-container {
+        width: 100%;
+        grid-template-columns: 260px;
+        justify-content: center;
+        justify-items: center;
+    }
+}
+
+/* ---------- Desktop ---------- */
+@media (min-width: 1024px) {
+    .cards-container {
+        width: 100%;
+        gap: 30px;
+        grid-template-columns: repeat(3, 300px);
+        justify-content: center;
+        justify-items: center;
+        margin-top: 120px;
+    }
+}
+
+/* ---------- Hover Animation ---------- */
+.cards-container button:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.15);
+}

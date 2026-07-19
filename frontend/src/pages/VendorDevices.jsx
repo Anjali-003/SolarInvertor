@@ -65,14 +65,15 @@ export default function VendorDevices() {
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: P.bg,
-        padding: "40px 20px",
-      }}
+            minHeight: "100vh",
+            background: P.bgGradient,
+            padding: "32px 20px 40px",
+            fontFamily: "'Inter', sans-serif",
+          }}
     >
       <div
         style={{
-          maxWidth: 900,
+          maxWidth: 480,
           margin: "0 auto",
         }}
       >
@@ -82,14 +83,17 @@ export default function VendorDevices() {
         {/* Page Heading */}
         <div
           style={{
-            marginBottom: 30,
+            marginBottom: 25,
           }}
         >
           <h1
             style={{
               fontSize: 32,
               fontWeight: 800,
-              marginBottom: 8,
+              color: P.textPrimary,
+              fontFamily: "'DM Sans', sans-serif",
+              textAlign: "center",
+              marginBottom: 2,
             }}
           >
             My Devices
@@ -97,7 +101,13 @@ export default function VendorDevices() {
 
           <p
             style={{
-              color: P.textLight,
+              fontSize: 13,
+                color: P.amber,
+                fontFamily: "'Inter', sans-serif",
+                textAlign: "center",
+                fontStyle: "italic",
+                marginTop: 0,
+                marginBottom: 20,
             }}
           >
             All registered inverter devices
@@ -151,10 +161,13 @@ export default function VendorDevices() {
         {/* Device Cards */}
         <div
           style={{
-            display: "grid",
-            gap: 20,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            marginBottom: 24,
           }}
         >
+
           {devices.map(device => (
 
             <div
@@ -166,109 +179,136 @@ export default function VendorDevices() {
             //     )
             //   }
 
-            onClick={() => {
-  localStorage.setItem(
-    "selectedVendorDevice",
-    JSON.stringify(device)
-  );
-  navigate("/vendor");
-}}
+              onClick={() => {
+                localStorage.setItem("selectedVendorDevice", JSON.stringify(device));
+                navigate("/vendor");
+              }}
               style={{
                 background: P.surface,
-                borderRadius: 24,
-                padding: 24,
+                borderRadius: 18,
+                padding: "18px 18px 18px 20px",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.07)",
+                border: `1px solid ${P.border}`,
                 cursor: "pointer",
-                transition: "0.25s",
-                boxShadow:
-                  "0 10px 30px rgba(0,0,0,0.08)",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                position: "relative",
+                overflow: "hidden",
               }}
             >
+              {/* LEFT — text content */}
+              <div style={{ flex: 1, minWidth: 0 }}>
 
-              {/* Top Row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent:
-                    "space-between",
-                  alignItems:
-                    "center",
-                  marginBottom: 16,
-                }}
-              >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: 20,
-                    fontWeight: 700,
-                  }}
-                >
-                  Device ID:{device.id}
-                </h3>
-
+                {/* Active badge */}
                 <div
                   style={{
-                    padding:
-                      "8px 14px",
-                    borderRadius: 999,
-                    color: "white",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    background: P.amber,
+                    color: P.surface,
+                    fontSize: 11,
                     fontWeight: 700,
-                    fontSize: 13,
-                    background:
-                      `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
+                    padding: "3px 10px",
+                    borderRadius: 20,
+                    marginBottom: 10,
+                    fontFamily: "'Inter', sans-serif",
                   }}
                 >
                   Active
                 </div>
+
+                {/* Device ID */}
+                <div style={{ marginBottom: 10 }}>
+                  <span
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 1000,
+                      color: P.textPrimary,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    Device ID: {device.id}
+                  </span>
+                </div>
+
+                {/* IMEI */}
+                <div style={{ marginBottom: 10 }}>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 1000,
+                      color: P.textMuted,
+                      fontFamily: "'Inter', sans-serif",
+                      marginBottom: 1,
+                    }}
+                  >
+                    IMEI
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: P.textSecond,
+                      fontFamily: "'Inter', sans-serif",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {device.imei}
+                  </div>
+                </div>
+
+                {/* Solution Type */}
+                <div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 1000,
+                      color: P.textMuted,
+                      fontFamily: "'Inter', sans-serif",
+                      marginBottom: 1,
+                    }}
+                  >
+                    Solution Type
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: P.textSecond,
+                      fontFamily: "'Inter', sans-serif",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {device.solution || "—"}
+                  </div>
+                </div>
               </div>
 
-              {/* IMEI */}
+              {/* RIGHT — solar panel image */}
               <div
                 style={{
-                  marginBottom: 12,
+                  flexShrink: 0,
+                  width: 170,
+                  height: 100,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <div
+                <img
+                  src="/src/assets/solar-panel.png"
+                  alt="Solar Panel"
                   style={{
-                    fontSize: 13,
-                    color: P.textIcon,
+                    width: 220,
+                    height: 180,
+                    objectFit: "contain",
                   }}
-                >
-                  IMEI
-                </div>
-
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 16,
-                  }}
-                >
-                  {device.imei}
-                </div>
+                />
               </div>
-
-              {/* Solution */}
-              <div>
-                <div
-                  style={{
-                    fontSize: 13,
-                    color: P.textIcon,
-                  }}
-                >
-                  Solution Type
-                </div>
-
-                <div
-                  style={{
-                    fontWeight: 600,
-                    color: P.textSoft,
-                  }}
-                >
-                  {device.solution}
-                </div>
-              </div>
-
             </div>
-
           ))}
         </div>
 
@@ -279,25 +319,23 @@ export default function VendorDevices() {
           }}
         >
           <button
-            onClick={() =>
-              navigate("/devices")
-            }
-            style={{
-              width: "100%",
-              padding: 14,
-              border: "none",
-              borderRadius: 14,
-              cursor: "pointer",
-              fontWeight: 700,
-              fontSize: 16,
-              color: P.textSubtle,
-              background: P.surface,
-              boxShadow:
-                "0 4px 12px rgba(0,0,0,0.08)",
-            }}
-          >
-            ← Back to Device Hub
-          </button>
+    onClick={() => navigate("/devices")}
+    style={{
+      width: "100%",
+      padding: "14px 16px",
+      border: `1px solid ${P.border}`,
+      borderRadius: 50,
+      cursor: "pointer",
+      fontWeight: 600,
+      fontSize: 14,
+      color: P.textSecond,
+      background: P.surface,
+      fontFamily: "'Inter', sans-serif",
+      boxShadow: P.shadowCard,
+    }}
+  >
+    ← Back to Device Hub
+  </button>
         </div>
 
       </div>

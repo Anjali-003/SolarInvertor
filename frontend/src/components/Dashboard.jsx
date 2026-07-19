@@ -13,8 +13,8 @@ import { DEVICE_TYPES } from "../constants/deviceTypes";
 // ─── Palette ──────────────────────────────────────────────────────────────────
 const P = {
     bg: "#FFFDF5",   // cream page background
-    surface: "#FFFFFF",   // card white
-    surfaceAlt: "#FFF8E7",   // slightly warm white for header/bars
+    surface: P.surface,   // card white
+    surfaceAlt: P.surfaceAmber,   // slightly warm white for header/bars
     border: "#F0E0C0",   // soft amber border
     borderStrong: "#E8C87A",   // stronger divider
     textPrimary: "#2C1A06",   // deep brown
@@ -61,8 +61,8 @@ function StatusBadge({ value }) {
         switch (value) {
             case 1: return { label: "ON", color: P.deepAmber };
             case 0: return { label: "OFF", color: P.textMuted };
-            case 2: return { label: "FAULT", color: "#EF4444" };
-            case 3: return { label: "OTHER", color: "#6B7280" };
+            case 2: return { label: "FAULT", color: P.red };
+            case 3: return { label: "OTHER", color: P.textAdminGray };
             default: return { label: "--", color: P.textDim };
         }
     };
@@ -213,7 +213,7 @@ function SummaryBar({ data }) {
             {pills.map(p => (
                 <div key={p.label} style={{
                     display: "flex", alignItems: "center", gap: 10,
-                    background: "#FFFFFF",
+                    background: P.surface,
                     border: `1px solid ${P.border}`,
                     borderLeft: `3px solid ${p.accent}`,
                     borderRadius: 10, padding: "8px 16px",

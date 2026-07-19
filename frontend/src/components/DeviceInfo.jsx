@@ -49,7 +49,7 @@ export default function DeviceInfo({
       : inverterStatus === 0
       ? P.red
       : inverterStatus === 2
-      ? "#EF4444"
+      ? P.red
       : P.textMuted;
 
   return (

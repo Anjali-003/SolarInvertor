@@ -1,10 +1,9 @@
 import { useInverter } from "../context/Context";
-
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
 import { parseKeyword } from "../utils/parseKeyword";
+import PageHeader from "../components/PageHeader";
 
 export default function Fault() {
 
@@ -157,26 +156,89 @@ export default function Fault() {
                 minHeight: "100vh",
                 paddingBottom: "90px",
                 background: P.bg,
+                fontFamily: "'Inter', sans-serif",
             }}
         >
 
-            <Header />
+        <PageHeader
+            title="FAULT"
+            backPath="/"
+        />
 
-            <DeviceInfo
-                data={data}
-                lastUpdated={lastUpdated}
-            />
+            {/* DEVICE INFO STRIP */}
+            <div
+                style={{
+                    margin: "20px 20px 16px",
+                    background: P.surface,
+                    borderRadius: 14,
+                    padding: "12px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                    boxShadow: P.shadowCard,
+                }}
+            >
+                {/* STATUS BADGE */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: P.surfaceGreen,
+                        border: `1px solid ${P.borderGreen}`,
+                        borderRadius: 20,
+                        padding: "4px 10px",
+                        flexShrink: 0,
+                    }}
+                >
+                    <div
+                        style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: P.green,
+                            boxShadow: `0 0 6px ${P.green}`,
+                        }}
+                    />
+                    <span
+                        style={{
+                            fontSize: 12,
+                            fontWeight: 700,
+                            color: P.green,
+                            fontFamily: "'DM Sans', sans-serif",
+                        }}
+                    >
+                        ON
+                    </span>
+                </div>
+
+                {/* SERIAL NUMBER */}
+                <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.5, marginBottom: 2 }}>
+                        SERIAL NUMBER
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary }}>
+                        {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                            ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                            : "--"}
+                    </div>
+                </div>
+
+                {/* LAST UPDATED */}
+                <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.5, marginBottom: 2 }}>
+                        LAST UPDATED
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: P.textPrimary }}>
+                        {lastUpdated || "--"}
+                    </div>
+                </div>
+            </div>
 
             {/* PAGE CONTENT */}
             <div
                 style={{
-                    paddingTop: "4px",
-                    paddingLeft: "12px",
-                    paddingRight: "12px",
-                    paddingBottom: "12px",
-                    maxWidth: "100%",
-                    margin: "0px 24px 28px",
-                    boxSizing: "border-box",
+                    padding: "0 20px 20px",
                 }}
             >
 
@@ -184,13 +246,12 @@ export default function Fault() {
                 <h2
                     style={{
                         fontSize: 18,
-                        fontWeight: 700,
+                        fontWeight: 800,
                         color: P.textPrimary,
-                        marginBottom: "10px",
-                        marginTop: "10px",
-                        letterSpacing: "-0.3px",
-                        fontFamily:
-                            "'Space Mono', monospace",
+                        marginBottom: 14,
+                        marginTop: 4,
+                        letterSpacing: 0,
+                        fontFamily: "'DM Sans', sans-serif",
                     }}
                 >
                     FAULT DETAILS
@@ -213,146 +274,83 @@ export default function Fault() {
 
                             <div
                                 key={fault.key}
-
                                 style={{
                                     background: P.surface,
-
-                                    // border:
-                                    //     `1px solid ${
-                                    //         active
-                                    //             ? P.red
-                                    //             : P.border
-                                    //     }`,
-
                                     borderRadius: 14,
-
-                                    padding: "18px",
-
-                                    boxShadow:
-                                        "0 2px 8px rgba(0,0,0,0.06)",
+                                    overflow: "hidden",
+                                    boxShadow: P.shadowCard,
                                 }}
                             >
-
-                                {/* TOP ROW */}
+                                {/* ICON + TITLE ROW */}
                                 <div
                                     style={{
                                         display: "flex",
-
-                                        justifyContent:
-                                            "space-between",
-
-                                        alignItems: "flex-start",
+                                        alignItems: "center",
+                                        gap: 12,
+                                        padding: "14px 16px 10px",
                                     }}
                                 >
-
-                                    {/* ICON + TITLE SECTION */}
+                                    {/* ICON in colored circle */}
                                     <div
                                         style={{
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: 10,
+                                            background: active ? P.surfaceRed : P.surfaceGreen,
                                             display: "flex",
-                                            gap: "12px",
-                                            flex: 1,
-                                            alignItems: "flex-start",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            flexShrink: 0,
+                                            color: active ? P.red : P.green,
                                         }}
                                     >
-                                        {/* ICON */}
+                                        {fault.icon}
+                                    </div>
+
+                                    {/* TITLE + DESC */}
+                                    <div>
                                         <div
                                             style={{
-                                                color: active ? P.red : P.green,
-                                                flexShrink: 0,
-                                                marginTop: "2px",
+                                                fontSize: 15,
+                                                fontWeight: 700,
+                                                color: P.textPrimary,
+                                                fontFamily: "'DM Sans', sans-serif",
                                             }}
                                         >
-                                            {fault.icon}
+                                            {fault.title}
                                         </div>
-
-                                        {/* TITLE */}
-                                        <div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: 18,
-
-                                                    fontWeight: 700,
-
-                                                    color:
-                                                        P.textPrimary,
-
-                                                    fontFamily:
-                                                        "'Source Sans Pro', sans-serif",
-                                                }}
-                                            >
-                                                {fault.title}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: 13,
-
-                                                    color:
-                                                        P.textMuted,
-
-                                                    marginTop: 2,
-
-                                                    fontFamily:
-                                                        "'Source Sans Pro', sans-serif",
-                                                }}
-                                            >
-                                                {fault.desc}
-                                            </div>
+                                        <div
+                                            style={{
+                                                fontSize: 12,
+                                                color: P.textMuted,
+                                                marginTop: 2,
+                                                fontFamily: "'Inter', sans-serif",
+                                            }}
+                                        >
+                                            {fault.desc}
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* STATUS BOX */}
-                                    <div
+                                {/* STATUS BANNER — full width at bottom of card */}
+                                <div
+                                    style={{
+                                        background: active ? P.red : P.green,
+                                        padding: "8px 16px",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    <span
                                         style={{
-                                            minWidth: 90,
-                                            padding: "8px 12px",
-
-                                            borderRadius: 10,
-
-                                            background:
-                                                active
-                                                    ? P.red
-                                                    : P.green,
-
-                                            display: "flex",
-
-                                            alignItems: "center",
-
-                                            justifyContent: "center",
-
-                                            boxShadow:
-                                                `0 0 10px ${active
-                                                    ? P.red
-                                                    : P.green
-                                                }55`,
-
-                                            flexShrink: 0,
+                                            fontSize: 13,
+                                            fontWeight: 700,
+                                            color: P.textWhite,
+                                            fontFamily: "'DM Sans', sans-serif",
+                                            letterSpacing: 0.3,
                                         }}
                                     >
-
-                                        <span
-                                            style={{
-                                                fontSize: 13,
-
-                                                fontWeight: 700,
-
-                                                color: P.surface,
-
-                                                fontFamily:
-                                                    "'Source Sans Pro', sans-serif",
-
-                                                letterSpacing: 0.5,
-
-                                                wordWrap: "break-word",
-                                                whiteSpace: "normal",
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            {getFaultText(fault)}
-                                        </span>
-
-                                    </div>
+                                        {getFaultText(fault)}
+                                    </span>
                                 </div>
                             </div>
                         );
