@@ -1,163 +1,19 @@
-//import { useNavigate } from "react-router-dom";
-//import Header from "../components/Header";
-//import P from "../theme/colors";
-
-//export default function DeviceHub() {
-//    const navigate = useNavigate();
-
-    // const role = localStorage.getItem("role");
-
-//    const username = localStorage.getItem("vendorName");
-
-//    const handleLogout = () => {
-
-//  const loginType =
-//    localStorage.getItem("loginType");
-
-//  localStorage.clear();
-
-//  if (loginType === "vendor") {
-
-//    navigate("/vendor-login");
-
-//  } else {
-
-//    navigate("/login");
-//  }
-//};
-//    return (
-//        <div
-//            style={{
-//                minHeight: "100vh",
-//                background: P.bg,
-//                padding: 30,
-//                display: "flex",
-//                flexDirection: "column",
-//                boxSizing: "border-box"
-//            }}
-//        >
-//            {/* PAGE CONTENT */}
-//            <div style={{ flex: 1, width: "100%", maxWidth: 450, margin: "0 auto" }}>
-
-//                <Header />
-
-//                {/* WELCOME */}
-//                <div
-//                    style={{
-//                        marginBottom: 50,
-//                    }}
-//                >
-//                    <h1
-//                        style={{
-//                            fontSize: 34,
-//                            fontWeight: 800,
-//                            marginBottom: 8,
-//                            color: P.textPrimary,
-//                       }}
-//                    >
-//                        Welcome {username}
-//                    </h1>
-//
-//                    <div
-//                        style={{
-//                            color: P.textSecond,
-//                            fontSize: 16,
-//                        }}
-//                    >
-//                        
-//                    </div>
-//                </div>
-
-//                {/* ACTION BUTTONS */}
-//                <div
-//                    style={{
-//                        display: "grid",
-//                        gap: 20,
-//                        maxWidth: 450,
-//                    }}
-//                >
-
-//                    <button
-//                        onClick={() =>
-//                            navigate("/register-device")
-//                        }
-//                        style={buttonStyle}
-//                    >
-//                        Register Device
-//                    </button>
-//                  <button
-//                        onClick={() =>
-//                            navigate("/my-devices")
-//                        }
-//                        style={buttonStyle}
-//                    >
-//                        My Devices
-//                    </button>
-//               </div>
-//           </div>
-
-//            {/* LOGOUT BUTTON AT BOTTOM */}
-//            <div
-//                style={{
-//                    width: "100%",
-//                    maxWidth: 450,
-//                    margin: "20px auto 0",
-                // }}
-            // >
-//                 <button
-//                     onClick={handleLogout}
-//                     style={logoutStyle}
-//                 >
-//                     Logout
-//                 </button>
-//             </div>
-//         </div>
-//     );
-// }
-
-// const buttonStyle = {
-//     padding: "22px",
-//     border: "none",
-//     borderRadius: 18,
-//     background: `linear-gradient(135deg, ${P.amber}, ${P.orange})`,
-//     color: P.surface,
-//     fontSize: 20,
-//     fontWeight: 700,
-//     cursor: "pointer",
-//     width: "100%",
-// };
-
-// const logoutStyle = {
-//     width: "100%",
-//     padding: "22px",
-//     background: P.red,
-//     border: "none",
-//     borderRadius: 18,
-//     color: P.surface,
-//     fontSize: 20,
-//     fontWeight: 700,
-//     cursor: "pointer",
-//     fontFamily:
-//         "'Source Sans Pro', sans-serif",
-// };
-
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import P from "../theme/colors";
-import "./DeviceHub.css";
+import "./AdminHome.css";
 
-export default function DeviceHub() {
+export default function AdminHome() {
     const navigate = useNavigate();
     const canvasRef = useRef(null);
-    const username = localStorage.getItem("vendorName");
-    const vendorEmail = localStorage.getItem("vendorEmail");
-    const vendorPhone = localStorage.getItem("vendorPhone");
+
+    const username = localStorage.getItem("adminName");
 
     const handleLogout = () => {
         const loginType = localStorage.getItem("loginType");
         localStorage.clear();
         if (loginType === "vendor") {
-            navigate("/vendor-login");
+            navigate("/login");
         } else {
             navigate("/login");
         }
@@ -289,8 +145,8 @@ void main() {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                    minHeight: "100vh",
-                    padding: "24px",
+                    flex: 1,
+                    padding: 0,
                 }}
             >
                 {/* TOP SECTION */}
@@ -300,10 +156,10 @@ void main() {
         display: "flex",
         flexDirection: "column",
         flex: 1,
-        minHeight: 0,
+        margin: "20px 20px 0",
     }}
 >
-                    {/* VENDOR DASHBOARD HEADING */}
+                    {/* ADMIN DASHBOARD HEADING */}
                     <div
                         style={{
                             marginBottom: 24,
@@ -318,7 +174,7 @@ void main() {
                                 lineHeight: 1.2,
                             }}
                         >
-                            Vendor
+                            Admin
                         </div>
                         <div
                             style={{
@@ -339,81 +195,166 @@ void main() {
                                 fontFamily: "'Inter', sans-serif",
                             }}
                         >
-                            Welcome, {username || "Vendor"}
+                            Welcome, {username || "Admin"}
                         </div>
                     </div>
 
                     {/* ACTION BUTTONS */}
-                    <div className="cards-container">
+                    <div
+                        className="admin-cards-container"
+                        style={{
+                            flex: 1,
+                            alignContent: "center",
+                        }}
+                    >
 
                         {/* PROFILE BUTTON */}
                         <button
-                            onClick={() => navigate("/vendor/profile")}
+                            className="admin-action-btn"
+                            onClick={() => navigate("/admin/profile")}
                             style={actionBtn}
                         >
                             <div style={btnIconWrap}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={P.textWhite} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke={P.textWhite}
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
                                     <circle cx="12" cy="8" r="4" />
                                     <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
                                 </svg>
                             </div>
-                            <span style={btnLabel}>Profile</span>
+
+                            <span style={btnLabel}>
+                                Profile
+                            </span>
                         </button>
 
-                        {/* REGISTER DEVICES BUTTON */}
+                        {/* PENDING VENDORS BUTTON */}
                         <button
-                            onClick={() => navigate("/register-device")}
+                            className="admin-action-btn"
+                            onClick={() => navigate("/admin/pending")}
                             style={actionBtn}
                         >
-                            <div style={btnIconWrap}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={P.textWhite} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="16" />
-                                    <line x1="8" y1="12" x2="16" y2="12" />
-                                </svg>
-                            </div>
-                            <span style={btnLabel}>Register Devices</span>
-                        </button>
 
-                        {/* MY DEVICES BUTTON */}
-                        <button
-                            onClick={() => navigate("/my-devices")}
-                            style={actionBtn}
-                        >
                             <div style={btnIconWrap}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={P.textWhite} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke={P.textWhite}
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
                                     <rect x="3" y="3" width="7" height="7" rx="1" />
                                     <rect x="14" y="3" width="7" height="7" rx="1" />
                                     <rect x="3" y="14" width="7" height="7" rx="1" />
                                     <rect x="14" y="14" width="7" height="7" rx="1" />
                                 </svg>
                             </div>
-                            <span style={btnLabel}>My Devices</span>
+
+                            <span style={btnLabel}>
+                                Pending Vendors
+                            </span>
+                        </button>
+
+                        {/* UPLOAD IMEI BUTTON */}
+                        <button
+                            className="admin-action-btn"
+                            onClick={() => navigate("/admin/upload-imei")}
+                            style={actionBtn}
+                        >
+
+                            <div style={btnIconWrap}>
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke={P.textWhite}
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="16" />
+                                    <line x1="8" y1="12" x2="16" y2="12" />
+                                </svg>
+                            </div>
+
+                            <span style={btnLabel}>
+                                Upload IMEI
+                            </span>
+                        </button>
+
+                        {/* USERS BUTTON */}
+                        <button
+                            className="admin-action-btn"
+                            onClick={() => navigate("/admin/users")}
+                            style={actionBtn}
+                        >
+
+                            <div style={btnIconWrap}>
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke={P.textWhite}
+                                    strokeWidth="2.3"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9.5" cy="7" r="3.5" />
+                                    <path d="M20 21v-2a3.5 3.5 0 0 0-2.5-3.35" />
+                                    <path d="M15.5 3.2a3.5 3.5 0 0 1 0 6.6" />
+                                </svg>
+                            </div>
+
+                            <span style={btnLabel}>
+                                Users
+                            </span>
                         </button>
                     </div>
                 </div>
 
                 {/* LOGOUT BUTTON */}
-                <button
-                    onClick={handleLogout}
+                <div
                     style={{
-                        width: "100%",
-                        padding: "15px",
-                        background: P.redLogout,
-                        border: "none",
-                        borderRadius: 50,
-                        color: P.textWhite,
-                        fontSize: 16,
-                        fontWeight: 700,
-                        fontFamily: "'DM Sans', sans-serif",
-                        cursor: "pointer",
-                        marginTop: 20,
-                        boxShadow: "0 4px 14px rgba(192,57,43,0.45)",
-                        letterSpacing: 0.3,
+                        padding: "20px",
+                        position: "relative",
+                        zIndex: 2,
+                        marginTop: "auto",
                     }}
                 >
-                    Logout
-                </button>
+    <button
+        onClick={handleLogout}
+        style={{
+            width: "100%",
+            padding: "15px",
+            background: P.redLogout,
+            border: "none",
+            borderRadius: 50,
+            color: P.textWhite,
+            fontSize: 16,
+            fontWeight: 700,
+            fontFamily: "'DM Sans', sans-serif",
+            cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(192,57,43,0.45)",
+            letterSpacing: 0.3,
+        }}
+    >
+        Logout
+    </button>
+</div>
             </div>
         </div>
     );
@@ -422,7 +363,7 @@ void main() {
 // ── Shared button styles ───────────────────────────────
 const actionBtn = {
     width: "100%",
-    aspectRatio: "1 / 1",
+    aspectRatio: "1 / 1.2",
 
     background: "rgba(255,255,255,0.10)",
     border: "1px solid rgba(255,255,255,0.18)",

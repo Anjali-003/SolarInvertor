@@ -82,6 +82,7 @@ const P = {
   shadowCard:      "0 2px 8px rgba(0,0,0,0.06)",
   shadowCardAmber: "0 2px 12px rgba(245,158,11,0.10)",
   shadowCardLg:    "0 8px 32px rgba(245,158,11,0.08), 0 2px 8px rgba(0,0,0,0.06)",
+  shadowCardRaised:  "0 4px 14px rgba(0,0,0,0.08)",
   shadowBtn:       "0 4px 14px rgba(249,115,22,0.35)",
   shadowBtnRed:    "0 4px 14px rgba(192,57,43,0.35)",
   shadowNav:       "0 -2px 12px rgba(0,0,0,0.08)",

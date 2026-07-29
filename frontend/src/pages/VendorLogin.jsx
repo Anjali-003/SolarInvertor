@@ -195,25 +195,22 @@ setSuccess("Registration submitted! Please wait for admin approval before loggin
 {/* BRAND */}
         <div
   style={{
-    background: P.surfaceFaded,
-    borderRadius: 16,
-    padding: "20px 16px",
-    marginBottom: 24,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 24,
   }}
 >
-          <img
-  src={logo}
-  alt="Logo"
-  style={{
-    width: 120,
-    height: 72,
-    objectFit: "contain",
-  }}
-/>
-        </div>
+  <img
+    src={logo}
+    alt="Logo"
+    style={{
+      width: 220,
+      height: 90,
+      objectFit: "contain",
+    }}
+  />
+</div>
 
         <ErrorMessage message={error} />
         {success && (

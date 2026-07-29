@@ -6,6 +6,26 @@ import P from "../theme/colors";
 
 export default function Home() {
     const { data, lastUpdated } = useInverter();
+    console.log(lastUpdated);
+
+   const formattedDateTime = (() => {
+    if (!lastUpdated) return { date: "--", time: "--" };
+
+    const d = new Date(lastUpdated);
+
+    return {
+        date: d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+        time: d.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        }),
+    };
+})();
 
     const getParameterValue = (parameter) => {
         const entry = Object.entries(data || {}).find(([key]) => {
@@ -92,36 +112,143 @@ export default function Home() {
     </div>
 </div>
 
-            {/* DEVICE INFO CARD */}
-            <div style={{ margin: "20px 20px 16px", background: P.surface, borderRadius: 16, padding: "16px 18px", boxShadow: P.shadowCard }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                    <div>
-                        <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
-                            SERIAL NUMBER
-                        </div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                            {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
-                                ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
-                                : "--"}
-                        </div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
-                            LAST UPDATED
-                        </div>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                            {lastUpdated ? lastUpdated.split(" ")[0] : "--"}
-                        </div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: P.textSecond, fontFamily: "'Inter', sans-serif" }}>
-                            {lastUpdated ? lastUpdated.split(" ").slice(1).join(" ") : "--"}
-                        </div>
-                    </div>
-                </div>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: P.surfaceGreen, border: `1px solid ${P.borderGreen}`, borderRadius: 20, padding: "4px 10px" }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
-                </div>
+            {/* ================= DEVICE INFO CARD ================= */}
+
+<div
+    style={{
+        margin: "20px 20px 16px",
+        background: P.surface,
+        borderRadius: 16,
+        padding: "16px 18px",
+        border: `1px solid ${P.border}`,
+        boxShadow: P.shadowCard,
+    }}
+>
+
+    {/* Online Badge (EXACTLY SAME AS POWER PAGE) */}
+    <div
+        style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: P.surfaceGreen,
+            border: `1px solid ${P.borderGreen}`,
+            borderRadius: 20,
+            padding: "4px 10px",
+            flexShrink: 0,
+            marginBottom: 16,
+        }}
+    >
+        <div
+            style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: P.green,
+                boxShadow: `0 0 6px ${P.green}`,
+            }}
+        />
+
+        <span
+            style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: P.textGreen,
+                fontFamily: "'DM Sans', sans-serif",
+            }}
+        >
+            Online
+        </span>
+    </div>
+
+    {/* Device Details */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 24,
+        }}
+    >
+
+        {/* Serial Number */}
+        <div style={{ flex: 1 }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                    fontFamily: "'Inter', sans-serif",
+                }}
+            >
+                SERIAL NUMBER
             </div>
+
+            <div
+                style={{
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: P.textPrimary,
+                    fontFamily: "'DM Sans', sans-serif",
+                }}
+            >
+                {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                    ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                    : "--"}
+            </div>
+        </div>
+
+        {/* Last Updated */}
+<div
+    style={{
+        textAlign: "right",
+    }}
+>
+    <div
+        style={{
+            fontSize: 10,
+            color: P.textLight,
+            fontWeight: 500,
+            letterSpacing: 0.8,
+            marginBottom: 6,
+            fontFamily: "'Inter', sans-serif",
+        }}
+    >
+        LAST UPDATED
+    </div>
+
+    <div
+        style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: P.textPrimary,
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1.2,
+        }}
+    >
+        {formattedDateTime.date}
+    </div>
+
+    {formattedDateTime.time && (
+        <div
+            style={{
+                marginTop: 3,
+                fontSize: 12,
+                fontWeight: 700,
+                color: P.textPrimary,
+                fontFamily: "'Inter', sans-serif",
+                lineHeight: 1.2,
+            }}
+        >
+        {formattedDateTime.time}
+        </div>
+    )}
+</div>
+    </div>
+
+</div>
 
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>
@@ -130,7 +257,7 @@ export default function Home() {
                     SOLAR PANEL DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardAmber, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
@@ -166,7 +293,7 @@ export default function Home() {
                     INVERTER DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 12, boxShadow: P.shadowCardAmber, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 12, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <div style={metricCard}>
                         <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>🌡 Temp</div>
                         <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
@@ -190,7 +317,7 @@ export default function Home() {
                         { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
                         { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
                     ].map((item) => (
-                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}" }}>
+                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}", boxShadow: P.shadowCard}}>
                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
                                 ⚡ {item.label}
                                 <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span>

@@ -434,9 +434,14 @@ body {
 
 .admin-content {
     flex: 1;
-    padding: 32px;
+    padding: 0;
     min-width: 0;
-    padding-bottom: 100px;
+}
+
+@media (max-width: 1024px) {
+    .admin-content {
+        padding-bottom: 100px;
+    }
 }
 
 .page-title {
@@ -602,7 +607,7 @@ body {
     }
 
     .admin-content {
-        padding: 24px 20px 90px;
+        padding: 0;
         width: 100%;
     }
 
@@ -658,7 +663,7 @@ body {
 @media (max-width: 640px) {
 
     .admin-content {
-        padding: 20px 16px 90px;
+        padding: 0;
     }
 
     .page-title { font-size: 22px; }

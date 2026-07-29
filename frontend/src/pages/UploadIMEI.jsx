@@ -9,6 +9,9 @@ import SuccessMessage from "../components/SuccessMessage";
 import "../styles/admin.css";
 import "../styles/UploadIMEI.css";
 
+import AdminPageHeader from "../components/AdminPageHeader";
+import AdminPageLayout from "../components/AdminPageLayout";
+
 export default function UploadIMEI() {
 
     const inputRef = useRef(null);
@@ -194,14 +197,10 @@ export default function UploadIMEI() {
         return <Loading />;
 
     return (
-
         <>
-
-            <h1 className="page-title">
-
-                Upload IMEI Excel
-
-            </h1>
+        <AdminPageHeader title="UPLOAD IMEI" />
+        
+        <AdminPageLayout>
 
             <p className="page-subtitle">
 
@@ -368,8 +367,8 @@ export default function UploadIMEI() {
 
             }
 
+        </AdminPageLayout>
         </>
-
     );
 
 }
