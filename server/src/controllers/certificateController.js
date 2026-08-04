@@ -1,7 +1,5 @@
 const fs = require("fs");
 const { Client } = require("ssh2");
-const fs = require("fs");
-const { Client } = require("ssh2");
 const pool = require("../config/database");            
 const {
     subscribeDevice
@@ -235,7 +233,7 @@ exports.generateCertificate = async (req, res) => {
 //         }
 
         // Vendor comes from authentication middleware
-        const vendorId = req.vendor.id;
+     //   const vendorId = req.vendor.id;
 //         const vendorId = req.vendor.id;
 
 //         const mqttPassword = crypto

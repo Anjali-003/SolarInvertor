@@ -371,7 +371,10 @@ loginUser(loginData);
         {/* SIGN UP FORM */}
         {mode === "signup" && (
           <form
-  onSubmit={handleLogin}
+  // onSubmit={handleLogin}
+
+    onSubmit={handleSetupDevice}
+
   style={{
     display: "flex",
     flexDirection: "column",
@@ -433,8 +436,9 @@ loginUser(loginData);
 </div> */}
 
             <PasswordInput
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
+    value={setupPassword}
+    // onChange={(e) => setPassword(e.target.value)}
+        onChange={(e)=>setSetupPassword(e.target.value)}
     placeholder="Password"
     required
     inputStyle={{
@@ -444,9 +448,12 @@ loginUser(loginData);
 />
 
               <PasswordInput
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    placeholder="Password"
+    value={confirmPassword}
+    // onChange={(e) => setPassword(e.target.value)}
+
+        onChange={(e)=>setConfirmPassword(e.target.value)}
+
+    placeholder="Confirm Password"
     required
     inputStyle={{
         ...inputStyle,
