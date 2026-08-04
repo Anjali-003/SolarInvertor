@@ -1,12 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import P from "../theme/colors";
 
 export default function PageHeader({
     title,
-    backPath,
 }) {
-
-    const navigate = useNavigate();
 
     return (
         <div
@@ -23,20 +19,6 @@ export default function PageHeader({
                 zIndex: 100,
             }}
         >
-            <button
-                onClick={() => navigate(backPath)}
-                style={{
-                    border: "none",
-                    background: "transparent",
-                    fontSize: 24,
-                    color: P.textAmber,
-                    cursor: "pointer",
-                    padding: 0,
-                    width: 32,
-                }}
-            >
-                ←
-            </button>
 
             <div
                 style={{
@@ -47,7 +29,7 @@ export default function PageHeader({
                     color: P.textAmber,
                     letterSpacing: 2,
                     fontFamily: "'DM Sans', sans-serif",
-                    marginRight: 32,
+                    marginRight: 0,
                 }}
             >
                 {title}

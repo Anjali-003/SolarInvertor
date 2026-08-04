@@ -48,45 +48,48 @@ export default function AdminLogin() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                fontFamily: "'Segoe UI', sans-serif",
+                background: P.bgGradient,
+                fontFamily: "'Inter', sans-serif",
+                padding: "24px 16px",
             }}
         >
             <div
                 style={{
-                    width: "95%",
-                    maxWidth: 460,
-                    padding: "55px 42px",
-                    background: "rgba(255,255,255,0.75)",
-                    backdropFilter: "blur(20px)",
-                    borderRadius: 28,
-                    border: "1px solid rgba(255,184,77,0.12)",
-                    boxShadow: "0 18px 45px rgba(255,184,77,0.12)",
-                }}
+                        width: "95%",
+                        maxWidth: 400,
+                        padding: "36px 28px 32px",
+                        background: P.surface,
+                        borderRadius: 24,
+                        border: `1px solid ${P.border}`,
+                        boxShadow: P.shadowCardLg,
+                    }}
             >
                 <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: 14,
-                    }}
-                >
-                    <img
-                        src={logo}
-                        alt="Logo"
-                        style={{
-                            width: 400,
-                            height: 120,
-                            objectFit: "contain",
-                        }}
-                    />
-                </div>
+    style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 24,
+    }}
+>
+    <img
+        src={logo}
+        alt="Logo"
+        style={{
+            width: 220,
+            height: 90,
+            objectFit: "contain",
+        }}
+    />
+</div>
 
                 <div
                     style={{
                         textAlign: "center",
-                        fontSize: 20,
-                        fontWeight: 600,
-                        marginBottom: 25,
+                        fontSize: 22,
+                        fontWeight: 700,
+                        marginBottom: 24,
+                        fontFamily: "'DM Sans', sans-serif",
                         color: P.textPrimary,
                     }}
                 >
@@ -134,23 +137,29 @@ export default function AdminLogin() {
 
 const inputStyle = {
     width: "100%",
-    padding: "14px 16px",
+    padding: "15px 20px",
     border: "none",
-    background: P.surfaceFaded,
-    borderRadius: 8,
+    background: P.surfaceForm,
+    borderRadius: 10,
     boxSizing: "border-box",
-    fontSize: 15,
+    fontSize: 14,
+    fontFamily: "'Inter', sans-serif",
+    color: P.textPrimary,
+    outline: "none",
 };
 
 const buttonStyle = {
     width: "100%",
-    padding: 14,
+    padding: "15px 16px",
     background: P.btnPrimary,
     border: "none",
-    color: "white",
+    color: P.textWhite,
+    fontSize: 16,
     fontWeight: 700,
-    fontSize: 15,
     borderRadius: 50,
     cursor: "pointer",
-    marginBottom: 20,
+    marginBottom: 14,
+    boxShadow: P.shadowBtn,
+    fontFamily: "'DM Sans', sans-serif",
+    letterSpacing: 0.3,
 };

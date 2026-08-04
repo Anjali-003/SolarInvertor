@@ -26,6 +26,8 @@ import PendingVendors from "./pages/PendingVendors";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
 import { InverterProvider } from "./context/Context";
+import AdminProfile from "./pages/AdminProfile";
+import AdminHome from "./pages/AdminHome";
 
 function App() {
   return (
@@ -169,9 +171,14 @@ function App() {
   }
 >
   <Route
-    path="/admin"
-    element={<PendingVendors />}
-  />
+  path="/admin"
+  element={<AdminHome />}
+/>
+
+<Route
+  path="/admin/pending"
+  element={<PendingVendors />}
+/>
 
   <Route
     path="/admin/upload-imei"
@@ -180,9 +187,12 @@ function App() {
 
   <Route
     path="/admin/users"
-    element={
-      <h2>Users (Coming Next)</h2>
-    }
+    element={<h2>Users (Coming Soon)</h2>}
+  />
+
+  <Route
+    path="/admin/profile"
+    element={<AdminProfile />}
   />
 </Route>
 

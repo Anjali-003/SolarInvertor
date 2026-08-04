@@ -15,8 +15,26 @@ export default function VendorHome() {
         localStorage.getItem("selectedVendorDevice") || "null"
     );
 
-    const { data, lastUpdated } =
-        useVendorDeviceData(device?.id);
+    const { data, lastUpdated } = useVendorDeviceData(device?.id);
+
+    const formattedDateTime = (() => {
+    if (!lastUpdated) return { date: "--", time: "--" };
+
+    const d = new Date(lastUpdated.replace(" ", "T"));
+
+    return {
+        date: d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+        time: d.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        }),
+    };
+})();
 
     const getParameterValue = (parameter) => {
         const entry = Object.entries(data || {}).find(([key]) => {
@@ -124,22 +142,21 @@ export default function VendorHome() {
     <button
         onClick={() => navigate("/my-devices")}
         style={{
-            border: `1px solid ${P.borderStrong}`,
-            background: P.amberWarm,
-            color: P.textAmber,
-            borderRadius: 20,
-            padding: "8px 14px",
-            fontSize: 14,
-            fontWeight: 600,
-            fontFamily: "'Inter', sans-serif",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            boxShadow: "0 2px 6px rgba(245,158,11,0.15)",
-        }}
+    border: "none",
+    background: "transparent",
+    color: P.textAmber,
+    fontSize: 30,
+    fontWeight: 100,
+    cursor: "pointer",
+    padding: 0,
+    width: 15,
+    height: 15,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+}}
     >
-        ← Devices
+        {"<"}
     </button>
 
     {/* Title */}
@@ -160,28 +177,148 @@ export default function VendorHome() {
 </div>
 
             {/* DEVICE INFO CARD */}
-            <div style={{
-                margin: "20px 20px 16px",
-                background: P.surface,
-                borderRadius: 16,
-                padding: "16px 18px",
-                boxShadow: P.shadowCard,
-            }}>
+<div
+    style={{
+        margin: "20px 20px 16px",
+        background: P.surface,
+        borderRadius: 16,
+        padding: "16px 18px",
+        border: `1px solid ${P.border}`,
+        boxShadow: P.shadowCard,
+    }}
+>
 
-                {/* STATUS BADGE */}
-                <div style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    background: P.surfaceGreen,
-                    border: `1px solid ${P.borderGreen}`,
-                    borderRadius: 20,
-                    padding: "4px 10px",
-                }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
-                </div>
+    {/* ON Badge */}
+    <div
+        style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: P.surfaceGreen,
+            border: `1px solid ${P.borderGreen}`,
+            borderRadius: 20,
+            padding: "4px 10px",
+            marginBottom: 16,
+        }}
+    >
+        <div
+            style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: P.green,
+                boxShadow: `0 0 6px ${P.green}`,
+            }}
+        />
+
+        <span
+            style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: P.textGreen,
+                fontFamily: "'DM Sans', sans-serif",
+            }}
+        >
+            ON
+        </span>
+    </div>
+
+    {/* Device Details */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+        }}
+    >
+
+        <div>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                }}
+            >
+                SERIAL NUMBER
             </div>
+
+            <div
+                style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: P.textPrimary,
+                    fontFamily: "'DM Sans', sans-serif",
+                }}
+            >
+                {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                    ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                    : "--"}
+            </div>
+        </div>
+
+        <div style={{ textAlign: "right" }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                }}
+            >
+                LAST UPDATED
+            </div>
+
+            <div
+    style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 8,
+        marginTop: 2,
+        whiteSpace: "nowrap",
+        fontFamily: "'DM Sans', sans-serif",
+    }}
+>
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.date}
+    </span>
+
+    <span
+        style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: P.textAmberBright,
+            display: "inline-block",
+            flexShrink: 0,
+        }}
+    />
+
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.time}
+    </span>
+</div>
+        </div>
+
+    </div>
+
+</div>
 
             <div style={{ padding: "0 20px 20px" }}>
 
@@ -199,11 +336,11 @@ export default function VendorHome() {
 
                 <div style={{
                     background: P.amber,
-                    border: `1.5px solid ${P.borderDark}`,
+                    border: `1.5px solid ${P.borderStrong}`,
                     borderRadius: 16,
                     padding: "16px",
                     marginBottom: 20,
-                    boxShadow: P.shadowCardAmber,
+                    boxShadow: P.shadowCardRaised,
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
                     gap: 12,
@@ -256,11 +393,11 @@ export default function VendorHome() {
                 {/* TEMP + FREQ */}
                 <div style={{
                     background: P.amber,
-                    border: `1.5px solid ${P.borderDark}`,
+                    border: `1.5px solid ${P.borderStrong}`,
                     borderRadius: 16,
                     padding: "16px",
                     marginBottom: 12,
-                    boxShadow: P.shadowCardAmber,
+                    boxShadow: P.shadowCardRaised,
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
                     gap: 12,
@@ -293,7 +430,7 @@ export default function VendorHome() {
                         { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
                         { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
                     ].map((item) => (
-                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}" }}>
+                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}", boxShadow: P.shadowCard}}>
                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
                                 ⚡ {item.label}
                                 <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span>

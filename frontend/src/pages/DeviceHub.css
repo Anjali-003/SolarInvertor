@@ -2,7 +2,7 @@
 .cards-container {
     width: 100%;
     display: grid;
-    grid-template-columns: 220px;
+    grid-template-columns: 215px;
     gap: 18px;
     justify-content: end;
 }
@@ -15,7 +15,7 @@
 @media (min-width: 700px) and (max-width: 1023px) {
     .cards-container {
         width: 100%;
-        grid-template-columns: 260px;
+        grid-template-columns: 250px;
         justify-content: center;
         justify-items: center;
     }

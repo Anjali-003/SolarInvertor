@@ -219,10 +219,10 @@ export default function VendorDevices() {
                 </div>
 
                 {/* Device ID */}
-                <div style={{ marginBottom: 10 }}>
+                <div style={{ marginBottom: 20 }}>
                   <span
                     style={{
-                      fontSize: 15,
+                      fontSize: 20,
                       fontWeight: 1000,
                       color: P.textPrimary,
                       fontFamily: "'DM Sans', sans-serif",
@@ -236,9 +236,9 @@ export default function VendorDevices() {
                 <div style={{ marginBottom: 10 }}>
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: 15,
                       fontWeight: 1000,
-                      color: P.textMuted,
+                      color: P.textSecond,
                       fontFamily: "'Inter', sans-serif",
                       marginBottom: 1,
                     }}
@@ -249,7 +249,7 @@ export default function VendorDevices() {
                     style={{
                       fontSize: 13,
                       fontWeight: 500,
-                      color: P.textSecond,
+                      color: P.textMuted,
                       fontFamily: "'Inter', sans-serif",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -264,9 +264,9 @@ export default function VendorDevices() {
                 <div>
                   <div
                     style={{
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: 1000,
-                      color: P.textMuted,
+                      color: P.textSecond,
                       fontFamily: "'Inter', sans-serif",
                       marginBottom: 1,
                     }}
@@ -277,7 +277,7 @@ export default function VendorDevices() {
                     style={{
                       fontSize: 13,
                       fontWeight: 500,
-                      color: P.textSecond,
+                      color: P.textMuted,
                       fontFamily: "'Inter', sans-serif",
                       textTransform: "capitalize",
                     }}

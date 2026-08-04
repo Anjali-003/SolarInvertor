@@ -9,6 +9,25 @@ import PageHeader from "../components/PageHeader";
 export default function Power() {
 
     const { data, lastUpdated } = useInverter();
+
+   const formattedDateTime = (() => {
+    if (!lastUpdated) return { date: "--", time: "--" };
+
+    const d = new Date(lastUpdated);
+
+    return {
+        date: d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+        time: d.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        }),
+    };
+})();
     // GET PARAMETER VALUE DYNAMICALLY
 
 // ── Style objects ─────────────────────────────────────
@@ -253,25 +272,160 @@ export default function Power() {
                 lastUpdated={lastUpdated}
             /> */}
 
-            {/* DEVICE STRIP */}
-            <div style={{ margin: "20px 20px 16px", background: P.surface, borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, boxShadow: P.shadowCard }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, background: P.surfaceGreen, border: `1px solid ${P.borderGreen}`, borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
-                </div>
-                <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>SERIAL NUMBER</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                        {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
-                            ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
-                            : "--"}
-                    </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>LAST UPDATED</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>{lastUpdated || "--"}</div>
-                </div>
+            {/* ================= DEVICE INFO CARD ================= */}
+
+<div
+    style={{
+        margin: "20px 20px 16px",
+        background: P.surface,
+        borderRadius: 16,
+        padding: "16px 18px",
+        border: `1px solid ${P.border}`,
+        boxShadow: P.shadowCard,
+    }}
+>
+
+    {/* Online Badge (EXACTLY SAME AS POWER PAGE) */}
+    <div
+        style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: P.surfaceGreen,
+            border: `1px solid ${P.borderGreen}`,
+            borderRadius: 20,
+            padding: "4px 10px",
+            flexShrink: 0,
+            marginBottom: 16,
+        }}
+    >
+        <div
+            style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: P.green,
+                boxShadow: `0 0 6px ${P.green}`,
+            }}
+        />
+
+        <span
+            style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: P.textGreen,
+                fontFamily: "'DM Sans', sans-serif",
+            }}
+        >
+            Online
+        </span>
+    </div>
+
+    {/* Device Details */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 24,
+        }}
+    >
+
+        {/* Serial Number */}
+        <div style={{ flex: 1 }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                    fontFamily: "'Inter', sans-serif",
+                }}
+            >
+                SERIAL NUMBER
             </div>
+
+            <div
+                style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: P.textPrimary,
+                    fontFamily: "'DM Sans', sans-serif",
+                }}
+            >
+                {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                    ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                    : "--"}
+            </div>
+        </div>
+
+        {/* Last Updated */}
+        <div
+            style={{
+                textAlign: "right",
+            }}
+        >
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                    fontFamily: "'Inter', sans-serif",
+                }}
+            >
+                LAST UPDATED
+            </div>
+
+            <div
+    style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 8,
+        marginTop: 2,
+        whiteSpace: "nowrap",
+        fontFamily: "'DM Sans', sans-serif",
+    }}
+>
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.date}
+    </span>
+
+    <span
+        style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: P.textAmberBright,
+            display: "inline-block",
+            flexShrink: 0,
+        }}
+    />
+
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.time}
+    </span>
+</div>
+        </div>
+
+    </div>
+
+</div>
 
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>

@@ -205,13 +205,13 @@ loginUser(loginData);
     >
       <div
         style={{
-          width: "100%",
+          width: "95%",
           maxWidth: 400,
           padding: "36px 28px 32px",
           background: P.surface,
           borderRadius: 24,
           border: `1px solid ${P.border}`,
-          boxShadow: `P.shadowCardLg, ${P.shadowCard}`,
+          boxShadow: P.shadowCardLg,
         }}
       >
         {/* HEADING */}
@@ -231,26 +231,48 @@ loginUser(loginData);
 
         {/* BRAND HEADER */}
         <div
-          style={{
-            background: P.surfaceFaded,
-            borderRadius: 16,
-            padding: "20px 16px",
-            marginBottom: 24,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <img
-            src={logo}
-            alt="Logo"
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 24,
+  }}
+>
+  <img
+    src={logo}
+    alt="Logo"
+    style={{
+      width: 220,
+      height: 90,
+      objectFit: "contain",
+    }}
+  />
+</div>
+
+{/* ERROR MESSAGE */}
+        <ErrorMessage message={error} />
+        {success && (
+          <div
             style={{
-              width: 120,
-              height: 72,
-              objectFit: "contain",
+              background: P.surfaceSuccess,
+              border: `1px solid ${P.borderSuccess}`,
+              color: P.textSuccessMsg,
+              padding: "10px 14px",
+              borderRadius: 12,
+              marginBottom: 14,
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
             }}
-          />
-        </div>
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={P.textSuccessMsg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {success}
+          </div>
+        )}
 
         {/* PAGE MODE */}
         <div
@@ -266,94 +288,43 @@ loginUser(loginData);
           {mode === "login" ? "User Login" : "User Registration"}
         </div>
 
-{/* ERROR MESSAGE */}
-        <ErrorMessage message={error} />
-        {success && (
-          <div
-            style={{
-              background: P.surfaceSuccess,
-              border: `1px solid ${P.borderSuccess}`,
-              color: P.textSuccessMsg,
-              padding: "10px 14px",
-              borderRadius: 8,
-              marginBottom: 20,
-              fontSize: 13,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={P.textSuccessMsg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            {success}
-          </div>
-        )}
-
         {/* LOGIN FORM */}
         {mode === "login" && (
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 12 }}>
+          <form
+  onSubmit={handleLogin}
+  style={{
+    display: "flex",
+    flexDirection: "column",
+  }}
+>
+            <div style={{ marginBottom: 14 }}>
               <input
                 type="text"
                 placeholder="Email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                style={inputStyle}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 14 }}>
 
     <PasswordInput
     value={password}
     onChange={(e) => setPassword(e.target.value)}
     placeholder="Password"
     required
-    inputStyle={{
-        width: "100%",
-        padding: "15px 20px",
-        border: "none",
-        background: P.surfaceForm,
-        borderRadius: 10,
-        fontSize: 14,
-        fontFamily: "'Inter', sans-serif",
-        color: P.textPrimary,
-    }}
+    inputStyle={inputStyle}
 />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "14px 16px",
-                background: P.btnPrimary,
-                border: "none",
-                color: P.textWhite,
-                fontSize: 15,
-                fontWeight: 600,
-                borderRadius: 50,
-                cursor: loading ? "not-allowed" : "pointer",
-                marginBottom: 18,
-                opacity: loading ? 0.7 : 1,
-                transition: "opacity 0.2s",
-              }}
+                style={buttonStyle}
             >
-              {loading ? "LOGGING IN..." : "LOG IN"}
+              {loading ? "Logging In..." : "Login"}
             </button>
 
             {/* <div style={{ marginBottom: 24, textAlign: "center" }}>
@@ -369,115 +340,82 @@ loginUser(loginData);
               </a>
             </div> */}
 
-            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
-              Don't have an Account?{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMode("signup");
-                  setError("");
-                  setSuccess("");
-                }}
-                style={{
-                  color: P.amber,
-                  textDecoration: "none",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Sign Up
-              </a>
-            </div>
+            <p
+  style={{
+    margin: 0,
+    fontSize: 13,
+    color: P.textHint,
+    textAlign: "center",
+    fontFamily: "'Inter', sans-serif",
+  }}
+>
+  Don't have an account?{" "}
+  <span
+    onClick={() => {
+      setMode("signup");
+      setError("");
+      setSuccess("");
+    }}
+    style={{
+      color: P.textAmberBright,
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    Sign Up
+  </span>
+</p>
           </form>
         )}
 
         {/* SIGN UP FORM */}
         {mode === "signup" && (
-          <form onSubmit={handleSetupDevice}>
-            <div style={{ marginBottom: 12 }}>
+          <form
+  onSubmit={handleLogin}
+  style={{
+    display: "flex",
+    flexDirection: "column",
+  }}
+>
+            <div style={{ marginBottom: 14 }}>
               <ImeiInput
                 value={imei}
                 onChange={(e) => setImei(e.target.value)}
                 placeholder="IMEI Number"
                 required
-                inputStyle={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                inputStyle={inputStyle}
               />
             </div>
 
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 14 }}>
               <input
                 type="text"
                 placeholder="Client Name"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                style={inputStyle}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 14 }}>
               <input
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                style={inputStyle}
                 required
               />
             </div>
 
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 14 }}>
               <input
                 type="tel"
                 placeholder="Phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                  boxSizing: "border-box",
-                  outline: "none",
-                }}
+                style={inputStyle}
                 required
               />
             </div>
@@ -494,90 +432,92 @@ loginUser(loginData);
   </select>
 </div> */}
 
-            <div style={{ marginBottom: 20 }}>
-              <PasswordInput
-                value={setupPassword}
-                onChange={(e) => setSetupPassword(e.target.value)}
-                placeholder="Password"
-                required
-                inputStyle={{
-                  width: "100%",
-                  padding: "15px 20px",
-                  border: "none",
-                  background: P.surfaceForm,
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  color: P.textPrimary,
-                }}
-              />
-            </div>
-
-              <div style={{ marginBottom: 20 }}>
-  <PasswordInput
-    value={confirmPassword}
-    onChange={(e) => setConfirmPassword(e.target.value)}
-    placeholder="Confirm Password"
+            <PasswordInput
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Password"
     required
     inputStyle={{
-      width: "100%",
-      padding: "15px 20px",
-      border: "none",
-      background: P.surfaceForm,
-      borderRadius: 10,
-      fontSize: 14,
-      fontFamily: "'Inter', sans-serif",
-      color: P.textPrimary,
+        ...inputStyle,
+        marginBottom: 14,
     }}
-  />
-</div>
+/>
+
+              <PasswordInput
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Password"
+    required
+    inputStyle={{
+        ...inputStyle,
+        marginBottom: 14,
+    }}
+/>
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: "15px 16px",
-                background: P.btnPrimary,
-                border: "none",
-                color: P.textWhite,
-                fontSize: 16,
-                fontWeight: 700,
-                borderRadius: 50,
-                cursor: loading ? "not-allowed" : "pointer",
-                marginBottom: 16,
-                opacity: loading ? 0.7 : 1,
-                transition: "opacity 0.2s",
-                boxShadow: P.shadowBtn,
-                fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: 0.3,
-              }}
+              style={buttonStyle}
             >
               {loading ? "Signing up..." : "Sign Up"}
             </button>
 
-            <div style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
-              Already have an account?{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMode("login");
-                  setError("");
-                }}
-                style={{
-                  color: P.amber,
-                  textDecoration: "none",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Login here
-              </a>
-            </div>
+            <p
+  style={{
+    margin: 0,
+    fontSize: 13,
+    color: P.textHint,
+    textAlign: "center",
+    fontFamily: "'Inter', sans-serif",
+  }}
+>
+  Already have an account?{" "}
+  <span
+    onClick={() => {
+      setMode("login");
+      setError("");
+    }}
+    style={{
+      color: P.textAmberBright,
+      fontWeight: 600,
+      cursor: "pointer",
+    }}
+  >
+    Login here
+  </span>
+</p>
           </form>
         )}
       </div>
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "15px 20px",
+  border: "none",
+  background: P.surfaceForm,
+  borderRadius: 10,
+  boxSizing: "border-box",
+  fontSize: 14,
+  fontFamily: "'Inter', sans-serif",
+  color: P.textPrimary,
+  outline: "none",
+};
+
+const buttonStyle = {
+  width: "100%",
+  padding: "15px 16px",
+  background: P.btnPrimary,
+  border: "none",
+  color: P.textWhite,
+  fontSize: 16,
+  fontWeight: 700,
+  borderRadius: 50,
+  cursor: "pointer",
+  marginBottom: 14,
+  boxShadow: P.shadowBtn,
+  fontFamily: "'DM Sans', sans-serif",
+  letterSpacing: 0.3,
+};

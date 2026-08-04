@@ -1,0 +1,59 @@
+/* ---------- Mobile ---------- */
+.admin-cards-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: 24px;
+    justify-content: center;
+    justify-items: center;
+}
+
+.admin-cards-container button {
+    width: 100%;
+    max-width: 210px;
+}
+
+/* ---------- Tablet ---------- */
+@media (min-width: 700px) and (max-width: 1023px) {
+    .admin-cards-container {
+        grid-template-columns: repeat(2, minmax(220px, 250px));
+        column-gap: 30px;
+        row-gap: 30px;
+        justify-content: center;
+        justify-items: center;
+    }
+
+    .admin-cards-container button {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* ---------- Desktop ---------- */
+@media (min-width: 1024px) {
+    .admin-action-btn {
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    .admin-cards-container {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 300px);
+        column-gap: 24px;
+        row-gap: 0;
+        justify-content: center;
+        justify-items: stretch;
+        margin-top: 20px;
+    }
+
+    .admin-cards-container button {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* ---------- Hover ---------- */
+.admin-cards-container button:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.15);
+}

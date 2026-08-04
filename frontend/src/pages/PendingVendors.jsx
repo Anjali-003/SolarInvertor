@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import "../styles/admin.css";
+import P from "../theme/colors";
+import AdminPageHeader from "../components/AdminPageHeader";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export default function PendingVendors() {
 
-
     console.log("PendingVendors rendered");
-
 
     const [vendors, setVendors] = useState([]);
 
@@ -85,9 +86,8 @@ export default function PendingVendors() {
             );
 
             setMessage(data.message);
-
+            setTimeout(() => {setMessage("");}, 3000);
             fetchPendingVendors();
-
         }
 
         catch (err) {
@@ -136,14 +136,10 @@ export default function PendingVendors() {
         return <h2>{error}</h2>;
 
     return (
-
-        <>
-
-            <h1 className="page-title">
-
-                Pending Vendors
-
-            </h1>
+    <>
+    <AdminPageHeader title="PENDING VENDORS" />
+    
+    <AdminPageLayout>
 
             <p className="page-subtitle">
 
@@ -274,8 +270,8 @@ export default function PendingVendors() {
 
             </div>
 
+        </AdminPageLayout>
         </>
-
     );
 
 }

@@ -12,6 +12,25 @@ export default function VendorFault() {
     const { id } = useParams();
     const { data, lastUpdated } = useVendorDeviceData(id);
 
+    const formattedDateTime = (() => {
+    if (!lastUpdated) return { date: "--", time: "--" };
+
+    const d = new Date(lastUpdated.replace(" ", "T"));
+
+    return {
+        date: d.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        }),
+        time: d.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        }),
+    };
+})();
+
     const getParameterValue = (parameter) => {
         const entry = Object.entries(data || {}).find(([key]) => {
             if (!key.includes("-")) return false;
@@ -120,25 +139,146 @@ export default function VendorFault() {
             backPath="/vendor"
         />
 
-            {/* DEVICE STRIP */}
-            <div style={{ margin: "20px 20px 16px", background: P.surface, borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "center", gap: 16, boxShadow: P.shadowCard }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, background: P.surfaceGreen, border: `1px solid ${P.borderGreen}`, borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: P.green, boxShadow: `0 0 6px ${P.green}` }} />
-                    <span style={{ fontSize: 12, fontWeight: 700, color: P.textGreen, fontFamily: "'DM Sans', sans-serif" }}>ON</span>
-                </div>
-                <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>SERIAL NUMBER</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                        {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
-                            ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
-                            : "--"}
-                    </div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 10, color: P.textLight, fontWeight: 500, letterSpacing: 0.8, marginBottom: 2 }}>LAST UPDATED</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>{lastUpdated || "--"}</div>
-                </div>
+            {/* DEVICE INFO CARD */}
+<div
+    style={{
+        margin: "20px 20px 16px",
+        background: P.surface,
+        borderRadius: 16,
+        padding: "16px 18px",
+        border: `1px solid ${P.border}`,
+        boxShadow: P.shadowCard,
+    }}
+>
+
+    {/* ON Badge */}
+    <div
+        style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: P.surfaceGreen,
+            border: `1px solid ${P.borderGreen}`,
+            borderRadius: 20,
+            padding: "4px 10px",
+            marginBottom: 16,
+        }}
+    >
+        <div
+            style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: P.green,
+                boxShadow: `0 0 6px ${P.green}`,
+            }}
+        />
+        <span
+            style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: P.textGreen,
+                fontFamily: "'DM Sans', sans-serif",
+            }}
+        >
+            ON
+        </span>
+    </div>
+
+    {/* Device Details */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+        }}
+    >
+        <div style={{ flex: 1 }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                }}
+            >
+                SERIAL NUMBER
             </div>
+
+            <div
+                style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: P.textPrimary,
+                    fontFamily: "'DM Sans', sans-serif",
+                }}
+            >
+                {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
+                    ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
+                    : "--"}
+            </div>
+        </div>
+
+        <div style={{ textAlign: "right" }}>
+            <div
+                style={{
+                    fontSize: 10,
+                    color: P.textLight,
+                    fontWeight: 500,
+                    letterSpacing: 0.8,
+                    marginBottom: 2,
+                }}
+            >
+                LAST UPDATED
+            </div>
+
+            <div
+    style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 8,
+        marginTop: 2,
+        whiteSpace: "nowrap",
+        fontFamily: "'DM Sans', sans-serif",
+    }}
+>
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.date}
+    </span>
+
+    <span
+        style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: P.textAmberBright,
+            display: "inline-block",
+            flexShrink: 0,
+        }}
+    />
+
+    <span
+        style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: P.textPrimary,
+        }}
+    >
+        {formattedDateTime.time}
+    </span>
+</div>
+        </div>
+    </div>
+
+</div>
 
             <div style={{ padding: "0 20px 20px" }}>
 
@@ -168,7 +308,7 @@ export default function VendorFault() {
                                     background: P.surface,
                                     borderRadius: 14,
                                     overflow: "hidden",
-                                    boxShadow: P.shadowCard,
+                                    boxShadow: P.shadowCardRaised,
                                 }}
                             >
                                 {/* ICON + TITLE ROW */}
