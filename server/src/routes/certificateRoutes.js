@@ -7,9 +7,6 @@ const router =
 const controller =
   require("../controllers/certificateController");
 
-const auth =
-  require("../middleware/authMiddleware");
-
 const vendorAuth =
   require("../middleware/vendorAuth");
 
@@ -27,6 +24,8 @@ router.post(
 //   controller.downloadCertificate
 // );
 
+
+// for ftp 
 
 router.post("/device/config", controller.getDeviceConfig);
 

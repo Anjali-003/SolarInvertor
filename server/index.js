@@ -16,6 +16,8 @@ const userRoutes = require("./src/routes/userRoutes");
 const certificateRoutes = require("./src/routes/certificateRoutes");
 const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
 const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
+const energyRoutes =
+    require("./src/routes/energyRoutes");
 
 const app = express();
 //const server = http.createServer(app);
@@ -60,6 +62,11 @@ app.use(
   vendorDeviceRoutes
 );
 
+
+app.use(
+    "/api/energy",
+    energyRoutes
+);
 
 // ─────────────────────────────────────
 // SOCKET AUTH MIDDLEWARE

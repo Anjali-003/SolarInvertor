@@ -3,9 +3,11 @@ import Footer from "../components/Footer";
 import { parseKeyword } from "../utils/parseKeyword";
 import PageHeader from "../components/PageHeader";
 import P from "../theme/colors";
+import DeviceInfo from "../components/DeviceInfo";
 
 export default function Home() {
-    const { data, lastUpdated } = useInverter();
+    // const { data, lastUpdated } = useInverter();
+    const { data, lastUpdated, energy } = useInverter();
     console.log(lastUpdated);
 
    const formattedDateTime = (() => {
@@ -27,13 +29,123 @@ export default function Home() {
     };
 })();
 
+// OLD PARSER
+
+    // const getParameterValue = (parameter) => {
+    //     const entry = Object.entries(data || {}).find(([key]) => {
+    //         if (!key.includes("-")) return false;
+    //         return parseKeyword(key).parameter === parameter;
+    //     });
+    //     return entry ? entry[1] : "--";
+    // };
+
     const getParameterValue = (parameter) => {
-        const entry = Object.entries(data || {}).find(([key]) => {
-            if (!key.includes("-")) return false;
-            return parseKeyword(key).parameter === parameter;
-        });
-        return entry ? entry[1] : "--";
-    };
+    return data?.[parameter] ?? "--";
+};
+
+const getPlantCapacity = () => {
+    const rat = Number(data?.RAT);
+
+    if (!Number.isFinite(rat) || rat <= 0) {
+        return null;
+    }
+
+    return rat;
+};
+
+
+const getHoursInCurrentMonth = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const daysInMonth = new Date(
+        year,
+        month + 1,
+        0
+    ).getDate();
+
+    return daysInMonth * 24;
+};
+
+
+const getHoursInCurrentYear = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const isLeapYear =
+        (year % 4 === 0 && year % 100 !== 0) ||
+        year % 400 === 0;
+
+    return (isLeapYear ? 366 : 365) * 24;
+};
+
+
+const calculateCUF = (generatedEnergy, totalHours) => {
+
+    const capacity = getPlantCapacity();
+
+    const energyValue = Number(generatedEnergy);
+
+    if (
+        capacity === null ||
+        !Number.isFinite(energyValue) ||
+        energyValue < 0 ||
+        totalHours <= 0
+    ) {
+        return null;
+    }
+
+    const cuf =
+        (energyValue /
+            (capacity * totalHours)) *
+        100;
+
+    return cuf;
+};
+
+
+const getTodayCUF = () => {
+    return calculateCUF(
+        energy?.today,
+        24
+    );
+};
+
+
+const getMonthlyCUF = () => {
+    return calculateCUF(
+        energy?.monthly,
+        getHoursInCurrentMonth()
+    );
+};
+
+
+const getYearlyCUF = () => {
+    return calculateCUF(
+        energy?.yearly,
+        getHoursInCurrentYear()
+    );
+};
+
+const formatCUF = (value) => {
+
+    if (value === null || !Number.isFinite(value)) {
+        return "--";
+    }
+
+    return `${value.toFixed(2)}%`;
+};
+
+const getDCPower = () => { 
+    const voltage = Number(data?.DCV1); 
+    const current = Number(data?.DCI1); 
+    if (!Number.isFinite(voltage) || !Number.isFinite(current)) { 
+        return "--"; } // DCV1 (V) × DCI1 (A) = Watts // Convert Watts → kW 
+        return (voltage * current / 1000).toFixed(3); 
+        };
 
     const metricCard = {
         background: P.surfaceWarm,
@@ -113,7 +225,7 @@ export default function Home() {
 </div>
 
             {/* ================= DEVICE INFO CARD ================= */}
-
+{/* 
 <div
     style={{
         margin: "20px 20px 16px",
@@ -125,7 +237,6 @@ export default function Home() {
     }}
 >
 
-    {/* Online Badge (EXACTLY SAME AS POWER PAGE) */}
     <div
         style={{
             display: "inline-flex",
@@ -161,7 +272,6 @@ export default function Home() {
         </span>
     </div>
 
-    {/* Device Details */}
     <div
         style={{
             display: "flex",
@@ -171,7 +281,6 @@ export default function Home() {
         }}
     >
 
-        {/* Serial Number */}
         <div style={{ flex: 1 }}>
             <div
                 style={{
@@ -200,7 +309,6 @@ export default function Home() {
             </div>
         </div>
 
-        {/* Last Updated */}
 <div
     style={{
         textAlign: "right",
@@ -248,13 +356,17 @@ export default function Home() {
 </div>
     </div>
 
-</div>
+</div> */}
 
+<DeviceInfo
+    data={data}
+    lastUpdated={lastUpdated}
+/>
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>
 
                 <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
-                    SOLAR PANEL DETAILS
+                    INVERTER DETAILS
                 </h2>
 
                 <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -276,7 +388,7 @@ export default function Home() {
                         <div style={metricLabel}>DC Current</div>
                         <div style={metricDesc}>Input current</div>
                     </div>
-
+{/* 
                     <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div>
                             <div style={metricIconRow}><span style={metricIcon}>🔲</span></div>
@@ -286,11 +398,191 @@ export default function Home() {
                         <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
                             {getParameterValue("DCKW1")} <span style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>kW</span>
                         </div>
-                    </div>
+                    </div> */}
+
+                                                {/* I*V = Power */}
+
+<div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div>
+        <div style={metricIconRow}>
+            <span style={metricIcon}>🔲</span>
+        </div>
+        <div style={metricLabel}>DC Power</div>
+        <div style={metricDesc}>DC Voltage × DC Current</div>
+    </div>
+
+    <div
+        style={{
+            fontSize: 22,
+            fontWeight: 800,
+            color: P.textPrimary,
+            fontFamily: "'DM Sans', sans-serif",
+        }}
+    >
+        {getDCPower()}{" "}
+        <span
+            style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: P.textMuted,
+            }}
+        >
+            kW
+        </span>
+    </div>
+</div>
+
+
+
+
                 </div>
+<h2
+    style={{
+        fontSize: 15,
+        fontWeight: 800,
+        color: P.textAmber,
+        marginBottom: 12,
+        marginTop: 4,
+        letterSpacing: 0.5,
+        fontFamily: "'DM Sans', sans-serif",
+    }}
+>
+    CAPACITY UTILIZATION FACTOR
+</h2>
+
+<div
+    style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: 10,
+        marginBottom: 20,
+    }}
+>
+
+    {/* TODAY */}
+    <div style={statCard}>
+
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            TODAY
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright
+            }}
+        >
+            {formatCUF(getTodayCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+
+    </div>
+
+
+    {/* MONTH */}
+    <div style={statCard}>
+
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            MONTH
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright
+            }}
+        >
+            {formatCUF(getMonthlyCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+
+    </div>
+
+
+    {/* YEAR */}
+    <div style={statCard}>
+
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            YEAR
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright
+            }}
+        >
+            {formatCUF(getYearlyCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+
+    </div>
+
+</div>
 
                 <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
-                    INVERTER DETAILS
+                    AC PARAMETER DETAILS
                 </h2>
 
                 <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 12, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -303,7 +595,7 @@ export default function Home() {
                     <div style={metricCard}>
                         <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>≋ Freq</div>
                         <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                            {getParameterValue("FREQ")} <span style={{ fontSize: 14, color: P.textMuted, fontWeight: 500 }}>Hz</span>
+                            {getParameterValue("GFREQ")} <span style={{ fontSize: 14, color: P.textMuted, fontWeight: 500 }}>Hz</span>
                         </div>
                     </div>
                 </div>
@@ -311,16 +603,18 @@ export default function Home() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                     {[
                         { key: "VN",   label: "AC Voltage",     desc: "VN",   unit: "V"    },
-                        { key: "I",    label: "AC Current",     desc: "I",    unit: "A"    },
-                        { key: "POW",  label: "Active Power",   desc: "POW",  unit: "kW"   },
+                        { key: "DCI1",    label: "AC Current",     desc: "I",    unit: "A"    },
+                        { key: "POW",  label: "Export Power",   desc: "POW",  unit: "kW"   },
                         { key: "PF",   label: "Power Factor",   desc: "PF",   unit: ""     },
-                        { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
-                        { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
+                        // { key: "GFREQ", label: "Grid Frequency", desc: "GFREQ", unit: "Hz" },
+
+                        // { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
+                        // { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
                     ].map((item) => (
                         <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}", boxShadow: P.shadowCard}}>
                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
                                 ⚡ {item.label}
-                                <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span>
+                                {/* <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span> */}
                             </div>
                             <div style={{ fontSize: 20, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
                                 {getParameterValue(item.key)}{" "}
@@ -337,3 +631,50 @@ export default function Home() {
         </div>
     );
 }
+
+
+const statCard = {
+    background: P.surface,
+    borderRadius: 14,
+    padding: "14px 10px",
+    textAlign: "center",
+    boxShadow: P.shadowCard,
+    border: `1px solid ${P.border}`,
+};
+
+const statIconWrap = {
+    width: 36,
+    height: 36,
+    borderRadius: "50%",
+    background: P.surfaceAmber,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 8px",
+};
+
+const statSubLabel = {
+    fontSize: 9,
+    fontWeight: 700,
+    color: P.textLight,
+    letterSpacing: 0.5,
+    fontFamily: "'Inter', sans-serif",
+    marginBottom: 4,
+    textTransform: "uppercase",
+};
+
+const statValue = {
+    fontSize: 20,
+    fontWeight: 800,
+    color: P.textPrimary,
+    fontFamily: "'DM Sans', sans-serif",
+    lineHeight: 1.1,
+};
+
+const statUnit = {
+    fontSize: 11,
+    fontWeight: 500,
+    color: P.textMuted,
+    fontFamily: "'Inter', sans-serif",
+    marginTop: 2,
+};

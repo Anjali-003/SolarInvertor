@@ -5,7 +5,7 @@
 //export default function DeviceHub() {
 //    const navigate = useNavigate();
 
-    // const role = localStorage.getItem("role");
+// const role = localStorage.getItem("role");
 
 //    const username = localStorage.getItem("vendorName");
 
@@ -102,8 +102,8 @@
 //                    width: "100%",
 //                    maxWidth: 450,
 //                    margin: "20px auto 0",
-                // }}
-            // >
+// }}
+// >
 //                 <button
 //                     onClick={handleLogout}
 //                     style={logoutStyle}
@@ -145,6 +145,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import P from "../theme/colors";
 import "./DeviceHub.css";
+import logo from "../assets/logo.png";
 
 export default function DeviceHub() {
     const navigate = useNavigate();
@@ -295,16 +296,85 @@ void main() {
             >
                 {/* TOP SECTION */}
 
-<div
-    style={{
-        display: "flex",
-        flexDirection: "column",
-        flex: 1,
-        minHeight: 0,
-    }}
->
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        minHeight: 0,
+                    }}
+                >
                     {/* VENDOR DASHBOARD HEADING */}
+
+                    {/* VENDOR DASHBOARD HEADING + COMPANY LOGO */}
                     <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 16,
+                            marginBottom: 24,
+                            width: "100%",
+                            boxSizing: "border-box",
+                        }} >
+                        {/* COMPANY LOGO */}
+                        <div style={{
+                            width: 86,
+                            height: 86,
+                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 16,
+                            background: "rgba(255,255,255,0.10)",
+                            border: "1px solid rgba(255,255,255,0.18)",
+                            backdropFilter: "blur(8px)",
+                            WebkitBackdropFilter: "blur(8px)",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.20)",
+                        }} >
+                            <img src={logo} alt="Company Logo"
+                                style={{
+                                    width: 102,
+                                    height: 102,
+                                    objectFit: "contain",
+                                    display: "block",
+                                }} />
+                        </div>
+                        {/* DASHBOARD TITLE */}
+                        <div style={{
+                            flex: 1,
+                            minWidth: 0,
+                        }} >
+                            <div style={{
+                                fontSize: 28,
+                                fontWeight: 800,
+                                color: P.textWhite,
+                                fontFamily: "'DM Sans', sans-serif",
+                                lineHeight: 1.1,
+                            }} >
+                                Vendor
+                            </div>
+                            <div style={{
+                                fontSize: 28,
+                                fontWeight: 800,
+                                color: P.textWhite,
+                                fontFamily: "'DM Sans', sans-serif",
+                                lineHeight: 1.1,
+                            }} >
+                                Dashboard </div>
+                            <div style={{
+                                marginTop: 6,
+                                fontSize: 18,
+                                color: "rgba(255,255,255,0.55)",
+                                fontFamily: "'Inter', sans-serif",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                            }} >
+                                Welcome, {username || "Vendor"}
+                            </div>
+                        </div>
+                    </div>
+                    {/* <div
                         style={{
                             marginBottom: 24,
                         }}
@@ -341,24 +411,12 @@ void main() {
                         >
                             Welcome, {username || "Vendor"}
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* ACTION BUTTONS */}
                     <div className="cards-container">
 
-                        {/* PROFILE BUTTON */}
-                        <button
-                            onClick={() => navigate("/vendor/profile")}
-                            style={actionBtn}
-                        >
-                            <div style={btnIconWrap}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={P.textWhite} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="8" r="4" />
-                                    <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
-                                </svg>
-                            </div>
-                            <span style={btnLabel}>Profile</span>
-                        </button>
+
 
                         {/* REGISTER DEVICES BUTTON */}
                         <button
@@ -390,8 +448,23 @@ void main() {
                             </div>
                             <span style={btnLabel}>My Devices</span>
                         </button>
+
+                        {/* PROFILE BUTTON */}
+                        <button
+                            onClick={() => navigate("/vendor/profile")}
+                            style={actionBtn}
+                        >
+                            <div style={btnIconWrap}>
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={P.textWhite} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" />
+                                </svg>
+                            </div>
+                            <span style={btnLabel}>Profile</span>
+                        </button>
                     </div>
                 </div>
+
 
                 {/* LOGOUT BUTTON */}
                 <button

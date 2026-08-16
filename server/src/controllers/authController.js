@@ -352,6 +352,7 @@ exports.login = async (req, res) => {
         email: user.email,
         phone: user.phone,
         imei: user.imei,
+        created_at: user.created_at,
       },
     };
 

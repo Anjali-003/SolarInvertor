@@ -1,193 +1,12 @@
-const fs = require("fs");
-const { Client } = require("ssh2");
-const pool = require("../config/database");            
-const {
-    subscribeDevice
-} = require("../services/mqttSubscription");
+// const fs = require("fs");
+// const { Client } = require("ssh2");
+// const pool = require("../config/database");            
+// const {
+//     subscribeDevice
+// } = require("../services/mqttSubscription");
 
-const crypto = require("crypto");
-const { exec } = require("child_process");
-
-
-exports.generateCertificate = async (req, res) => {
-
-    console.log("BODY:", req.body);
-
-    const {
-        imei,
-        solution,
-        deviceVersion
-    } = req.body;
-
-    if (!imei || !solution || !deviceVersion) {
-        return res.status(400).json({
-            error: "Missing fields"
-        });
-    }
-
-    try {
-
-        // Check IMEI exists
-        const [imeiRows] = await pool.execute(
-            `SELECT * FROM imei_list WHERE imei = ?`,
-            [imei]
-        );
-
-        if (imeiRows.length === 0) {
-            return res.status(400).json({
-                error: "IMEI not registered by admin"
-            });
-        }
-
-        // Check device already registered
-        const [existingDevice] = await pool.execute(
-            `SELECT * FROM devices WHERE imei = ?`,
-            [imei]
-        );
-
-        if (existingDevice.length > 0) {
-            return res.status(400).json({
-                error: "Device already registered"
-            });
-        }
-
-        // Vendor comes from authentication middleware
-        const vendorId = req.vendor.id;
-
-        const mqttPassword = crypto
-            .randomBytes(24)
-            .toString("base64")
-            .replace(/[+/=]/g, "")
-            .substring(0, 24);
-
-        const conn = new Client();
-
-        conn.on("ready", () => {
-
-            console.log("SSH Connected");
-
-            const command =
-                `/home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
-
-            console.log("Running:", command);
-
-            conn.exec(command, (err, stream) => {
-
-                if (err) {
-                    conn.end();
-
-                    return res.status(500).json({
-                        error: "SSH execution failed",
-                        details: err.message
-                    });
-                }
-
-                let stdout = "";
-                let stderr = "";
-
-                stream.on("data", (data) => {
-                    stdout += data.toString();
-                });
-
-                stream.stderr.on("data", (data) => {
-                    stderr += data.toString();
-                });
-
-                stream.on("close", async (code) => {
-
-                    conn.end();
-
-                    if (code !== 0) {
-                        return res.status(500).json({
-                            error: "Certificate generation failed",
-                            details: stderr
-                        });
-                    }
-
-                    try {
-
-                        await pool.execute(
-                            `
-                            INSERT INTO devices
-                            (
-                                imei,
-                                vendor_id,
-                                solution,
-                                device_version,
-                                mqtt_password
-                            )
-                            VALUES (?, ?, ?, ?, ?)
-                            `,
-                            [
-                                imei,
-                                vendorId,
-                                solution,
-                                deviceVersion,
-                                mqttPassword
-                            ]
-                        );
-
-                        subscribeDevice(
-                            imei,
-                            solution,
-                            deviceVersion
-                        );
-
-                        return res.json({
-                            success: true,
-                            message: "Device registered successfully"
-                        });
-
-                    } catch (dbErr) {
-
-                        console.error(dbErr);
-
-                        return res.status(500).json({
-                            error: "Database insert failed",
-                            details: dbErr.message
-                        });
-                    }
-                });
-            });
-        });
-
-        conn.on("error", (err) => {
-            return res.status(500).json({
-                error: "SSH connection failed",
-                details: err.message
-            });
-        });
-
-        conn.connect({
-            host: process.env.VPS_HOST,
-            port: 22,
-            username: process.env.VPS_USER,
-            privateKey: fs.readFileSync(process.env.SSH_KEY_PATH)
-        });
-
-    } catch (err) {
-
-        console.error(err);
-
-        return res.status(500).json({
-            error: "Server error",
-            details: err.message
-        });
-    }
-};
-
-
-
-
-
-
-
-
-
-//  THIS IS FOR SERVER USE ONLY 
-
-
-
+// const crypto = require("crypto");
+// const { exec } = require("child_process");
 
 
 // exports.generateCertificate = async (req, res) => {
@@ -232,8 +51,7 @@ exports.generateCertificate = async (req, res) => {
 //             });
 //         }
 
-        // Vendor comes from authentication middleware
-     //   const vendorId = req.vendor.id;
+//         // Vendor comes from authentication middleware
 //         const vendorId = req.vendor.id;
 
 //         const mqttPassword = crypto
@@ -242,70 +60,386 @@ exports.generateCertificate = async (req, res) => {
 //             .replace(/[+/=]/g, "")
 //             .substring(0, 24);
 
-//         // Execute certificate script as certAdmin
-//         const command =
-//             `sudo -u certAdmin /home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
+//         const conn = new Client();
 
-//         console.log("Running:", command);
+//         conn.on("ready", () => {
 
-//         exec(command, async (err, stdout, stderr) => {
+//             console.log("SSH Connected");
 
-//             if (err) {
+//             const command =
+//                 `/home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
 
-//                 console.error(stderr || err);
+//             console.log("Running:", command);
 
-//                 return res.status(500).json({
-//                     error: "Certificate generation failed",
-//                     details: stderr || err.message
-//                 });
-//             }
+//             conn.exec(command, (err, stream) => {
 
-//             console.log(stdout);
+//                 if (err) {
+//                     conn.end();
 
-//             try {
+//                     return res.status(500).json({
+//                         error: "SSH execution failed",
+//                         details: err.message
+//                     });
+//                 }
 
-//                 await pool.execute(
-//                     `
-//                     INSERT INTO devices
-//                     (
-//                         imei,
-//                         vendor_id,
-//                         solution,
-//                         device_version,
-//                         mqtt_password
-//                     )
-//                     VALUES (?, ?, ?, ?, ?)
-//                     `,
-//                     [
-//                         imei,
-//                         vendorId,
-//                         solution,
-//                         deviceVersion,
-//                         mqttPassword
-//                     ]
-//                 );
+//                 let stdout = "";
+//                 let stderr = "";
 
-//                 subscribeDevice(
-//                     imei,
-//                     solution,
-//                     deviceVersion
-//                 );
-
-//                 return res.json({
-//                     success: true,
-//                     message: "Device registered successfully"
+//                 stream.on("data", (data) => {
+//                     stdout += data.toString();
 //                 });
 
-//             }
-//             catch (dbErr) {
-
-//                 console.error(dbErr);
-
-//                 return res.status(500).json({
-//                     error: "Database insert failed",
-//                     details: dbErr.message
+//                 stream.stderr.on("data", (data) => {
+//                     stderr += data.toString();
 //                 });
-//             }
+
+//                 stream.on("close", async (code) => {
+
+//                     conn.end();
+
+//                     if (code !== 0) {
+//                         return res.status(500).json({
+//                             error: "Certificate generation failed",
+//                             details: stderr
+//                         });
+//                     }
+
+//                     try {
+
+//                         await pool.execute(
+//                             `
+//                             INSERT INTO devices
+//                             (
+//                                 imei,
+//                                 vendor_id,
+//                                 solution,
+//                                 device_version,
+//                                 mqtt_password
+//                             )
+//                             VALUES (?, ?, ?, ?, ?)
+//                             `,
+//                             [
+//                                 imei,
+//                                 vendorId,
+//                                 solution,
+//                                 deviceVersion,
+//                                 mqttPassword
+//                             ]
+//                         );
+
+//                         subscribeDevice(
+//                             imei,
+//                             solution,
+//                             deviceVersion
+//                         );
+
+//                         return res.json({
+//                             success: true,
+//                             message: "Device registered successfully"
+//                         });
+
+//                     } catch (dbErr) {
+
+//                         console.error(dbErr);
+
+//                         return res.status(500).json({
+//                             error: "Database insert failed",
+//                             details: dbErr.message
+//                         });
+//                     }
+//                 });
+//             });
+//         });
+
+//         conn.on("error", (err) => {
+//             return res.status(500).json({
+//                 error: "SSH connection failed",
+//                 details: err.message
+//             });
+//         });
+
+//         conn.connect({
+//             host: process.env.VPS_HOST,
+//             port: 22,
+//             username: process.env.VPS_USER,
+//             privateKey: fs.readFileSync(process.env.SSH_KEY_PATH)
+//         });
+
+//     } catch (err) {
+
+//         console.error(err);
+
+//         return res.status(500).json({
+//             error: "Server error",
+//             details: err.message
+//         });
+//     }
+// };
+
+
+
+
+
+
+
+
+
+// //  THIS IS FOR SERVER USE ONLY 
+
+
+
+
+
+// // exports.generateCertificate = async (req, res) => {
+
+// //     console.log("BODY:", req.body);
+
+// //     const {
+// //         imei,
+// //         solution,
+// //         deviceVersion
+// //     } = req.body;
+
+// //     if (!imei || !solution || !deviceVersion) {
+// //         return res.status(400).json({
+// //             error: "Missing fields"
+// //         });
+// //     }
+
+// //     try {
+
+// //         // Check IMEI exists
+// //         const [imeiRows] = await pool.execute(
+// //             `SELECT * FROM imei_list WHERE imei = ?`,
+// //             [imei]
+// //         );
+
+// //         if (imeiRows.length === 0) {
+// //             return res.status(400).json({
+// //                 error: "IMEI not registered by admin"
+// //             });
+// //         }
+
+// //         // Check device already registered
+// //         const [existingDevice] = await pool.execute(
+// //             `SELECT * FROM devices WHERE imei = ?`,
+// //             [imei]
+// //         );
+
+// //         if (existingDevice.length > 0) {
+// //             return res.status(400).json({
+// //                 error: "Device already registered"
+// //             });
+// //         }
+
+//         // Vendor comes from authentication middleware
+//      //   const vendorId = req.vendor.id;
+// //         const vendorId = req.vendor.id;
+
+// //         const mqttPassword = crypto
+// //             .randomBytes(24)
+// //             .toString("base64")
+// //             .replace(/[+/=]/g, "")
+// //             .substring(0, 24);
+
+// //         // Execute certificate script as certAdmin
+// //         const command =
+// //             `sudo -u certAdmin /home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
+
+// //         console.log("Running:", command);
+
+// //         exec(command, async (err, stdout, stderr) => {
+
+// //             if (err) {
+
+// //                 console.error(stderr || err);
+
+// //                 return res.status(500).json({
+// //                     error: "Certificate generation failed",
+// //                     details: stderr || err.message
+// //                 });
+// //             }
+
+// //             console.log(stdout);
+
+// //             try {
+
+// //                 await pool.execute(
+// //                     `
+// //                     INSERT INTO devices
+// //                     (
+// //                         imei,
+// //                         vendor_id,
+// //                         solution,
+// //                         device_version,
+// //                         mqtt_password
+// //                     )
+// //                     VALUES (?, ?, ?, ?, ?)
+// //                     `,
+// //                     [
+// //                         imei,
+// //                         vendorId,
+// //                         solution,
+// //                         deviceVersion,
+// //                         mqttPassword
+// //                     ]
+// //                 );
+
+// //                 subscribeDevice(
+// //                     imei,
+// //                     solution,
+// //                     deviceVersion
+// //                 );
+
+// //                 return res.json({
+// //                     success: true,
+// //                     message: "Device registered successfully"
+// //                 });
+
+// //             }
+// //             catch (dbErr) {
+
+// //                 console.error(dbErr);
+
+// //                 return res.status(500).json({
+// //                     error: "Database insert failed",
+// //                     details: dbErr.message
+// //                 });
+// //             }
+
+// //         });
+
+// //     }
+// //     catch (err) {
+
+// //         console.error(err);
+
+// //         return res.status(500).json({
+// //             error: "Server error",
+// //             details: err.message
+// //         });
+
+// //     }
+// // };
+
+
+
+// // THIS IS FOR SERVER USE ONLY
+
+
+
+// // const command = `sudo -u certAdmin /home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
+
+// // exec(command, async (err, stdout, stderr) => {
+// //     if (err) {
+// //         return res.status(500).json({
+// //             error: "Certificate generation failed",
+// //             details: stderr || err.message
+// //         });
+// //     }
+
+// //     try {
+// //         await pool.execute(
+// //             `INSERT INTO devices
+// //             (
+// //                 imei,
+// //                 vendor_id,
+// //                 solution,
+// //                 device_version,
+// //                 mqtt_password
+// //             )
+// //             VALUES (?, ?, ?, ?, ?)`,
+// //             [
+// //                 imei,
+// //                 vendorId,
+// //                 solution,
+// //                 deviceVersion,
+// //                 mqttPassword
+// //             ]
+// //         );
+
+// //         subscribeDevice(
+// //             imei,
+// //             solution,
+// //             deviceVersion
+// //         );
+
+// //         return res.json({
+// //             success: true,
+// //             message: "Device registered successfully"
+// //         });
+
+// //     } catch (dbErr) {
+// //         return res.status(500).json({
+// //             error: "Database insert failed",
+// //             details: dbErr.message
+// //         });
+// //     }
+// // });
+
+
+
+
+
+
+
+
+
+
+// exports.getDeviceConfig = async (req, res) => {
+
+//     try {
+
+//         const { imei } = req.body;
+
+//         if (!imei) {
+//             return res.status(400).json({
+//                 error: "IMEI required"
+//             });
+//         }
+
+//         const [rows] = await pool.execute(
+//             `
+//             SELECT *
+//             FROM devices
+//             WHERE imei = ?
+//             `,
+//             [imei]
+//         );
+
+//         if (rows.length === 0) {
+//             return res.status(404).json({
+//                 error: "Device not found"
+//             });
+//         }
+
+//         const device = rows[0];
+
+//         return res.json({
+
+//             URL: "213.210.21.49",
+
+//             PORT: 8883,
+
+//             CID: imei,
+
+//             USERNAME: imei,
+
+//             PASSWORD: device.mqtt_password,
+
+//             FTPURL: "213.210.21.49",
+
+//             FTPPORT: 21,
+
+//             FTPUSER: "ftpdevice",
+
+//             FTPPASS: "12345",
+
+//             FTPDOWN: `/device_certs/${imei}/`,
+
+//             VERSION: device.device_version,
+
+//             SOLUTION: device.solution
 
 //         });
 
@@ -315,67 +449,15 @@ exports.generateCertificate = async (req, res) => {
 //         console.error(err);
 
 //         return res.status(500).json({
-//             error: "Server error",
-//             details: err.message
+//             error: err.message
 //         });
 
 //     }
+
 // };
 
 
 
-// THIS IS FOR SERVER USE ONLY
-
-
-
-// const command = `sudo -u certAdmin /home/certAdmin/scripts/gen_cert.sh ${imei} ${vendorId} ${solution}`;
-
-// exec(command, async (err, stdout, stderr) => {
-//     if (err) {
-//         return res.status(500).json({
-//             error: "Certificate generation failed",
-//             details: stderr || err.message
-//         });
-//     }
-
-//     try {
-//         await pool.execute(
-//             `INSERT INTO devices
-//             (
-//                 imei,
-//                 vendor_id,
-//                 solution,
-//                 device_version,
-//                 mqtt_password
-//             )
-//             VALUES (?, ?, ?, ?, ?)`,
-//             [
-//                 imei,
-//                 vendorId,
-//                 solution,
-//                 deviceVersion,
-//                 mqttPassword
-//             ]
-//         );
-
-//         subscribeDevice(
-//             imei,
-//             solution,
-//             deviceVersion
-//         );
-
-//         return res.json({
-//             success: true,
-//             message: "Device registered successfully"
-//         });
-
-//     } catch (dbErr) {
-//         return res.status(500).json({
-//             error: "Database insert failed",
-//             details: dbErr.message
-//         });
-//     }
-// });
 
 
 
@@ -385,11 +467,190 @@ exports.generateCertificate = async (req, res) => {
 
 
 
+//the above code is for generating certificate and getting device config. It uses SSH to connect to a remote server and execute a script to generate certificates for devices.
 
-exports.getDeviceConfig = async (req, res) => {
+const pool = require("../config/database");
+const crypto = require("crypto");
+
+const {
+    subscribeDevice
+} = require("../services/mqttSubscription");
+
+
+exports.generateCertificate = async (req, res) => {
+
+    console.log("DEVICE REGISTRATION BODY:", req.body);
+
+    const {
+        imei,
+        solution,
+        deviceVersion
+    } = req.body;
+
+    // --------------------------------------------------
+    // 1. Validate request
+    // --------------------------------------------------
+
+    if (!imei || !solution || !deviceVersion) {
+        return res.status(400).json({
+            error: "IMEI, solution and device version are required"
+        });
+    }
+
+    // Optional: validate IMEI format
+    if (!/^\d{15}$/.test(imei)) {
+        return res.status(400).json({
+            error: "IMEI must be exactly 15 digits"
+        });
+    }
 
     try {
 
+        // --------------------------------------------------
+        // 2. Get vendor from authentication middleware
+        // --------------------------------------------------
+
+        if (!req.vendor || !req.vendor.id) {
+            return res.status(401).json({
+                error: "Vendor authentication required"
+            });
+        }
+
+        const vendorId = req.vendor.id;
+
+        // --------------------------------------------------
+        // 3. Check whether IMEI was registered by admin
+        // --------------------------------------------------
+
+        const [imeiRows] = await pool.execute(
+            `
+            SELECT *
+            FROM imei_list
+            WHERE imei = ?
+            `,
+            [imei]
+        );
+
+        if (imeiRows.length === 0) {
+            return res.status(400).json({
+                error: "IMEI not registered by admin"
+            });
+        }
+
+        // --------------------------------------------------
+        // 4. Check whether device already exists
+        // --------------------------------------------------
+
+        const [existingDevice] = await pool.execute(
+            `
+            SELECT *
+            FROM devices
+            WHERE imei = ?
+            `,
+            [imei]
+        );
+
+        if (existingDevice.length > 0) {
+            return res.status(400).json({
+                error: "Device already registered"
+            });
+        }
+
+        // --------------------------------------------------
+        // 5. Generate MQTT password
+        // --------------------------------------------------
+
+        const mqttPassword = crypto
+            .randomBytes(24)
+            .toString("base64")
+            .replace(/[+/=]/g, "")
+            .substring(0, 24);
+
+        // --------------------------------------------------
+        // 6. Save device in database
+        // --------------------------------------------------
+
+        await pool.execute(
+            `
+            INSERT INTO devices
+            (
+                imei,
+                vendor_id,
+                solution,
+                device_version,
+                mqtt_password
+            )
+            VALUES (?, ?, ?, ?, ?)
+            `,
+            [
+                imei,
+                vendorId,
+                solution,
+                deviceVersion,
+                mqttPassword
+            ]
+        );
+
+        console.log(
+            `Device ${imei} registered successfully for vendor ${vendorId}`
+        );
+
+        // --------------------------------------------------
+        // 7. Subscribe MQTT device
+        // --------------------------------------------------
+
+        try {
+
+            subscribeDevice(
+                imei,
+                solution,
+                deviceVersion
+            );
+
+        } catch (mqttErr) {
+
+            console.error(
+                "MQTT subscription failed:",
+                mqttErr
+            );
+
+            // Important:
+            // Device is already saved in DB.
+            // We don't fail the registration because
+            // MQTT subscription failed.
+        }
+
+        // --------------------------------------------------
+        // 8. Send response
+        // --------------------------------------------------
+
+        return res.status(201).json({
+            success: true,
+            message: "Device registered successfully",
+            device: {
+                imei,
+                vendorId,
+                solution,
+                deviceVersion
+            }
+        });
+
+    } catch (err) {
+
+        console.error(
+            "Device registration error:",
+            err
+        );
+
+        return res.status(500).json({
+            error: "Device registration failed",
+            details: err.message
+        });
+    }
+};
+
+exports.getDeviceConfig = async (req, res) => {
+    try {
         const { imei } = req.body;
 
         if (!imei) {
@@ -416,42 +677,28 @@ exports.getDeviceConfig = async (req, res) => {
         const device = rows[0];
 
         return res.json({
-
             URL: "213.210.21.49",
-
             PORT: 8883,
 
             CID: imei,
-
             USERNAME: imei,
-
             PASSWORD: device.mqtt_password,
 
             FTPURL: "213.210.21.49",
-
             FTPPORT: 21,
-
             FTPUSER: "ftpdevice",
-
             FTPPASS: "12345",
-
             FTPDOWN: `/device_certs/${imei}/`,
 
             VERSION: device.device_version,
-
             SOLUTION: device.solution
-
         });
 
-    }
-    catch (err) {
-
+    } catch (err) {
         console.error(err);
 
         return res.status(500).json({
             error: err.message
         });
-
     }
-
 };

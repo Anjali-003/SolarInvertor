@@ -43,6 +43,10 @@ export default function Login() {
   localStorage.setItem("username", data.user.name);
   localStorage.setItem("email", data.user.email);
   localStorage.setItem("phone", data.user.phone);
+  localStorage.setItem(
+"registeredSince",
+    data.user.created_at
+);
 
     setLoading(false);
 
@@ -57,8 +61,9 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        // "http://localhost:3000/api/auth/login",
-                "/api/auth/login",
+        "http://localhost:3000/api/auth/login",
+        //VPSCHANGE
+                // "/api/auth/login",
 
         {
           method: "POST",
@@ -122,8 +127,9 @@ if (!/^\d{15}$/.test(imei)) {
 
     try {
       const res = await fetch(
-        // "http://localhost:3000/api/auth/setup-device",
-        "/api/auth/setup-device",
+        "http://localhost:3000/api/auth/setup-device",
+        //VPSCHANGE
+        // "/api/auth/setup-device",
         {
           method: "POST",
           headers: {
@@ -157,8 +163,9 @@ if (!/^\d{15}$/.test(imei)) {
 // Signup successful, now automatically login
 
 const loginRes = await fetch(
-  // "http://localhost:3000/api/auth/login",
-  "/api/auth/login",
+  "http://localhost:3000/api/auth/login",
+  //VPSCHANGE
+  // "/api/auth/login",
   {
     method: "POST",
     headers: {
