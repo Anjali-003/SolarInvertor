@@ -6,6 +6,7 @@ import { PARAMETER_MAP } from "../constants/parameterMap";
 import { parseKeyword } from "../utils/parseKeyword";
 import PageHeader from "../components/PageHeader";
 import { useState } from "react";
+import PageBackground from "../components/PageBackground";
 
 export default function Power() {
 
@@ -1795,7 +1796,8 @@ const EnergyChart = ({ data, color }) => {
     // ];
 
     return (
-        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
+        <PageBackground>
+        <div style={{ minHeight: "100vh", paddingBottom: "90px", fontFamily: "'Inter', sans-serif" }}>
 
             <PageHeader
                 title="POWER"
@@ -1959,7 +1961,15 @@ const EnergyChart = ({ data, color }) => {
 
             </div> */}
 
-            
+            <div
+                style={{
+                    width: "100%",
+                    maxWidth: 520,
+                    margin: "0 auto",
+                    boxSizing: "border-box",
+                }}
+            >
+
             <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
@@ -1968,11 +1978,11 @@ const EnergyChart = ({ data, color }) => {
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>
 
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     SOLAR PANEL DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
@@ -2015,7 +2025,7 @@ const EnergyChart = ({ data, color }) => {
                     style={{
                         fontSize: 15,
                         fontWeight: 800,
-                        color: P.textAmber,
+                        color: P.textWhite,
                         marginBottom: 14,
                         marginTop: 4,
                         letterSpacing: 0.5,
@@ -2307,9 +2317,10 @@ const EnergyChart = ({ data, color }) => {
                     <LineChart value={getParameterValue("TON")} maxValue={24} color={P.textAmber} />
                 </div> */}
             </div>
-
+            </div>
             {/* FOOTER */}
             <Footer data={data} />
         </div>
+        </PageBackground>
     );
 }

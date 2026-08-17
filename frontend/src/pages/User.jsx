@@ -321,6 +321,7 @@
 import { useNavigate } from "react-router-dom";
 import P from "../theme/colors";
 import Footer from "../components/Footer";
+import PageBackground from "../components/PageBackground";
 
 export default function User() {
     const navigate = useNavigate();
@@ -352,13 +353,13 @@ export default function User() {
     };
 
     return (
+        <PageBackground>
         <div
             style={{
                 width: "100%",
                 minHeight: "100vh",
                 padding: "20px",
                 paddingBottom: 110,
-                background: P.bgGradient,
                 fontFamily: "'Inter', sans-serif",
                 boxSizing: "border-box",
                 overflowX: "hidden",
@@ -388,14 +389,15 @@ export default function User() {
                         boxSizing: "border-box",
 
                         borderRadius: 24,
-                        background: P.btnPrimary,
+                        background: P.profileGradient,
+                        border: `4px solid ${P.borderOld}`,
 
                         position: "relative",
                         overflow: "hidden",
 
                         boxShadow:
                             "0 10px 30px rgba(0,0,0,0.12)",
-
+                        
                         marginBottom: 28,
                     }}
                 >
@@ -849,6 +851,7 @@ export default function User() {
             <Footer />
 
         </div>
+        </PageBackground>
     );
 }
 

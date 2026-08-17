@@ -4,7 +4,7 @@ import { parseKeyword } from "../utils/parseKeyword";
 import PageHeader from "../components/PageHeader";
 import P from "../theme/colors";
 import DeviceInfo from "../components/DeviceInfo";
-
+import PageBackground from "../components/PageBackground";
 export default function Home() {
     // const { data, lastUpdated } = useInverter();
     const { data, lastUpdated, energy } = useInverter();
@@ -195,7 +195,14 @@ const getDCPower = () => {
     };
 
     return (
-        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
+        <PageBackground>
+        <div
+    style={{
+        minHeight: "100vh",
+        paddingBottom: "90px",
+        fontFamily: "'Inter', sans-serif",
+    }}
+>
 
         <div
     style={{
@@ -358,22 +365,42 @@ const getDCPower = () => {
 
 </div> */}
 
+<div
+    style={{
+        width: "100%",
+        maxWidth: 520,
+        margin: "0 auto",
+        boxSizing: "border-box",
+    }}
+>
+
 <DeviceInfo
     data={data}
     lastUpdated={lastUpdated}
 />
             {/* PAGE CONTENT */}
-            <div style={{ padding: "0 20px 20px" }}>
+            <div style={{ padding: "0 20px 20px", boxSizing: "border-box", }}>
 
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     INVERTER DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("DCV1")} <span style={metricUnit}>V</span></span>
                         </div>
                         <div style={metricLabel}>DC Voltage</div>
@@ -382,7 +409,18 @@ const getDCPower = () => {
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("DCI1")} <span style={metricUnit}>A</span></span>
                         </div>
                         <div style={metricLabel}>DC Current</div>
@@ -405,7 +443,18 @@ const getDCPower = () => {
 <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
     <div>
         <div style={metricIconRow}>
-            <span style={metricIcon}>🔲</span>
+            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
         </div>
         <div style={metricLabel}>DC Power</div>
         <div style={metricDesc}>DC Voltage × DC Current</div>
@@ -440,7 +489,7 @@ const getDCPower = () => {
     style={{
         fontSize: 15,
         fontWeight: 800,
-        color: P.textAmber,
+        color: P.textWhite,
         marginBottom: 12,
         marginTop: 4,
         letterSpacing: 0.5,
@@ -581,11 +630,11 @@ const getDCPower = () => {
 
 </div>
 
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     AC PARAMETER DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 12, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 12, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
                     <div style={metricCard}>
                         <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>🌡 Temp</div>
                         <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
@@ -611,9 +660,23 @@ const getDCPower = () => {
                         // { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
                         // { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
                     ].map((item) => (
-                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: "1px solid ${P.border}", boxShadow: P.shadowCard}}>
+                        <div key={item.key} style={{ ...metricCard, background: P.surface, border: `1px solid ${P.border}`, boxShadow: P.shadowCard}}>
                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
-                                ⚡ {item.label}
+                                        <svg
+                                            width="12"
+                                            height="12"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
+                                        </svg>
+                                    
+{" "}
+{item.label}
                                 {/* <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span> */}
                             </div>
                             <div style={{ fontSize: 20, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
@@ -625,10 +688,11 @@ const getDCPower = () => {
                 </div>
 
             </div>
-
+            </div>
             <Footer />
 
         </div>
+        </PageBackground>
     );
 }
 
