@@ -1986,7 +1986,18 @@ const EnergyChart = ({ data, color }) => {
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("PV")} <span style={metricUnit}>V</span></span>
                         </div>
                         <div style={metricLabel}>PV Voltage</div>
@@ -1995,7 +2006,18 @@ const EnergyChart = ({ data, color }) => {
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("PI")} <span style={metricUnit}>A</span></span>
                         </div>
                         <div style={metricLabel}>PV Current</div>
@@ -2004,7 +2026,18 @@ const EnergyChart = ({ data, color }) => {
 
                     <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div>
-                            <div style={metricIconRow}><span style={metricIcon}>🔲</span></div>
+                            <div style={metricIconRow}><svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg></div>
                             <div style={metricLabel}>Solar Power</div>
                             <div style={metricDesc}>Total output</div>
                         </div>
