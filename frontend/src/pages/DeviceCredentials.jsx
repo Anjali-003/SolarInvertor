@@ -60,9 +60,9 @@ export default function DeviceCredentials() {
         const res =
           await fetch(
             // `http://localhost:3000/api/certs/credentials/${certificateId}`,
-            `http://localhost:3000/api/certs/${certificateId}/credentials`,
+            // `http://localhost:3000/api/certs/${certificateId}/credentials`,
             //VPSCHANGE
-            // `/api/certs/${certificateId}/credentials`,
+            `/api/certs/${certificateId}/credentials`,
             {
               headers: {
                 Authorization:

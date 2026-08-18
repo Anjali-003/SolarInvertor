@@ -419,7 +419,10 @@ export default function VendorDevices() {
             }
 
             const res = await fetch(
-    "http://localhost:3000/api/vendor/devices",
+              //VPSCHANGE
+    // "http://localhost:3000/api/vendor/devices",
+        "/api/vendor/devices",
+
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

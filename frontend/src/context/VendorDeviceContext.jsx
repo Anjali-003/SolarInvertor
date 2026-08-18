@@ -501,9 +501,9 @@ const [energyCharts, setEnergyCharts] =
             setError(null);
 
             const res = await fetch(
-                `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
+                // `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
                 // VPSCHANGE
-                // `/api/vendor/devices/${selectedDevice.id}/latest`,
+                `/api/vendor/devices/${selectedDevice.id}/latest`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -635,7 +635,10 @@ const fetchEnergy = useCallback(async () => {
     try {
 
         const res = await fetch(
-            `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+            //VPSCHANGE
+            // `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+                        `/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+
             {
                 method: "GET",
 

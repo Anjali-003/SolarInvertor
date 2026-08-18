@@ -2415,8 +2415,8 @@ import {
 } from "react";
 
 const InverterContext = createContext();
-
-const API_BASE = "http://localhost:3000";
+//VPSCHANGE
+// const API_BASE = "http://localhost:3000";
 
 const EMPTY_ENERGY = {
     today: 0,
@@ -2507,7 +2507,10 @@ export function InverterProvider({ children }) {
         try {
 
             const res = await fetch(
-                `${API_BASE}/api/user/devices`,
+                //VPSCHANGE
+                // `${API_BASE}/api/user/devices`,
+                                `/api/user/devices`,
+
                 {
                     method: "GET",
 
@@ -2646,7 +2649,10 @@ export function InverterProvider({ children }) {
         try {
 
             const res = await fetch(
-                `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
+                //VPSCHANGE
+                // `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
+                                `/api/latest-message?device_id=${selectedDeviceId}`,
+
                 {
                     method: "GET",
 
@@ -2735,7 +2741,10 @@ export function InverterProvider({ children }) {
         try {
 
             const res = await fetch(
-                `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
+                //VPSCHANGE
+                // `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
+                                `/api/energy/summary?device_id=${selectedDeviceId}`,
+
                 {
                     method: "GET",
 

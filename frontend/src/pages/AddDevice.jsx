@@ -832,7 +832,10 @@ export default function AddDevice() {
             // ========================================
 
             const res = await fetch(
-                "http://localhost:3000/api/user/devices",
+                //VPSCHANGE
+                // "http://localhost:3000/api/user/devices",
+                                "/api/user/devices",
+
                 {
                     method: "POST",
 

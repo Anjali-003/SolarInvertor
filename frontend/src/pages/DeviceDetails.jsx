@@ -967,7 +967,8 @@ import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
 import PageBackground from "../components/PageBackground";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+//VPSCHANGE
 
 export default function DeviceDetails() {
 
@@ -1016,7 +1017,10 @@ export default function DeviceDetails() {
                 }
 
                 const res = await fetch(
-                    `${API_BASE}/api/user/device-details?device_id=${selectedDeviceId}`,
+                    //VPSCHANGE
+                    // `${API_BASE}/api/user/device-details?device_id=${selectedDeviceId}`,
+                                        `/api/user/device-details?device_id=${selectedDeviceId}`,
+
                     {
                         method: "GET",
 

@@ -7,7 +7,8 @@ import DeviceInfo from "../components/DeviceInfo";
 import PageBackground from "../components/PageBackground";
 import P from "../theme/colors";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+//VPSCHANGE
 
 export default function VendorDeviceDetails() {
     const navigate = useNavigate();
@@ -116,7 +117,10 @@ export default function VendorDeviceDetails() {
         }
 
         const res = await fetch(
-            `${API_BASE}/api/vendor/devices/${id}/details`,
+            //VPSCHANGE
+            // `${API_BASE}/api/vendor/devices/${id}/details`,
+                        `/api/vendor/devices/${id}/details`,
+
             {
                 method: "GET",
                 headers: {
