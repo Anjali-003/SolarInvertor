@@ -16,8 +16,8 @@ const userRoutes = require("./src/routes/userRoutes");
 const certificateRoutes = require("./src/routes/certificateRoutes");
 const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
 const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
-const energyRoutes =
-    require("./src/routes/energyRoutes");
+const energyRoutes = require("./src/routes/energyRoutes");
+const userDeviceRoutes = require("./src/routes/userDeviceRoutes");
 
 const app = express();
 //const server = http.createServer(app);
@@ -66,6 +66,11 @@ app.use(
 app.use(
     "/api/energy",
     energyRoutes
+);
+
+app.use(
+    "/api/user",
+    userDeviceRoutes
 );
 
 // ─────────────────────────────────────
@@ -202,11 +207,11 @@ app.get("/api/test", (req, res) => {
 
 
 
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-app.use((req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
+// app.use((req, res) => {
+//     res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+// });
 
 
 

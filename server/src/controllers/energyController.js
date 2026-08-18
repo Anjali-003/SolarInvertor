@@ -2676,18 +2676,85 @@ exports.getEnergySummary =
 
         try {
 
-            const imei =
-                req.user?.imei;
+            // const imei =
+            //     req.user?.imei;
+
+            const userId = req.user?.id;
+
+            const deviceId =
+    Number(req.query.device_id);
+
+if (
+    !Number.isInteger(deviceId) ||
+    deviceId <= 0
+) {
+    return res.status(400).json({
+        error: "Invalid device_id"
+    });
+}
+
+//             const [devices] = await pool.execute(
+//   `
+//   SELECT d.imei
+//   FROM user_devices ud
+//   JOIN devices d
+//     ON d.id = ud.device_id
+//   WHERE ud.user_id = ?
+//   LIMIT 1
+//   `,
+//   [userId]
+// );
+
+const [devices] =
+    await pool.execute(
+        `
+        SELECT
+            d.id,
+            d.imei
+        FROM user_devices ud
+
+        INNER JOIN devices d
+            ON d.id = ud.device_id
+
+        WHERE
+            ud.user_id = ?
+            AND d.id = ?
+
+        LIMIT 1
+        `,
+        [
+            userId,
+            deviceId
+        ]
+    );
+
+// if (devices.length === 0) {
+//   return res.status(404).json({
+//     error: "No device assigned to this user"
+//   });
+// }
+
+if (devices.length === 0) {
+
+    return res.status(403).json({
+        error:
+            "You do not have access to this device"
+    });
+}
+
+const imei = devices[0].imei;
+
+// no longer in use 
 
 
-            if (!imei) {
+            // if (!imei) {
 
-                return res.status(401).json({
+            //     return res.status(401).json({
 
-                    error:
-                        "Unauthorized: IMEI not found in token"
-                });
-            }
+            //         error:
+            //             "Unauthorized: IMEI not found in token"
+            //     });
+            // }
 
 
             const now =

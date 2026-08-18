@@ -4,10 +4,18 @@ import { parseKeyword } from "../utils/parseKeyword";
 import PageHeader from "../components/PageHeader";
 import P from "../theme/colors";
 import DeviceInfo from "../components/DeviceInfo";
+import DeviceMenu from "../components/DeviceMenu";
 
 export default function Home() {
     // const { data, lastUpdated } = useInverter();
-    const { data, lastUpdated, energy } = useInverter();
+    // const { data, lastUpdated, energy } = useInverter();
+    const {
+    data,
+    lastUpdated,
+    energy,
+    devices,
+    selectedDeviceId
+} = useInverter();
     console.log(lastUpdated);
 
    const formattedDateTime = (() => {
@@ -197,7 +205,7 @@ const getDCPower = () => {
     return (
         <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
 
-        <div
+        {/* <div
     style={{
         height: 64,
         background: P.surface,
@@ -222,7 +230,41 @@ const getDCPower = () => {
     >
         HOME
     </div>
-</div>
+</div> */}
+
+{/* 
+<div
+    style={{
+        height: 64,
+        background: P.surface,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderBottom: "1px solid #ECECEC",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+    }}
+>
+
+    <DeviceMenu />
+
+    <div
+        style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: P.textAmber,
+            letterSpacing: 2,
+            fontFamily: "'DM Sans', sans-serif",
+        }}
+    >
+        HOME
+    </div>
+
+</div> */}
+
+<PageHeader title="HOME" />
 
             {/* ================= DEVICE INFO CARD ================= */}
 {/* 
@@ -358,9 +400,16 @@ const getDCPower = () => {
 
 </div> */}
 
+{/* <DeviceInfo
+    data={data}
+    lastUpdated={lastUpdated}
+/> */}
+
 <DeviceInfo
     data={data}
     lastUpdated={lastUpdated}
+    devices={devices}
+    selectedDeviceId={selectedDeviceId}
 />
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>

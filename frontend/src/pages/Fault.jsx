@@ -1123,7 +1123,14 @@ import PageHeader from "../components/PageHeader";
 import DeviceInfo from "../components/DeviceInfo";
 
 export default function Fault() {
-    const { data, lastUpdated } = useInverter();
+    // const { data, lastUpdated } = useInverter();
+
+      const {
+    data,
+    lastUpdated,
+    devices,
+    selectedDeviceId
+} = useInverter();
 
     // ─── GET PARAMETER VALUE ───────────────────────────────────────
     const getParameterValue = (parameter) => {
@@ -1370,10 +1377,17 @@ export default function Fault() {
                 backPath="/"
             />
 
-            <DeviceInfo
+            {/* <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
-            />
+            /> */}
+
+            <DeviceInfo
+    data={data}
+    lastUpdated={lastUpdated}
+    devices={devices}
+    selectedDeviceId={selectedDeviceId}
+/>
 
             {/* ================= PAGE CONTENT ================= */}
 

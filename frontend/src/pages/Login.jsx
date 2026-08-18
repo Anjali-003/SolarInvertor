@@ -27,6 +27,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,23 +37,174 @@ export default function Login() {
     }
   }, [navigate]);
 
-  const loginUser = (data) => {
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("loginType", "user");
-  localStorage.setItem("imei", data.user.imei);
-  localStorage.setItem("username", data.user.name);
-  localStorage.setItem("email", data.user.email);
-  localStorage.setItem("phone", data.user.phone);
-  localStorage.setItem(
-"registeredSince",
-    data.user.created_at
-);
+//   const loginUser = (data) => {
+//   localStorage.setItem("token", data.token);
+//   localStorage.setItem("loginType", "user");
+//   // localStorage.setItem("imei", data.user.imei);
+//   localStorage.setItem("username", data.user.name);
+//   localStorage.setItem("email", data.user.email);
+//   localStorage.setItem("phone", data.user.phone);
+//   localStorage.setItem(
+// "registeredSince",
+//     data.user.created_at
+// );
+
+//     setLoading(false);
+
+
+//   navigate("/");
+// };
+
+const loginUser = async (data) => {
+
+  try {
+
+    // =====================================================
+    // SAVE LOGIN TOKEN
+    // =====================================================
+
+    const token = data.token;
+
+    localStorage.setItem(
+      "token",
+      token
+    );
+
+    localStorage.setItem(
+      "loginType",
+      "user"
+    );
+
+    localStorage.setItem(
+      "username",
+      data.user.name
+    );
+
+    localStorage.setItem(
+      "email",
+      data.user.email
+    );
+
+    localStorage.setItem(
+      "phone",
+      data.user.phone
+    );
+
+    localStorage.setItem(
+      "registeredSince",
+      data.user.created_at
+    );
+
+
+    // =====================================================
+    // GET USER'S DEVICES
+    // =====================================================
+
+    const devicesRes = await fetch(
+      "http://localhost:3000/api/user/devices",
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        }
+      }
+    );
+
+
+    const devicesData =
+      await devicesRes.json();
+
+
+    if (!devicesRes.ok) {
+
+      console.log(
+        "Failed to fetch user devices:",
+        devicesData
+      );
+
+      setError(
+        devicesData.error ||
+        "Failed to load devices"
+      );
+
+      setLoading(false);
+
+      return;
+    }
+
+
+    console.log(
+      "📱 User devices:",
+      devicesData.devices
+    );
+
+
+    // =====================================================
+    // SAVE DEVICES
+    // =====================================================
+
+    localStorage.setItem(
+      "userDevices",
+      JSON.stringify(
+        devicesData.devices || []
+      )
+    );
+
+
+    // =====================================================
+    // SELECT FIRST DEVICE
+    // =====================================================
+
+    if (
+      devicesData.devices &&
+      devicesData.devices.length > 0
+    ) {
+
+      const firstDevice =
+        devicesData.devices[0];
+
+      localStorage.setItem(
+        "selectedDeviceId",
+        firstDevice.id
+      );
+
+      console.log(
+        "✅ Selected device:",
+        firstDevice
+      );
+
+    } else {
+
+      console.log(
+        "⚠️ User has no devices"
+      );
+
+    }
+
+
+    // =====================================================
+    // FINISH LOGIN
+    // =====================================================
 
     setLoading(false);
 
+    navigate("/");
 
-  navigate("/");
+  } catch (err) {
+
+    console.error(
+      "Device loading error:",
+      err
+    );
+
+    setError(
+      "Failed to load user devices"
+    );
+
+    setLoading(false);
+  }
 };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -141,6 +293,7 @@ if (!/^\d{15}$/.test(imei)) {
             name: clientName,
             phone,
             email,
+            location,
             password: setupPassword,
             confirm_password: confirmPassword,
             //role,
@@ -429,6 +582,17 @@ loginUser(loginData);
                 required
               />
             </div>
+
+            <div style={{ marginBottom: 14 }}>
+    <input
+        type="text"
+        placeholder="Location"
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        style={inputStyle}
+        required
+    />
+</div>
 {/* 
             <div className="form-group">
   <label>Role</label>

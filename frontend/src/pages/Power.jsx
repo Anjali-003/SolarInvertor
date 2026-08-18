@@ -10,12 +10,22 @@ import { useState } from "react";
 export default function Power() {
 
     // const { data, lastUpdated, energy, energyCharts } = useInverter();
-    const {
+//     const {
+//     data,
+//     lastUpdated,
+//     energy,
+//     energyCharts,
+//     refreshEnergy
+// } = useInverter();
+
+const {
     data,
     lastUpdated,
     energy,
+    devices,
     energyCharts,
-    refreshEnergy
+    refreshEnergy,
+    selectedDeviceId
 } = useInverter();
 
     const [chartMode, setChartMode] =
@@ -1960,10 +1970,17 @@ const EnergyChart = ({ data, color }) => {
             </div> */}
 
             
-            <DeviceInfo
+            {/* <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
-            />
+            /> */}
+
+            <DeviceInfo
+    data={data}
+    lastUpdated={lastUpdated}
+    devices={devices}
+    selectedDeviceId={selectedDeviceId}
+/>
 
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>

@@ -249,7 +249,7 @@ const { encrypt } = require("../utils/encryption");
 
 const {
     aggregateHourlyLKWH,
-    completePreviousHours
+    // completePreviousHours
 } = require("../services/hourlyEnergyService");
 
 client.on("connect", async () => {
@@ -446,10 +446,10 @@ if (Number.isFinite(lkwh)) {
             recordedAt
         );
 
-        await completePreviousHours(
-            topicInfo.imei,
-            recordedAt
-        );
+        // await completePreviousHours(
+        //     topicInfo.imei,
+        //     recordedAt
+        // );
 
     } catch (aggregationError) {
 

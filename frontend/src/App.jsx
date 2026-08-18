@@ -247,7 +247,7 @@
 // />
 //       </Routes>
 
-     
+
 //     </BrowserRouter>
 //   );
 // }
@@ -272,6 +272,8 @@ import Fault from "./pages/Fault";
 import Power from "./pages/Power";
 import User from "./pages/User";
 import Login from "./pages/Login";
+import AddDevice from "./pages/AddDevice";
+import DeviceDetails from "./pages/DeviceDetails";
 
 // ================= VENDOR PAGES =================
 
@@ -434,6 +436,27 @@ function App() {
                                 <User />
                             </InverterProvider>
                         </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/add-device"
+                    element={
+                        <ProtectedRoute>
+                            <InverterProvider>
+                                <AddDevice />
+                            </InverterProvider>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/device-details"
+                    element={<ProtectedRoute>
+                        <InverterProvider>
+                            <DeviceDetails />
+                        </InverterProvider>
+                    </ProtectedRoute>
                     }
                 />
 
