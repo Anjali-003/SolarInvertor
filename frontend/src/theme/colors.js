@@ -15,6 +15,7 @@ const P = {
   surfaceAdmin:    "#F4F6F9",   // admin portal page background
   surfaceAdminRow: "#F9FAFB",   // admin table header row
   surfaceHover:    "#FFF7ED",   // admin table row hover
+  pageSide:        "#F3E8D8", // soft warm cream for desktop side areas
 
   // ── Borders ───────────────────────────────────────
   border:          "#F0EBE0",   // default warm neutral border
@@ -27,6 +28,7 @@ const P = {
   borderSuccess:   "#BBF7D0",   // success message border
   borderAdmin:     "#E5E7EB",   // admin table row border, card borders
   borderAdminDark: "#D1D5DB",   // admin stronger border
+  borderCardDark:  "#8F5A3A",
 
   // ── Text ──────────────────────────────────────────
   textPrimary:     "#1A1A1A",   // darkest — main headings, values, bold labels
@@ -49,6 +51,7 @@ const P = {
   textOldSecond:   "#7A5230",   // legacy secondary brown
   textOldMuted:    "#B08050",   // legacy muted brown
   textOldDim:      "#D4AA80",   // legacy dim text
+  textBlack:       "#000000",   // pure black text (used sparingly)
 
   // ── Brand / Accent ────────────────────────────────
   amber:           "#F59E0B",   // primary amber — icons, badges, borders
@@ -64,6 +67,7 @@ const P = {
   btnAdmin:        "linear-gradient(135deg, #F59E0B, #EA580C)",           // admin active link
   btnGreen:        "linear-gradient(135deg, #10B981, #059669)",           // approve button
   btnRed:          "linear-gradient(135deg, #EF4444, #DC2626)",           // reject / logout
+  profileGradient: "linear-gradient(135deg, #f07b90, #f7c76f, #f07b90)",
 
   // ── Semantic ──────────────────────────────────────
   green:           "#22C55E",   // success / normal / ON status

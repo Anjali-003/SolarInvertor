@@ -6,6 +6,7 @@ import { PARAMETER_MAP } from "../constants/parameterMap";
 import { parseKeyword } from "../utils/parseKeyword";
 import PageHeader from "../components/PageHeader";
 import { useState } from "react";
+import PageBackground from "../components/PageBackground";
 
 export default function Power() {
 
@@ -1805,7 +1806,8 @@ const EnergyChart = ({ data, color }) => {
     // ];
 
     return (
-        <div style={{ minHeight: "100vh", paddingBottom: "90px", background: P.bg, fontFamily: "'Inter', sans-serif" }}>
+        <PageBackground>
+        <div style={{ minHeight: "100vh", paddingBottom: "90px", fontFamily: "'Inter', sans-serif" }}>
 
             <PageHeader
                 title="POWER"
@@ -1969,8 +1971,16 @@ const EnergyChart = ({ data, color }) => {
 
             </div> */}
 
-            
-            {/* <DeviceInfo
+            <div
+                style={{
+                    width: "100%",
+                    maxWidth: 520,
+                    margin: "0 auto",
+                    boxSizing: "border-box",
+                }}
+            >
+{/*
+            <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
             /> */}
@@ -1985,15 +1995,26 @@ const EnergyChart = ({ data, color }) => {
             {/* PAGE CONTENT */}
             <div style={{ padding: "0 20px 20px" }}>
 
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     SOLAR PANEL DETAILS
                 </h2>
 
-                <div style={{ background: P.textAmberBright, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "16px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("PV")} <span style={metricUnit}>V</span></span>
                         </div>
                         <div style={metricLabel}>PV Voltage</div>
@@ -2002,7 +2023,18 @@ const EnergyChart = ({ data, color }) => {
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
-                            <span style={metricIcon}>⚡</span>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
                             <span style={metricValue}>{getParameterValue("PI")} <span style={metricUnit}>A</span></span>
                         </div>
                         <div style={metricLabel}>PV Current</div>
@@ -2011,7 +2043,18 @@ const EnergyChart = ({ data, color }) => {
 
                     <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div>
-                            <div style={metricIconRow}><span style={metricIcon}>🔲</span></div>
+                            <div style={metricIconRow}><svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg></div>
                             <div style={metricLabel}>Solar Power</div>
                             <div style={metricDesc}>Total output</div>
                         </div>
@@ -2032,7 +2075,7 @@ const EnergyChart = ({ data, color }) => {
                     style={{
                         fontSize: 15,
                         fontWeight: 800,
-                        color: P.textAmber,
+                        color: P.textWhite,
                         marginBottom: 14,
                         marginTop: 4,
                         letterSpacing: 0.5,
@@ -2324,9 +2367,10 @@ const EnergyChart = ({ data, color }) => {
                     <LineChart value={getParameterValue("TON")} maxValue={24} color={P.textAmber} />
                 </div> */}
             </div>
-
+            </div>
             {/* FOOTER */}
             <Footer data={data} />
         </div>
+        </PageBackground>
     );
 }

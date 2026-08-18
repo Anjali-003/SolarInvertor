@@ -375,9 +375,10 @@ export default function Footer() {
 
                 position: "fixed",
                 bottom: 0,
-                left: 0,
-                right: 0,
-
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "100%",
+                maxWidth: 520,
                 height: 68,
 
                 boxShadow: P.shadowNav,

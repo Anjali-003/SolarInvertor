@@ -1121,6 +1121,7 @@ import Footer from "../components/Footer";
 import P from "../theme/colors";
 import PageHeader from "../components/PageHeader";
 import DeviceInfo from "../components/DeviceInfo";
+import PageBackground from "../components/PageBackground";
 
 export default function Fault() {
     // const { data, lastUpdated } = useInverter();
@@ -1364,11 +1365,11 @@ export default function Fault() {
     const activeFaults = faultDefs.filter(isFaultActive);
 
     return (
+        <PageBackground>
         <div
             style={{
                 minHeight: "100vh",
                 paddingBottom: "90px",
-                background: P.bg,
                 fontFamily: "'Inter', sans-serif",
             }}
         >
@@ -1377,7 +1378,16 @@ export default function Fault() {
                 backPath="/"
             />
 
-            {/* <DeviceInfo
+            <div
+                style={{
+                    width: "100%",
+                    maxWidth: 520,
+                    margin: "0 auto",
+                    boxSizing: "border-box",
+                }}
+            >
+{/*
+            <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
             /> */}
@@ -1393,15 +1403,15 @@ export default function Fault() {
 
             <div
                 style={{
-                    padding: "0 20px 20px",
+                    padding: "0 20px 20px", boxSizing: "border-box",
                 }}
             >
                 {/* HEADING */}
                 <h2
                     style={{
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: 800,
-                        color: P.textPrimary,
+                        color: P.textWhite,
                         marginBottom: 14,
                         marginTop: 4,
                         fontFamily: "'DM Sans', sans-serif",
@@ -1619,8 +1629,9 @@ export default function Fault() {
                     </div>
                 )}
             </div>
-
+            </div>
             <Footer data={data} />
         </div>
+        </PageBackground>
     );
 }
