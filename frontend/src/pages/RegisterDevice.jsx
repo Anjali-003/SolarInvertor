@@ -1373,47 +1373,6 @@ export default function RegisterDevice() {
               }}
             />
           </div>
-
-          {/* =================================================
-              SOLUTION
-          ================================================= */}
-          <div
-            style={{
-              marginBottom: 14,
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Solution"
-              value={solution}
-              onChange={(e) =>
-                setSolution(e.target.value)
-              }
-              style={{
-                width: "100%",
-
-                padding: "15px 20px",
-
-                borderRadius: 10,
-                border: "none",
-
-                background:
-                  P.surfaceForm,
-
-                fontSize: 14,
-
-                fontFamily:
-                  "'Inter', sans-serif",
-
-                color: P.textPrimary,
-
-                boxSizing: "border-box",
-                outline: "none",
-              }}
-              required
-            />
-          </div>
-
           {/* =================================================
               DEVICE VERSION
           ================================================= */}
@@ -1455,6 +1414,48 @@ export default function RegisterDevice() {
               required
             />
           </div>
+
+          {/* =================================================
+              SOLUTION
+          ================================================= */}
+          <div
+            style={{
+              marginBottom: 14,
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Device Type"
+              value={solution}
+              onChange={(e) =>
+                setSolution(e.target.value)
+              }
+              style={{
+                width: "100%",
+
+                padding: "15px 20px",
+
+                borderRadius: 10,
+                border: "none",
+
+                background:
+                  P.surfaceForm,
+
+                fontSize: 14,
+
+                fontFamily:
+                  "'Inter', sans-serif",
+
+                color: P.textPrimary,
+
+                boxSizing: "border-box",
+                outline: "none",
+              }}
+              required
+            />
+          </div>
+
+          
 
           {/* =================================================
               REGISTER BUTTON

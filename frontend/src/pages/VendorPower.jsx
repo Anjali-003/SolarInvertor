@@ -1406,58 +1406,859 @@
 
 
 
+// import VendorFooter from "../components/VendorFooter";
+// import DeviceInfo from "../components/DeviceInfo";
+// import { useVendorDevice } from "../context/VendorDeviceContext";
+// import P from "../theme/colors";
+// import PageHeader from "../components/PageHeader";
+
+// export default function VendorPower() {
+//     // ============================================================
+//     // DEVICE CONTEXT
+//     // ============================================================
+
+//     const {
+//         data,
+//         loading,
+//         lastUpdated,
+//     } = useVendorDevice();
+
+//     // ============================================================
+//     // FORMAT DATE / TIME
+//     // ============================================================
+
+//     const formattedDateTime = (() => {
+//         if (!lastUpdated) {
+//             return {
+//                 date: "--",
+//                 time: "--",
+//             };
+//         }
+
+//         const d = new Date(
+//             typeof lastUpdated === "string"
+//                 ? lastUpdated.replace(" ", "T")
+//                 : lastUpdated
+//         );
+
+//         return {
+//             date: d.toLocaleDateString("en-GB", {
+//                 day: "numeric",
+//                 month: "short",
+//                 year: "numeric",
+//             }),
+
+//             time: d.toLocaleTimeString("en-US", {
+//                 hour: "numeric",
+//                 minute: "2-digit",
+//                 hour12: true,
+//             }),
+//         };
+//     })();
+
+//     // ============================================================
+//     // GET PARAMETER VALUE
+//     // ============================================================
+
+//     const getParameterValue = (parameter) => {
+//         return data?.[parameter] ?? "--";
+//     };
+
+//     // ============================================================
+//     // STYLES
+//     // ============================================================
+
+//     const metricCard = {
+//         background: P.surfaceWarm,
+//         border: `1px solid ${P.borderAmber}`,
+//         borderRadius: 12,
+//         padding: "12px 14px",
+//         minWidth: 0,
+//         boxSizing: "border-box",
+//     };
+
+//     const metricIconRow = {
+//         display: "flex",
+//         alignItems: "center",
+//         justifyContent: "space-between",
+//         marginBottom: 6,
+//     };
+
+//     const metricIcon = {
+//         fontSize: 16,
+//         color: P.textAmberBright,
+//     };
+
+//     const metricValue = {
+//         fontSize: 20,
+//         fontWeight: 800,
+//         color: P.textPrimary,
+//         fontFamily: "'DM Sans', sans-serif",
+//     };
+
+//     const metricUnit = {
+//         fontSize: 14,
+//         fontWeight: 600,
+//         color: P.textMuted,
+//         fontFamily: "'Inter', sans-serif",
+//     };
+
+//     const metricLabel = {
+//         fontSize: 13,
+//         fontWeight: 600,
+//         color: P.textSecond,
+//         fontFamily: "'Inter', sans-serif",
+//         marginBottom: 2,
+//     };
+
+//     const metricDesc = {
+//         fontSize: 11,
+//         color: P.textLight,
+//         fontFamily: "'Inter', sans-serif",
+//     };
+
+//     const statCard = {
+//         background: P.surface,
+//         borderRadius: 14,
+//         padding: "14px 10px",
+//         textAlign: "center",
+//         boxShadow: P.shadowCard,
+//         border: `1px solid ${P.border}`,
+//         minWidth: 0,
+//         boxSizing: "border-box",
+//     };
+
+//     const statIconWrap = {
+//         width: 36,
+//         height: 36,
+//         borderRadius: "50%",
+//         background: P.surfaceAmber,
+//         display: "flex",
+//         alignItems: "center",
+//         justifyContent: "center",
+//         margin: "0 auto 8px",
+//     };
+
+//     const statSubLabel = {
+//         fontSize: 9,
+//         fontWeight: 700,
+//         color: P.textLight,
+//         letterSpacing: 0.5,
+//         fontFamily: "'Inter', sans-serif",
+//         marginBottom: 4,
+//         textTransform: "uppercase",
+//     };
+
+//     const statValue = {
+//         fontSize: 20,
+//         fontWeight: 800,
+//         color: P.textPrimary,
+//         fontFamily: "'DM Sans', sans-serif",
+//         lineHeight: 1.1,
+//         overflow: "hidden",
+//         textOverflow: "ellipsis",
+//         whiteSpace: "nowrap",
+//     };
+
+//     const statUnit = {
+//         fontSize: 11,
+//         fontWeight: 500,
+//         color: P.textMuted,
+//         fontFamily: "'Inter', sans-serif",
+//         marginTop: 2,
+//     };
+
+//     const chartCard = {
+//         background: P.surface,
+//         borderRadius: 16,
+//         padding: 16,
+//         marginBottom: 14,
+//         boxShadow: P.shadowCard,
+//         border: `1px solid ${P.border}`,
+//         boxSizing: "border-box",
+//         width: "100%",
+//     };
+
+//     const chartHeader = {
+//         display: "flex",
+//         justifyContent: "space-between",
+//         alignItems: "center",
+//         gap: 12,
+//         marginBottom: 16,
+//     };
+
+//     const chartTitle = {
+//         fontSize: 14,
+//         fontWeight: 600,
+//         color: P.textPrimary,
+//         fontFamily: "'DM Sans', sans-serif",
+//     };
+
+//     const chartBadge = {
+//         background: P.amber,
+//         color: P.surface,
+//         fontSize: 12,
+//         fontWeight: 700,
+//         padding: "4px 12px",
+//         borderRadius: 20,
+//         fontFamily: "'Inter', sans-serif",
+//         whiteSpace: "nowrap",
+//         flexShrink: 0,
+//     };
+
+//     // ============================================================
+//     // BAR CHART
+//     // ============================================================
+
+//     const BarChart = ({ value, maxValue, color }) => {
+//         const numBars = 10;
+
+//         const numericValue = Number(value);
+
+//         const filledBars = Number.isFinite(numericValue)
+//             ? Math.round(
+//                   (Math.min(numericValue, maxValue) /
+//                       maxValue) *
+//                       numBars
+//               )
+//             : 0;
+
+//         const heights = [
+//             40,
+//             55,
+//             35,
+//             70,
+//             85,
+//             60,
+//             90,
+//             75,
+//             65,
+//             80,
+//         ];
+
+//         return (
+//             <div
+//                 style={{
+//                     display: "flex",
+//                     alignItems: "flex-end",
+//                     gap: 6,
+//                     height: 80,
+//                     padding: "0 4px",
+//                     width: "100%",
+//                     boxSizing: "border-box",
+//                 }}
+//             >
+//                 {heights.map((height, index) => (
+//                     <div
+//                         key={index}
+//                         style={{
+//                             flex: 1,
+//                             minWidth: 0,
+//                             height: `${height}%`,
+//                             borderRadius: "4px 4px 0 0",
+//                             background:
+//                                 index < filledBars
+//                                     ? color
+//                                     : `${color}33`,
+//                             transition:
+//                                 "height 0.4s ease",
+//                         }}
+//                     />
+//                 ))}
+//             </div>
+//         );
+//     };
+
+//     // ============================================================
+//     // LINE CHART
+//     // ============================================================
+
+//     const LineChart = ({ color }) => {
+//         const points = [
+//             10,
+//             15,
+//             12,
+//             18,
+//             20,
+//             16,
+//             22,
+//             25,
+//             21,
+//             28,
+//             24,
+//             30,
+//         ];
+
+//         const width = 280;
+//         const height = 70;
+//         const max = Math.max(...points);
+
+//         const coords = points.map((point, index) => ({
+//             x:
+//                 (index / (points.length - 1)) *
+//                 width,
+//             y:
+//                 height -
+//                 (point / max) *
+//                     (height - 10),
+//         }));
+
+//         const pathD = coords
+//             .map(
+//                 (coordinate, index) =>
+//                     `${
+//                         index === 0 ? "M" : "L"
+//                     } ${coordinate.x} ${coordinate.y}`
+//             )
+//             .join(" ");
+
+//         const areaD = `${pathD} L ${width} ${height} L 0 ${height} Z`;
+
+//         return (
+//             <svg
+//                 width="100%"
+//                 viewBox={`0 0 ${width} ${height}`}
+//                 style={{
+//                     overflow: "visible",
+//                     display: "block",
+//                 }}
+//             >
+//                 <defs>
+//                     <linearGradient
+//                         id="vendorPowerLineGrad"
+//                         x1="0"
+//                         y1="0"
+//                         x2="0"
+//                         y2="1"
+//                     >
+//                         <stop
+//                             offset="0%"
+//                             stopColor={color}
+//                             stopOpacity="0.25"
+//                         />
+
+//                         <stop
+//                             offset="100%"
+//                             stopColor={color}
+//                             stopOpacity="0.02"
+//                         />
+//                     </linearGradient>
+//                 </defs>
+
+//                 <path
+//                     d={areaD}
+//                     fill="url(#vendorPowerLineGrad)"
+//                 />
+
+//                 <path
+//                     d={pathD}
+//                     fill="none"
+//                     stroke={color}
+//                     strokeWidth="2.5"
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                 />
+
+//                 <circle
+//                     cx={coords[coords.length - 1].x}
+//                     cy={coords[coords.length - 1].y}
+//                     r="5"
+//                     fill={color}
+//                 />
+//             </svg>
+//         );
+//     };
+
+//     // ============================================================
+//     // PAGE
+//     // ============================================================
+
+//     return (
+//         <div
+//             style={{
+//                 minHeight: "100vh",
+//                 paddingBottom: 90,
+//                 background: P.bg,
+//                 fontFamily: "'Inter', sans-serif",
+//                 boxSizing: "border-box",
+//                 width: "100%",
+//                 overflowX: "hidden",
+//             }}
+//         >
+//             {/* HEADER */}
+
+//             <PageHeader
+//                 title="POWER"
+//                 backPath="/vendor"
+//             />
+
+//             {/* DEVICE INFO */}
+
+//             <DeviceInfo
+//                 data={data}
+//                 lastUpdated={lastUpdated}
+//             />
+
+//             {/* PAGE CONTENT */}
+
+//             <div
+//                 style={{
+//                     width: "100%",
+//                     maxWidth: 700,
+//                     margin: "0 auto",
+//                     padding: "0 20px 20px",
+//                     boxSizing: "border-box",
+//                 }}
+//             >
+//                 {/* SOLAR PANEL DETAILS */}
+
+//                 <h2
+//                     style={{
+//                         fontSize: 15,
+//                         fontWeight: 800,
+//                         color: P.textAmber,
+//                         marginBottom: 12,
+//                         marginTop: 4,
+//                         letterSpacing: 0.5,
+//                         fontFamily:
+//                             "'DM Sans', sans-serif",
+//                     }}
+//                 >
+//                     SOLAR PANEL DETAILS
+//                 </h2>
+
+//                 <div
+//                     style={{
+//                         background:
+//                             P.textAmberBright,
+//                         border: `1.5px solid ${P.borderDark}`,
+//                         borderRadius: 16,
+//                         padding: 16,
+//                         marginBottom: 20,
+//                         boxShadow:
+//                             P.shadowCardRaised,
+//                         display: "grid",
+//                         gridTemplateColumns:
+//                             "repeat(2, minmax(0, 1fr))",
+//                         gap: 12,
+//                         boxSizing: "border-box",
+//                         width: "100%",
+//                     }}
+//                 >
+//                     {/* PV VOLTAGE */}
+
+//                     <div style={metricCard}>
+//                         <div style={metricIconRow}>
+//                             <span style={metricIcon}>
+//                                 ⚡
+//                             </span>
+
+//                             <span style={metricValue}>
+//                                 {getParameterValue("PV")}{" "}
+//                                 <span style={metricUnit}>
+//                                     V
+//                                 </span>
+//                             </span>
+//                         </div>
+
+//                         <div style={metricLabel}>
+//                             PV Voltage
+//                         </div>
+
+//                         <div style={metricDesc}>
+//                             Input Voltage
+//                         </div>
+//                     </div>
+
+//                     {/* PV CURRENT */}
+
+//                     <div style={metricCard}>
+//                         <div style={metricIconRow}>
+//                             <span style={metricIcon}>
+//                                 ⚡
+//                             </span>
+
+//                             <span style={metricValue}>
+//                                 {getParameterValue("PI")}{" "}
+//                                 <span style={metricUnit}>
+//                                     A
+//                                 </span>
+//                             </span>
+//                         </div>
+
+//                         <div style={metricLabel}>
+//                             PV Current
+//                         </div>
+
+//                         <div style={metricDesc}>
+//                             Input Current
+//                         </div>
+//                     </div>
+
+//                     {/* SOLAR POWER */}
+
+//                     <div
+//                         style={{
+//                             ...metricCard,
+//                             gridColumn: "1 / -1",
+//                             display: "flex",
+//                             alignItems: "center",
+//                             justifyContent: "space-between",
+//                             gap: 16,
+//                         }}
+//                     >
+//                         <div
+//                             style={{
+//                                 minWidth: 0,
+//                             }}
+//                         >
+//                             <div style={metricIconRow}>
+//                                 <span style={metricIcon}>
+//                                     🔲
+//                                 </span>
+//                             </div>
+
+//                             <div style={metricLabel}>
+//                                 Solar Power
+//                             </div>
+
+//                             <div style={metricDesc}>
+//                                 Total Output
+//                             </div>
+//                         </div>
+
+//                         <div
+//                             style={{
+//                                 fontSize: 22,
+//                                 fontWeight: 800,
+//                                 color: P.textPrimary,
+//                                 fontFamily:
+//                                     "'DM Sans', sans-serif",
+//                                 whiteSpace: "nowrap",
+//                                 flexShrink: 0,
+//                             }}
+//                         >
+//                             {getParameterValue("PPOW")}{" "}
+//                             <span
+//                                 style={{
+//                                     fontSize: 14,
+//                                     fontWeight: 600,
+//                                     color: P.textMuted,
+//                                 }}
+//                             >
+//                                 kW
+//                             </span>
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 {/* GENERATION SUMMARY */}
+
+//                 <h2
+//                     style={{
+//                         fontSize: 15,
+//                         fontWeight: 800,
+//                         color: P.textAmber,
+//                         marginBottom: 14,
+//                         marginTop: 4,
+//                         letterSpacing: 0.5,
+//                         fontFamily:
+//                             "'DM Sans', sans-serif",
+//                     }}
+//                 >
+//                     GENERATION SUMMARY
+//                 </h2>
+
+//                 {/* TOP 3 STAT CARDS */}
+
+//                 <div
+//                     style={{
+//                         display: "grid",
+//                         gridTemplateColumns:
+//                             "repeat(3, minmax(0, 1fr))",
+//                         gap: 10,
+//                         marginBottom: 16,
+//                         width: "100%",
+//                     }}
+//                 >
+//                     {/* TODAY */}
+
+//                     <div style={statCard}>
+//                         <div style={statIconWrap}>
+//                             <svg
+//                                 width="18"
+//                                 height="18"
+//                                 viewBox="0 0 24 24"
+//                                 fill="none"
+//                                 stroke={P.borderStrong}
+//                                 strokeWidth="2.5"
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                             >
+//                                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+//                             </svg>
+//                         </div>
+
+//                         <div style={statSubLabel}>
+//                             TODAY
+//                         </div>
+
+//                         <div style={statValue}>
+//                             {getParameterValue("POW")}
+//                         </div>
+
+//                         <div style={statUnit}>
+//                             W
+//                         </div>
+//                     </div>
+
+//                     {/* MONTH */}
+
+//                     <div style={statCard}>
+//                         <div style={statIconWrap}>
+//                             <svg
+//                                 width="18"
+//                                 height="18"
+//                                 viewBox="0 0 24 24"
+//                                 fill="none"
+//                                 stroke={P.borderStrong}
+//                                 strokeWidth="2.5"
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                             >
+//                                 <circle
+//                                     cx="12"
+//                                     cy="12"
+//                                     r="5"
+//                                 />
+
+//                                 <line
+//                                     x1="12"
+//                                     y1="1"
+//                                     x2="12"
+//                                     y2="3"
+//                                 />
+
+//                                 <line
+//                                     x1="12"
+//                                     y1="21"
+//                                     x2="12"
+//                                     y2="23"
+//                                 />
+
+//                                 <line
+//                                     x1="4.22"
+//                                     y1="4.22"
+//                                     x2="5.64"
+//                                     y2="5.64"
+//                                 />
+
+//                                 <line
+//                                     x1="18.36"
+//                                     y1="18.36"
+//                                     x2="19.78"
+//                                     y2="19.78"
+//                                 />
+
+//                                 <line
+//                                     x1="1"
+//                                     y1="12"
+//                                     x2="3"
+//                                     y2="12"
+//                                 />
+
+//                                 <line
+//                                     x1="21"
+//                                     y1="12"
+//                                     x2="23"
+//                                     y2="12"
+//                                 />
+
+//                                 <line
+//                                     x1="4.22"
+//                                     y1="19.78"
+//                                     x2="5.64"
+//                                     y2="18.36"
+//                                 />
+
+//                                 <line
+//                                     x1="18.36"
+//                                     y1="5.64"
+//                                     x2="19.78"
+//                                     y2="4.22"
+//                                 />
+
+//                             </svg>
+//                         </div>
+
+//                         <div style={statSubLabel}>
+//                             MONTH
+//                         </div>
+
+//                         <div
+//                             style={{
+//                                 ...statValue,
+//                                 color: P.textAmberBright,
+//                             }}
+//                         >
+//                             {getParameterValue("LON")}
+//                         </div>
+
+//                         <div style={statUnit}>
+//                             kWh
+//                         </div>
+//                     </div>
+
+//                     {/* TOTAL */}
+
+//                     <div style={statCard}>
+//                         <div style={statIconWrap}>
+//                             <svg
+//                                 width="18"
+//                                 height="18"
+//                                 viewBox="0 0 24 24"
+//                                 fill="none"
+//                                 stroke={P.borderStrong}
+//                                 strokeWidth="2.5"
+//                                 strokeLinecap="round"
+//                                 strokeLinejoin="round"
+//                             >
+//                                 <circle
+//                                     cx="12"
+//                                     cy="12"
+//                                     r="10"
+//                                 />
+
+//                                 <polyline points="12 6 12 12 16 14" />
+//                             </svg>
+//                         </div>
+
+//                         <div style={statSubLabel}>
+//                             TOTAL
+//                         </div>
+
+//                         <div
+//                             style={{
+//                                 ...statValue,
+//                                 color: P.textAmberBright,
+//                             }}
+//                         >
+//                             {getParameterValue("LKWH")}
+//                         </div>
+
+//                         <div style={statUnit}>
+//                             hrs
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 {/* TODAY ENERGY */}
+
+//                 <div style={chartCard}>
+//                     <div style={chartHeader}>
+//                         <span style={chartTitle}>
+//                             Today Energy
+//                         </span>
+
+//                         <span style={chartBadge}>
+//                             {getParameterValue("TKWH")}{" "}
+//                             kWh
+//                         </span>
+//                     </div>
+
+//                     <BarChart
+//                         value={getParameterValue("TKWH")}
+//                         maxValue={50}
+//                         color={P.textAmberBright}
+//                     />
+//                 </div>
+
+//                 {/* TODAY ON TIME */}
+
+//                 {/* 
+//                 <div style={chartCard}>
+//                     ...
+//                 </div>
+//                 */}
+//             </div>
+
+//             {/* FOOTER */}
+
+//             <VendorFooter />
+//         </div>
+//     );
+// }
+
+
+
+
+
+
+import { useState } from "react";
+
 import VendorFooter from "../components/VendorFooter";
 import DeviceInfo from "../components/DeviceInfo";
 import { useVendorDevice } from "../context/VendorDeviceContext";
 import P from "../theme/colors";
-import PageHeader from "../components/PageHeader";
+import VendorPageHeader from "../components/VendorPageHeader";
+import PageBackground from "../components/PageBackground";
 
 export default function VendorPower() {
-    // ============================================================
-    // DEVICE CONTEXT
-    // ============================================================
 
     const {
         data,
         loading,
         lastUpdated,
+
+        // NEW
+        energy,
+        energyCharts,
+        refreshEnergy,
     } = useVendorDevice();
 
+    const [chartMode, setChartMode] = useState("today");
+    const [refreshing, setRefreshing] = useState(false);
+
     // ============================================================
-    // FORMAT DATE / TIME
+    // REFRESH ENERGY
     // ============================================================
 
-    const formattedDateTime = (() => {
-        if (!lastUpdated) {
-            return {
-                date: "--",
-                time: "--",
-            };
+    const handleRefreshEnergy = async () => {
+
+        if (refreshing) return;
+
+        try {
+
+            setRefreshing(true);
+
+            await refreshEnergy();
+
+        } catch (err) {
+
+            console.error(
+                "Vendor energy refresh failed:",
+                err
+            );
+
+        } finally {
+
+            setRefreshing(false);
+
         }
-
-        const d = new Date(
-            typeof lastUpdated === "string"
-                ? lastUpdated.replace(" ", "T")
-                : lastUpdated
-        );
-
-        return {
-            date: d.toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-            }),
-
-            time: d.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-            }),
-        };
-    })();
+    };
 
     // ============================================================
-    // GET PARAMETER VALUE
+    // CHART DATA
+    // ============================================================
+
+    const chartData = Array.isArray(
+        energyCharts?.[chartMode]
+    )
+        ? energyCharts[chartMode]
+        : [];
+
+    // ============================================================
+    // PARAMETER
     // ============================================================
 
     const getParameterValue = (parameter) => {
@@ -1482,11 +2283,6 @@ export default function VendorPower() {
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 6,
-    };
-
-    const metricIcon = {
-        fontSize: 16,
-        color: P.textAmberBright,
     };
 
     const metricValue = {
@@ -1603,169 +2399,420 @@ export default function VendorPower() {
         borderRadius: 20,
         fontFamily: "'Inter', sans-serif",
         whiteSpace: "nowrap",
-        flexShrink: 0,
     };
 
     // ============================================================
-    // BAR CHART
+    // ENERGY CHART
     // ============================================================
 
-    const BarChart = ({ value, maxValue, color }) => {
-        const numBars = 10;
+    const EnergyChart = ({ data, color }) => {
 
-        const numericValue = Number(value);
+        const safeData =
+            Array.isArray(data)
+                ? data
+                : [];
 
-        const filledBars = Number.isFinite(numericValue)
-            ? Math.round(
-                  (Math.min(numericValue, maxValue) /
-                      maxValue) *
-                      numBars
-              )
-            : 0;
+        if (safeData.length === 0) {
 
-        const heights = [
-            40,
-            55,
-            35,
-            70,
-            85,
-            60,
-            90,
-            75,
-            65,
-            80,
-        ];
+            return (
+                <div
+                    style={{
+                        height: 220,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: P.textMuted,
+                        fontSize: 13,
+                    }}
+                >
+                    No energy data available
+                </div>
+            );
+        }
+
+        const values = safeData.map(
+            item => Number(item.value) || 0
+        );
+
+        const maxValue =
+            Math.max(...values, 0);
+
+        // ========================================================
+        // NICE Y AXIS MAX
+        // ========================================================
+
+        const getNiceMax = (value) => {
+
+            if (value <= 0) {
+                return 10;
+            }
+
+            const magnitude = Math.pow(
+                10,
+                Math.floor(Math.log10(value))
+            );
+
+            const normalized =
+                value / magnitude;
+
+            let nice;
+
+            if (normalized <= 1) {
+                nice = 1;
+            } else if (normalized <= 2) {
+                nice = 2;
+            } else if (normalized <= 5) {
+                nice = 5;
+            } else {
+                nice = 10;
+            }
+
+            return nice * magnitude;
+        };
+
+        const yAxisMax =
+            getNiceMax(maxValue);
+
+        // ========================================================
+        // Y AXIS
+        // ========================================================
+
+        const tickCount = 5;
+
+        const tickStep =
+            yAxisMax / tickCount;
+
+        const yAxisTicks =
+            Array.from(
+                { length: tickCount + 1 },
+                (_, index) =>
+                    Math.round(
+                        tickStep * index
+                    )
+            );
+
+        // ========================================================
+        // CHART SIZE
+        // ========================================================
+
+        const chartHeight = 240;
+        const plotHeight = 180;
+
+        // ========================================================
+        // CHART TYPE
+        // ========================================================
+
+        const isMonthly =
+            safeData.length >= 28 &&
+            safeData.length <= 31;
+
+        const isYearly =
+            safeData.length === 12;
+
+        // ========================================================
+        // LABEL VISIBILITY
+        // ========================================================
+
+        const shouldShowLabel = (index) => {
+
+            if (isMonthly) {
+
+                return (
+                    index === 0 ||
+                    index % 5 === 0 ||
+                    index === safeData.length - 1
+                );
+            }
+
+            if (isYearly) {
+                return true;
+            }
+
+            return index % 3 === 0;
+        };
 
         return (
             <div
                 style={{
-                    display: "flex",
-                    alignItems: "flex-end",
-                    gap: 6,
-                    height: 80,
-                    padding: "0 4px",
                     width: "100%",
-                    boxSizing: "border-box",
+                    overflow: "hidden",
+                    paddingBottom: 8,
                 }}
             >
-                {heights.map((height, index) => (
+
+                <div
+                    style={{
+                        display: "flex",
+                        width: "100%",
+                        height: chartHeight,
+                    }}
+                >
+
+                    {/* Y AXIS */}
+
                     <div
-                        key={index}
+                        style={{
+                            width: 38,
+                            flexShrink: 0,
+                            height: plotHeight,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            alignItems: "flex-end",
+                            paddingRight: 6,
+                        }}
+                    >
+
+                        {[...yAxisTicks]
+                            .reverse()
+                            .map((tick, index) => (
+
+                                <span
+                                    key={index}
+                                    style={{
+                                        fontSize: 9,
+                                        color: P.textMuted,
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    {tick}
+                                </span>
+
+                            ))}
+
+                    </div>
+
+                    {/* GRAPH */}
+
+                    <div
                         style={{
                             flex: 1,
                             minWidth: 0,
-                            height: `${height}%`,
-                            borderRadius: "4px 4px 0 0",
-                            background:
-                                index < filledBars
-                                    ? color
-                                    : `${color}33`,
-                            transition:
-                                "height 0.4s ease",
+                            position: "relative",
+                            height: chartHeight,
                         }}
-                    />
-                ))}
-            </div>
-        );
-    };
-
-    // ============================================================
-    // LINE CHART
-    // ============================================================
-
-    const LineChart = ({ color }) => {
-        const points = [
-            10,
-            15,
-            12,
-            18,
-            20,
-            16,
-            22,
-            25,
-            21,
-            28,
-            24,
-            30,
-        ];
-
-        const width = 280;
-        const height = 70;
-        const max = Math.max(...points);
-
-        const coords = points.map((point, index) => ({
-            x:
-                (index / (points.length - 1)) *
-                width,
-            y:
-                height -
-                (point / max) *
-                    (height - 10),
-        }));
-
-        const pathD = coords
-            .map(
-                (coordinate, index) =>
-                    `${
-                        index === 0 ? "M" : "L"
-                    } ${coordinate.x} ${coordinate.y}`
-            )
-            .join(" ");
-
-        const areaD = `${pathD} L ${width} ${height} L 0 ${height} Z`;
-
-        return (
-            <svg
-                width="100%"
-                viewBox={`0 0 ${width} ${height}`}
-                style={{
-                    overflow: "visible",
-                    display: "block",
-                }}
-            >
-                <defs>
-                    <linearGradient
-                        id="vendorPowerLineGrad"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
                     >
-                        <stop
-                            offset="0%"
-                            stopColor={color}
-                            stopOpacity="0.25"
-                        />
 
-                        <stop
-                            offset="100%"
-                            stopColor={color}
-                            stopOpacity="0.02"
-                        />
-                    </linearGradient>
-                </defs>
+                        {/* GRID */}
 
-                <path
-                    d={areaD}
-                    fill="url(#vendorPowerLineGrad)"
-                />
+                        <div
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                height: plotHeight,
+                                pointerEvents: "none",
+                            }}
+                        >
 
-                <path
-                    d={pathD}
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
+                            {yAxisTicks.map(
+                                (tick, index) => {
 
-                <circle
-                    cx={coords[coords.length - 1].x}
-                    cy={coords[coords.length - 1].y}
-                    r="5"
-                    fill={color}
-                />
-            </svg>
+                                    const position =
+                                        (1 -
+                                            tick /
+                                                yAxisMax) *
+                                        100;
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            style={{
+                                                position:
+                                                    "absolute",
+                                                left: 0,
+                                                right: 0,
+                                                top:
+                                                    `${position}%`,
+                                                borderTop:
+                                                    `1px dashed ${P.border}`,
+                                            }}
+                                        />
+                                    );
+                                }
+                            )}
+
+                        </div>
+
+                        {/* BARS */}
+
+                        <div
+                            style={{
+                                position: "absolute",
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                height: plotHeight,
+                                display: "flex",
+                                alignItems: "flex-end",
+                                gap: isMonthly ? 2 : 5,
+                                padding: "0 2px",
+                            }}
+                        >
+
+                            {safeData.map(
+                                (item, index) => {
+
+                                    const value =
+                                        Number(
+                                            item.value
+                                        ) || 0;
+
+                                    const barHeight =
+                                        maxValue > 0
+                                            ? (
+                                                value /
+                                                yAxisMax
+                                            ) *
+                                              plotHeight
+                                            : 2;
+
+                                    return (
+                                        <div
+                                            key={index}
+                                            style={{
+                                                flex: 1,
+                                                minWidth: 0,
+                                                height:
+                                                    plotHeight,
+                                                display:
+                                                    "flex",
+                                                flexDirection:
+                                                    "column",
+                                                alignItems:
+                                                    "center",
+                                                justifyContent:
+                                                    "flex-end",
+                                                position:
+                                                    "relative",
+                                            }}
+                                        >
+
+                                            {/* VALUE */}
+
+                                            {value > 0 && (
+                                                <div
+                                                    style={{
+                                                        position:
+                                                            "absolute",
+                                                        bottom:
+                                                            Math.min(
+                                                                barHeight +
+                                                                    4,
+                                                                plotHeight -
+                                                                    12
+                                                            ),
+                                                        fontSize: 8,
+                                                        fontWeight: 600,
+                                                        color:
+                                                            P.textMuted,
+                                                        whiteSpace:
+                                                            "nowrap",
+                                                        zIndex: 2,
+                                                    }}
+                                                >
+                                                    {value.toFixed(
+                                                        1
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* BAR */}
+
+                                            <div
+                                                style={{
+                                                    width:
+                                                        "100%",
+                                                    maxWidth:
+                                                        isMonthly
+                                                            ? 14
+                                                            : 28,
+                                                    height:
+                                                        Math.max(
+                                                            barHeight,
+                                                            value >
+                                                                0
+                                                                ? 3
+                                                                : 1
+                                                        ),
+                                                    background:
+                                                        value >
+                                                        0
+                                                            ? color
+                                                            : `${color}33`,
+                                                    borderRadius:
+                                                        "4px 4px 0 0",
+                                                    transition:
+                                                        "height 0.4s ease",
+                                                    position:
+                                                        "absolute",
+                                                    bottom: 0,
+                                                }}
+                                            />
+
+                                        </div>
+                                    );
+                                }
+                            )}
+
+                        </div>
+
+                        {/* X AXIS */}
+
+                        <div
+                            style={{
+                                position: "absolute",
+                                top:
+                                    plotHeight + 8,
+                                left: 0,
+                                right: 0,
+                                display: "flex",
+                                alignItems: "center",
+                            }}
+                        >
+
+                            {safeData.map(
+                                (item, index) => (
+
+                                    <div
+                                        key={index}
+                                        style={{
+                                            flex: 1,
+                                            minWidth: 0,
+                                            textAlign:
+                                                "center",
+                                            fontSize:
+                                                isMonthly
+                                                    ? 8
+                                                    : 9,
+                                            color:
+                                                P.textMuted,
+                                            whiteSpace:
+                                                "nowrap",
+                                            overflow:
+                                                "hidden",
+                                            visibility:
+                                                shouldShowLabel(
+                                                    index
+                                                )
+                                                    ? "visible"
+                                                    : "hidden",
+                                        }}
+                                    >
+                                        {item.label}
+                                    </div>
+
+                                )
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
         );
     };
 
@@ -1774,417 +2821,802 @@ export default function VendorPower() {
     // ============================================================
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                paddingBottom: 90,
-                background: P.bg,
-                fontFamily: "'Inter', sans-serif",
-                boxSizing: "border-box",
-                width: "100%",
-                overflowX: "hidden",
-            }}
-        >
-            {/* HEADER */}
 
-            <PageHeader
-                title="POWER"
-                backPath="/vendor"
-            />
-
-            {/* DEVICE INFO */}
-
-            <DeviceInfo
-                data={data}
-                lastUpdated={lastUpdated}
-            />
-
-            {/* PAGE CONTENT */}
+        <PageBackground>
 
             <div
                 style={{
-                    width: "100%",
-                    maxWidth: 700,
-                    margin: "0 auto",
-                    padding: "0 20px 20px",
-                    boxSizing: "border-box",
+                    minHeight: "100vh",
+                    paddingBottom: 90,
+                    fontFamily:
+                        "'Inter', sans-serif",
                 }}
             >
-                {/* SOLAR PANEL DETAILS */}
 
-                <h2
-                    style={{
-                        fontSize: 15,
-                        fontWeight: 800,
-                        color: P.textAmber,
-                        marginBottom: 12,
-                        marginTop: 4,
-                        letterSpacing: 0.5,
-                        fontFamily:
-                            "'DM Sans', sans-serif",
-                    }}
-                >
-                    SOLAR PANEL DETAILS
-                </h2>
+                <VendorPageHeader
+                    title="POWER"
+                    backPath="/vendor"
+                />
 
                 <div
                     style={{
-                        background:
-                            P.textAmberBright,
-                        border: `1.5px solid ${P.borderDark}`,
-                        borderRadius: 16,
-                        padding: 16,
-                        marginBottom: 20,
-                        boxShadow:
-                            P.shadowCardRaised,
-                        display: "grid",
-                        gridTemplateColumns:
-                            "repeat(2, minmax(0, 1fr))",
-                        gap: 12,
-                        boxSizing: "border-box",
                         width: "100%",
+                        maxWidth: 520,
+                        margin: "0 auto",
+                        boxSizing: "border-box",
                     }}
                 >
-                    {/* PV VOLTAGE */}
 
-                    <div style={metricCard}>
-                        <div style={metricIconRow}>
-                            <span style={metricIcon}>
-                                ⚡
-                            </span>
+                    {/* DEVICE INFO */}
 
-                            <span style={metricValue}>
-                                {getParameterValue("PV")}{" "}
-                                <span style={metricUnit}>
-                                    V
-                                </span>
-                            </span>
-                        </div>
+                    <DeviceInfo
+                        data={data}
+                        lastUpdated={lastUpdated}
+                    />
 
-                        <div style={metricLabel}>
-                            PV Voltage
-                        </div>
-
-                        <div style={metricDesc}>
-                            Input Voltage
-                        </div>
-                    </div>
-
-                    {/* PV CURRENT */}
-
-                    <div style={metricCard}>
-                        <div style={metricIconRow}>
-                            <span style={metricIcon}>
-                                ⚡
-                            </span>
-
-                            <span style={metricValue}>
-                                {getParameterValue("PI")}{" "}
-                                <span style={metricUnit}>
-                                    A
-                                </span>
-                            </span>
-                        </div>
-
-                        <div style={metricLabel}>
-                            PV Current
-                        </div>
-
-                        <div style={metricDesc}>
-                            Input Current
-                        </div>
-                    </div>
-
-                    {/* SOLAR POWER */}
+                    {/* CONTENT */}
 
                     <div
                         style={{
-                            ...metricCard,
-                            gridColumn: "1 / -1",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            gap: 16,
+                            padding:
+                                "0 20px 20px",
                         }}
                     >
-                        <div
+
+                        {/* ==================================================
+                            SOLAR PANEL DETAILS
+                        ================================================== */}
+
+                        <h2
                             style={{
-                                minWidth: 0,
-                            }}
-                        >
-                            <div style={metricIconRow}>
-                                <span style={metricIcon}>
-                                    🔲
-                                </span>
-                            </div>
-
-                            <div style={metricLabel}>
-                                Solar Power
-                            </div>
-
-                            <div style={metricDesc}>
-                                Total Output
-                            </div>
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: 22,
+                                fontSize: 15,
                                 fontWeight: 800,
-                                color: P.textPrimary,
+                                color: P.textWhite,
+                                marginBottom: 12,
+                                marginTop: 4,
+                                letterSpacing: 0.5,
                                 fontFamily:
                                     "'DM Sans', sans-serif",
-                                whiteSpace: "nowrap",
-                                flexShrink: 0,
                             }}
                         >
-                            {getParameterValue("PPOW")}{" "}
-                            <span
+                            SOLAR PANEL DETAILS
+                        </h2>
+
+                        <div
+                            style={{
+                                background:
+                                    P.borderDark,
+                                border:
+                                    `1.5px solid ${P.borderDark}`,
+                                borderRadius: 16,
+                                padding: 5,
+                                marginBottom: 20,
+                                boxShadow:
+                                    P.shadowCardRaised,
+                                display: "grid",
+                                gridTemplateColumns:
+                                    "1fr 1fr",
+                                gap: 5,
+                            }}
+                        >
+
+                            {/* PV VOLTAGE */}
+
+                            <div
+                                style={metricCard}
+                            >
+
+                                <div
+                                    style={
+                                        metricIconRow
+                                    }
+                                >
+
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                    </svg>
+
+                                    <span
+                                        style={
+                                            metricValue
+                                        }
+                                    >
+                                        {
+                                            getParameterValue(
+                                                "PV"
+                                            )
+                                        }{" "}
+                                        <span
+                                            style={
+                                                metricUnit
+                                            }
+                                        >
+                                            V
+                                        </span>
+                                    </span>
+
+                                </div>
+
+                                <div
+                                    style={
+                                        metricLabel
+                                    }
+                                >
+                                    PV Voltage
+                                </div>
+
+                                <div
+                                    style={
+                                        metricDesc
+                                    }
+                                >
+                                    Input Voltage
+                                </div>
+
+                            </div>
+
+                            {/* PV CURRENT */}
+
+                            <div
+                                style={metricCard}
+                            >
+
+                                <div
+                                    style={
+                                        metricIconRow
+                                    }
+                                >
+
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                    </svg>
+
+                                    <span
+                                        style={
+                                            metricValue
+                                        }
+                                    >
+                                        {
+                                            getParameterValue(
+                                                "PI"
+                                            )
+                                        }{" "}
+                                        <span
+                                            style={
+                                                metricUnit
+                                            }
+                                        >
+                                            A
+                                        </span>
+                                    </span>
+
+                                </div>
+
+                                <div
+                                    style={
+                                        metricLabel
+                                    }
+                                >
+                                    PV Current
+                                </div>
+
+                                <div
+                                    style={
+                                        metricDesc
+                                    }
+                                >
+                                    Input current
+                                </div>
+
+                            </div>
+
+                            {/* SOLAR POWER */}
+
+                            <div
                                 style={{
-                                    fontSize: 14,
-                                    fontWeight: 600,
-                                    color: P.textMuted,
+                                    ...metricCard,
+                                    gridColumn:
+                                        "1 / -1",
+                                    display: "flex",
+                                    alignItems:
+                                        "center",
+                                    justifyContent:
+                                        "space-between",
                                 }}
                             >
-                                kW
-                            </span>
-                        </div>
-                    </div>
-                </div>
 
-                {/* GENERATION SUMMARY */}
+                                <div>
 
-                <h2
-                    style={{
-                        fontSize: 15,
-                        fontWeight: 800,
-                        color: P.textAmber,
-                        marginBottom: 14,
-                        marginTop: 4,
-                        letterSpacing: 0.5,
-                        fontFamily:
-                            "'DM Sans', sans-serif",
-                    }}
-                >
-                    GENERATION SUMMARY
-                </h2>
+                                    <div
+                                        style={
+                                            metricIconRow
+                                        }
+                                    >
 
-                {/* TOP 3 STAT CARDS */}
+                                        <svg
+                                            width="18"
+                                            height="18"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                        </svg>
 
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns:
-                            "repeat(3, minmax(0, 1fr))",
-                        gap: 10,
-                        marginBottom: 16,
-                        width: "100%",
-                    }}
-                >
-                    {/* TODAY */}
+                                    </div>
 
-                    <div style={statCard}>
-                        <div style={statIconWrap}>
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke={P.borderStrong}
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                            </svg>
-                        </div>
+                                    <div
+                                        style={
+                                            metricLabel
+                                        }
+                                    >
+                                        Solar Power
+                                    </div>
 
-                        <div style={statSubLabel}>
-                            TODAY
-                        </div>
+                                    <div
+                                        style={
+                                            metricDesc
+                                        }
+                                    >
+                                        Total output
+                                    </div>
 
-                        <div style={statValue}>
-                            {getParameterValue("POW")}
-                        </div>
+                                </div>
 
-                        <div style={statUnit}>
-                            W
-                        </div>
-                    </div>
+                                <div
+                                    style={{
+                                        fontSize: 22,
+                                        fontWeight: 800,
+                                        color:
+                                            P.textPrimary,
+                                        fontFamily:
+                                            "'DM Sans', sans-serif",
+                                    }}
+                                >
+                                    {
+                                        getParameterValue(
+                                            "PPOW"
+                                        )
+                                    }{" "}
+                                    <span
+                                        style={{
+                                            fontSize: 14,
+                                            fontWeight: 600,
+                                            color:
+                                                P.textMuted,
+                                        }}
+                                    >
+                                        kW
+                                    </span>
+                                </div>
 
-                    {/* MONTH */}
+                            </div>
 
-                    <div style={statCard}>
-                        <div style={statIconWrap}>
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke={P.borderStrong}
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="5"
-                                />
-
-                                <line
-                                    x1="12"
-                                    y1="1"
-                                    x2="12"
-                                    y2="3"
-                                />
-
-                                <line
-                                    x1="12"
-                                    y1="21"
-                                    x2="12"
-                                    y2="23"
-                                />
-
-                                <line
-                                    x1="4.22"
-                                    y1="4.22"
-                                    x2="5.64"
-                                    y2="5.64"
-                                />
-
-                                <line
-                                    x1="18.36"
-                                    y1="18.36"
-                                    x2="19.78"
-                                    y2="19.78"
-                                />
-
-                                <line
-                                    x1="1"
-                                    y1="12"
-                                    x2="3"
-                                    y2="12"
-                                />
-
-                                <line
-                                    x1="21"
-                                    y1="12"
-                                    x2="23"
-                                    y2="12"
-                                />
-
-                                <line
-                                    x1="4.22"
-                                    y1="19.78"
-                                    x2="5.64"
-                                    y2="18.36"
-                                />
-
-                                <line
-                                    x1="18.36"
-                                    y1="5.64"
-                                    x2="19.78"
-                                    y2="4.22"
-                                />
-
-                            </svg>
                         </div>
 
-                        <div style={statSubLabel}>
-                            MONTH
-                        </div>
+                        {/* ==================================================
+                            GENERATION SUMMARY
+                        ================================================== */}
+
+                        <h2
+                            style={{
+                                fontSize: 15,
+                                fontWeight: 800,
+                                color: P.textWhite,
+                                marginBottom: 14,
+                                marginTop: 4,
+                                letterSpacing: 0.5,
+                                fontFamily:
+                                    "'DM Sans', sans-serif",
+                            }}
+                        >
+                            GENERATION SUMMARY
+                        </h2>
 
                         <div
                             style={{
-                                ...statValue,
-                                color: P.textAmberBright,
+                                display: "grid",
+                                gridTemplateColumns:
+                                    "1fr 1fr 1fr",
+                                gap: 10,
+                                marginBottom: 16,
                             }}
                         >
-                            {getParameterValue("LON")}
-                        </div>
 
-                        <div style={statUnit}>
-                            kWh
-                        </div>
-                    </div>
+                            {/* TODAY */}
 
-                    {/* TOTAL */}
-
-                    <div style={statCard}>
-                        <div style={statIconWrap}>
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke={P.borderStrong}
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                            <div
+                                style={statCard}
                             >
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                />
 
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
+                                <div
+                                    style={
+                                        statIconWrap
+                                    }
+                                >
+
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke={
+                                            P.borderStrong
+                                        }
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                    </svg>
+
+                                </div>
+
+                                <div
+                                    style={
+                                        statSubLabel
+                                    }
+                                >
+                                    TODAY
+                                </div>
+
+                                <div
+                                    style={{
+                                        ...statValue,
+                                        color:
+                                            P.textAmberBright,
+                                    }}
+                                >
+                                    {energy?.today ??
+                                        "--"}
+                                </div>
+
+                                <div
+                                    style={statUnit}
+                                >
+                                    kWh
+                                </div>
+
+                            </div>
+
+                            {/* MONTH */}
+
+                            <div
+                                style={statCard}
+                            >
+
+                                <div
+                                    style={
+                                        statIconWrap
+                                    }
+                                >
+
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke={
+                                            P.borderStrong
+                                        }
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="5"
+                                        />
+
+                                        <line
+                                            x1="12"
+                                            y1="1"
+                                            x2="12"
+                                            y2="3"
+                                        />
+
+                                        <line
+                                            x1="12"
+                                            y1="21"
+                                            x2="12"
+                                            y2="23"
+                                        />
+
+                                        <line
+                                            x1="4.22"
+                                            y1="4.22"
+                                            x2="5.64"
+                                            y2="5.64"
+                                        />
+
+                                        <line
+                                            x1="18.36"
+                                            y1="18.36"
+                                            x2="19.78"
+                                            y2="19.78"
+                                        />
+
+                                        <line
+                                            x1="1"
+                                            y1="12"
+                                            x2="3"
+                                            y2="12"
+                                        />
+
+                                        <line
+                                            x1="21"
+                                            y1="12"
+                                            x2="23"
+                                            y2="12"
+                                        />
+
+                                        <line
+                                            x1="4.22"
+                                            y1="19.78"
+                                            x2="5.64"
+                                            y2="18.36"
+                                        />
+
+                                        <line
+                                            x1="18.36"
+                                            y1="5.64"
+                                            x2="19.78"
+                                            y2="4.22"
+                                        />
+
+                                    </svg>
+
+                                </div>
+
+                                <div
+                                    style={
+                                        statSubLabel
+                                    }
+                                >
+                                    MONTH
+                                </div>
+
+                                <div
+                                    style={{
+                                        ...statValue,
+                                        color:
+                                            P.textAmberBright,
+                                    }}
+                                >
+                                    {energy?.monthly ??
+                                        "--"}
+                                </div>
+
+                                <div
+                                    style={statUnit}
+                                >
+                                    kWh
+                                </div>
+
+                            </div>
+
+                            {/* TOTAL */}
+
+                            <div
+                                style={statCard}
+                            >
+
+                                <div
+                                    style={
+                                        statIconWrap
+                                    }
+                                >
+
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke={
+                                            P.borderStrong
+                                        }
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                        />
+
+                                        <polyline points="12 6 12 12 16 14" />
+
+                                    </svg>
+
+                                </div>
+
+                                <div
+                                    style={
+                                        statSubLabel
+                                    }
+                                >
+                                    TOTAL
+                                </div>
+
+                                <div
+                                    style={{
+                                        ...statValue,
+                                        color:
+                                            P.textAmberBright,
+                                    }}
+                                >
+                                    {
+                                        getParameterValue(
+                                            "LKWH"
+                                        )
+                                    }
+                                </div>
+
+                                <div
+                                    style={statUnit}
+                                >
+                                    kWh
+                                </div>
+
+                            </div>
+
                         </div>
 
-                        <div style={statSubLabel}>
-                            TOTAL
-                        </div>
+                        {/* ==================================================
+                            ENERGY CHART
+                        ================================================== */}
 
                         <div
-                            style={{
-                                ...statValue,
-                                color: P.textAmberBright,
-                            }}
+                            style={chartCard}
                         >
-                            {getParameterValue("LKWH")}
+
+                            <div
+                                style={{
+                                    ...chartHeader,
+                                    alignItems:
+                                        "center",
+                                }}
+                            >
+
+                                <span
+                                    style={
+                                        chartTitle
+                                    }
+                                >
+                                    {chartMode ===
+                                    "today"
+                                        ? "Today Energy"
+                                        : chartMode ===
+                                          "monthly"
+                                            ? "Monthly Energy"
+                                            : "Yearly Energy"}
+                                </span>
+
+                                <div
+                                    style={{
+                                        display:
+                                            "flex",
+                                        alignItems:
+                                            "center",
+                                        gap: 8,
+                                    }}
+                                >
+
+                                    <span
+                                        style={
+                                            chartBadge
+                                        }
+                                    >
+                                        {Number(
+                                            energy?.[
+                                                chartMode
+                                            ] ?? 0
+                                        ).toFixed(2)}{" "}
+                                        kWh
+                                    </span>
+
+                                    {/* REFRESH */}
+
+                                    <button
+                                        onClick={
+                                            handleRefreshEnergy
+                                        }
+                                        disabled={
+                                            refreshing
+                                        }
+                                        title="Refresh energy data"
+                                        style={{
+                                            width: 34,
+                                            height: 34,
+                                            border:
+                                                `1px solid ${P.border}`,
+                                            borderRadius: 8,
+                                            background:
+                                                refreshing
+                                                    ? P.bg
+                                                    : P.surface,
+                                            color:
+                                                P.textPrimary,
+                                            display:
+                                                "flex",
+                                            alignItems:
+                                                "center",
+                                            justifyContent:
+                                                "center",
+                                            cursor:
+                                                refreshing
+                                                    ? "default"
+                                                    : "pointer",
+                                            padding: 0,
+                                            opacity:
+                                                refreshing
+                                                    ? 0.6
+                                                    : 1,
+                                        }}
+                                    >
+
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+
+                                            <path d="M20 11a8.1 8.1 0 0 0-15.5-2" />
+
+                                            <polyline points="4 4 4 9 9 9" />
+
+                                            <path d="M4 13a8.1 8.1 0 0 0 15.5 2" />
+
+                                            <polyline points="20 20 20 15 15 15" />
+
+                                        </svg>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            {/* CHART TABS */}
+
+                            <div
+                                style={{
+                                    display:
+                                        "flex",
+                                    background:
+                                        P.bg,
+                                    borderRadius: 10,
+                                    padding: 4,
+                                    marginBottom: 20,
+                                }}
+                            >
+
+                                {[
+                                    [
+                                        "today",
+                                        "Today",
+                                    ],
+                                    [
+                                        "monthly",
+                                        "Monthly",
+                                    ],
+                                    [
+                                        "yearly",
+                                        "Yearly",
+                                    ],
+                                ].map(
+                                    ([
+                                        key,
+                                        label,
+                                    ]) => (
+
+                                        <button
+                                            key={key}
+                                            onClick={() =>
+                                                setChartMode(
+                                                    key
+                                                )
+                                            }
+                                            style={{
+                                                flex: 1,
+                                                border:
+                                                    "none",
+                                                borderRadius:
+                                                    8,
+                                                padding:
+                                                    "8px 6px",
+                                                cursor:
+                                                    "pointer",
+                                                background:
+                                                    chartMode ===
+                                                    key
+                                                        ? P.amber
+                                                        : "transparent",
+                                                color:
+                                                    chartMode ===
+                                                    key
+                                                        ? P.surface
+                                                        : P.textMuted,
+                                                fontSize: 12,
+                                                fontWeight: 700,
+                                                fontFamily:
+                                                    "'Inter', sans-serif",
+                                            }}
+                                        >
+                                            {label}
+                                        </button>
+
+                                    )
+                                )}
+
+                            </div>
+
+                            {/* CHART */}
+
+                            <EnergyChart
+                                data={chartData}
+                                color={
+                                    P.textAmberBright
+                                }
+                            />
+
+                            <div
+                                style={{
+                                    textAlign:
+                                        "center",
+                                    marginTop: 8,
+                                    fontSize: 10,
+                                    color:
+                                        P.textLight,
+                                }}
+                            >
+                                {chartMode ===
+                                "today"
+                                    ? "Energy generated per hour"
+                                    : chartMode ===
+                                      "monthly"
+                                        ? "Energy generated per day"
+                                        : "Energy generated per month"}
+                            </div>
+
                         </div>
 
-                        <div style={statUnit}>
-                            hrs
-                        </div>
-                    </div>
-                </div>
-
-                {/* TODAY ENERGY */}
-
-                <div style={chartCard}>
-                    <div style={chartHeader}>
-                        <span style={chartTitle}>
-                            Today Energy
-                        </span>
-
-                        <span style={chartBadge}>
-                            {getParameterValue("TKWH")}{" "}
-                            kWh
-                        </span>
                     </div>
 
-                    <BarChart
-                        value={getParameterValue("TKWH")}
-                        maxValue={50}
-                        color={P.textAmberBright}
-                    />
                 </div>
 
-                {/* TODAY ON TIME */}
+                <VendorFooter />
 
-                {/* 
-                <div style={chartCard}>
-                    ...
-                </div>
-                */}
             </div>
 
-            {/* FOOTER */}
-
-            <VendorFooter />
-        </div>
+        </PageBackground>
     );
 }

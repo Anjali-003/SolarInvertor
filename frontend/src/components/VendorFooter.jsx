@@ -65,6 +65,61 @@ const navItems = [
                 </svg>
             ),
         },
+
+        {
+            label: "Device",
+            path: `/vendor/device/${id}/details`,
+            icon: (
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    {/* Device body */}
+                    <rect
+                        x="5"
+                        y="2"
+                        width="14"
+                        height="20"
+                        rx="2"
+                        ry="2"
+                    />
+
+                    {/* Screen */}
+                    <rect
+                        x="8"
+                        y="5"
+                        width="8"
+                        height="7"
+                        rx="1"
+                    />
+
+                    {/* Bottom indicators */}
+                    <circle
+                        cx="9"
+                        cy="16"
+                        r="1"
+                    />
+
+                    <circle
+                        cx="12"
+                        cy="16"
+                        r="1"
+                    />
+
+                    <circle
+                        cx="15"
+                        cy="16"
+                        r="1"
+                    />
+                </svg>
+            ),
+        },
         
     ];
 

@@ -283,6 +283,7 @@ import RegisterDevice from "./pages/RegisterDevice";
 import DeviceCredentials from "./pages/DeviceCredentials";
 import VendorDevices from "./pages/VendorDevices";
 import VendorProfile from "./pages/VendorProfile";
+import VendorDeviceDetails from "./pages/VendorDeviceDetails";
 
 import VendorHome from "./pages/VendorHome";
 import VendorPower from "./pages/VendorPower";
@@ -386,8 +387,13 @@ function App() {
 
                 <Route
                     path="/my-devices"
-                    element={<VendorDevices />}
+                    element={
+                    <VendorProtectedRoute>
+                        <VendorDevices />
+                        </VendorProtectedRoute>}
                 />
+
+                 
 
 
                 {/* =====================================================
@@ -509,6 +515,13 @@ function App() {
                         path="/vendor/device/:id/fault"
                         element={<VendorFault />}
                     />
+
+                    <Route
+    path="/vendor/device/:id/details" 
+                    element={
+                        <VendorDeviceDetails />
+                        }
+                />
 
                 </Route>
 

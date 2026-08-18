@@ -421,7 +421,7 @@ const getDCPower = () => {
                     INVERTER DETAILS
                 </h2>
 
-                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+                <div style={{ background: P.borderDark, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
 
                     <div style={metricCard}>
                         <div style={metricIconRow}>
@@ -655,7 +655,7 @@ const getDCPower = () => {
                     AC PARAMETER DETAILS
                 </h2>
 
-                <div style={{ background: P.borderCardDark, border: `1.5px solid ${P.borderCardDark}`, borderRadius: 16, padding: "5px", marginBottom: 12, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                     <div style={metricCard}>
                         <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>🌡 Temp</div>
                         <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>

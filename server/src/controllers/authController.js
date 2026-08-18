@@ -783,7 +783,7 @@ exports.setupDevice = async (req, res) => {
         device_id,
         location
       )
-      VALUES (?, ?)
+      VALUES (?, ?, ?)
       `,
       [
         userId,

@@ -1,22 +1,90 @@
+// const express = require("express");
+// const router = express.Router();
+
+// const vendorAuth =
+//   require("../middleware/vendorAuth");
+
+// const deviceController =
+//   require("../controllers/vendorDeviceController");
+
+//   const vendorEnergyController =
+//     require("../controllers/vendorEnergyController");
+
+// router.get(
+//   "/my-devices",
+//   vendorAuth,
+//   deviceController.getVendorDevices
+// );
+
+// router.get(
+//   "/my-devices/:id",
+//   vendorAuth,
+//   deviceController.getDeviceDetails
+// );
+
+// router.get(
+//     "/:id/energy/summary",
+//     vendorAuth,
+//     vendorEnergyController.getVendorEnergySummary
+// );
+
+
+// module.exports = router;
+
+
+
 const express = require("express");
+
 const router = express.Router();
 
 const vendorAuth =
-  require("../middleware/vendorAuth");
+    require("../middleware/vendorAuth");
 
 const deviceController =
-  require("../controllers/vendorDeviceController");
+    require("../controllers/vendorDeviceController");
+
+const vendorEnergyController =
+    require("../controllers/vendorEnergyController");
+
+const messageController =
+    require("../controllers/messageController");
+
 
 router.get(
-  "/my-devices",
-  vendorAuth,
-  deviceController.getVendorDevices
+    "/devices",
+    vendorAuth,
+    deviceController.getVendorDevices
 );
 
+// router.get(
+//     "/",
+//     vendorAuth,
+//     deviceController.getVendorDevices
+// );
+
 router.get(
-  "/my-devices/:id",
-  vendorAuth,
-  deviceController.getDeviceDetails
+    "/devices/:id",
+    vendorAuth,
+    deviceController.getDeviceDetails
 );
+
+router.get("/devices/:id/details", vendorAuth, deviceController.getVendorDeviceDetails);
+
+
+router.get(
+    "/devices/:id/latest",
+    vendorAuth,
+    messageController.getVendorLatestMessage
+);
+
+
+router.get(
+    "/devices/:id/energy/summary",
+    vendorAuth,
+    vendorEnergyController.getVendorEnergySummary
+);
+
+
+
 
 module.exports = router;

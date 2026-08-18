@@ -57,8 +57,13 @@ app.use("/api/admin",adminAuthRoutes);
 //   require("./routes/vendorDeviceRoutes")
 // );
 
+// app.use(
+//   "/api/devices",
+//   vendorDeviceRoutes
+// );
+
 app.use(
-  "/api/devices",
+  "/api/vendor",
   vendorDeviceRoutes
 );
 

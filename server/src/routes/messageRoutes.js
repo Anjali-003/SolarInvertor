@@ -73,10 +73,10 @@ router.get("/latest-message", auth, controller.getLatestMessage);
 // );
 
 
-router.get(
-  "/vendor/devices/:id/latest",
-  vendorAuth,
-  controller.getVendorLatestMessage
-);
+// router.get(
+//   "/vendor/devices/:id/latest",
+//   vendorAuth,
+//   controller.getVendorLatestMessage
+// );
 
 module.exports = router;

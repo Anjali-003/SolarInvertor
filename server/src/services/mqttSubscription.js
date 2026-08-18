@@ -29,7 +29,7 @@
 
 const client = require("./mqttClient");
 
-function subscribeDevice(imei, solution, deviceVersion) {
+function subscribeDevice(imei, soluwtion, deviceVersion) {
 
    const topic = `${deviceVersion}/${solution}/${imei}/#`;
 

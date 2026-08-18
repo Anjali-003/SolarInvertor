@@ -1010,12 +1010,14 @@
 
 
 // changed the context
+
 import { useNavigate } from "react-router-dom";
 import VendorFooter from "../components/VendorFooter";
 import P from "../theme/colors";
 import DeviceInfo from "../components/DeviceInfo";
-import PageHeader from "../components/PageHeader";
+import VendorPageHeader from "../components/VendorPageHeader";
 import { useVendorDevice } from "../context/VendorDeviceContext";
+import PageBackground from "../components/PageBackground";
 
 export default function VendorHome() {
     const navigate = useNavigate();
@@ -1024,12 +1026,116 @@ export default function VendorHome() {
     // DEVICE CONTEXT
     // ============================================================
 
+    // const {
+    //     selectedDevice,
+    //     data,
+    //     loading,
+    //     lastUpdated,
+    // } = useVendorDevice();
     const {
-        selectedDevice,
-        data,
-        loading,
-        lastUpdated,
-    } = useVendorDevice();
+    selectedDevice,
+    data,
+    loading,
+    lastUpdated,
+    energy,
+} = useVendorDevice();
+
+
+const getPlantCapacity = () => {
+    const rat = Number(data?.RAT);
+
+    if (!Number.isFinite(rat) || rat <= 0) {
+        return null;
+    }
+
+    return rat;
+};
+
+const getHoursInCurrentMonth = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+    return daysInMonth * 24;
+};
+
+const getHoursInCurrentYear = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+
+    const isLeapYear =
+        (year % 4 === 0 && year % 100 !== 0) ||
+        year % 400 === 0;
+
+    return (
+        (isLeapYear ? 366 : 365) * 24
+    );
+};
+
+const calculateCUF = (
+    generatedEnergy,
+    totalHours
+) => {
+    const capacity = getPlantCapacity();
+
+    const energyValue =
+        Number(generatedEnergy);
+
+    if (
+        capacity === null ||
+        !Number.isFinite(energyValue) ||
+        energyValue < 0 ||
+        totalHours <= 0
+    ) {
+        return null;
+    }
+
+    return (
+        (energyValue /
+            (capacity * totalHours)) *
+        100
+    );
+};
+
+const getTodayCUF = () => {
+    return calculateCUF(
+        energy?.today,
+        24
+    );
+};
+
+const getMonthlyCUF = () => {
+    return calculateCUF(
+        energy?.monthly,
+        getHoursInCurrentMonth()
+    );
+};
+
+const getYearlyCUF = () => {
+    return calculateCUF(
+        energy?.yearly,
+        getHoursInCurrentYear()
+    );
+};
+
+const formatCUF = (value) => {
+    if (
+        value === null ||
+        !Number.isFinite(value)
+    ) {
+        return "--";
+    }
+
+    return `${value.toFixed(2)}%`;
+};
 
     // ============================================================
     // GET PARAMETER VALUE
@@ -1125,7 +1231,7 @@ export default function VendorHome() {
                     boxSizing: "border-box",
                 }}
             >
-                <PageHeader title="HOME" />
+                <VendorPageHeader title="HOME" />
 
                 <div
                     style={{
@@ -1164,11 +1270,12 @@ export default function VendorHome() {
     // ============================================================
 
     return (
+        <PageBackground>
         <div
             style={{
                 minHeight: "100vh",
                 paddingBottom: 90,
-                background: P.bg,
+                // background: P.bg,
                 fontFamily: "'Inter', sans-serif",
                 boxSizing: "border-box",
                 width: "100%",
@@ -1236,10 +1343,18 @@ export default function VendorHome() {
 
             {/* ================= DEVICE INFO ================= */}
 
-            <DeviceInfo
+            {/* <DeviceInfo
                 data={data}
                 lastUpdated={lastUpdated}
-            />
+            /> */}
+
+
+            <DeviceInfo
+    data={data}
+    lastUpdated={lastUpdated}
+    devices={selectedDevice ? [selectedDevice] : []}
+    selectedDeviceId={selectedDevice?.id}
+/>
 
             {/* ================= PAGE CONTENT ================= */}
 
@@ -1258,7 +1373,7 @@ export default function VendorHome() {
                     style={{
                         fontSize: 15,
                         fontWeight: 800,
-                        color: P.textAmber,
+                        color: P.textWhite,
                         marginBottom: 12,
                         marginTop: 4,
                         letterSpacing: 0.5,
@@ -1378,13 +1493,151 @@ export default function VendorHome() {
                     </div>
                 </div>
 
+
+                <h2
+    style={{
+        fontSize: 15,
+        fontWeight: 800,
+        color: P.textWhite,
+        marginBottom: 12,
+        marginTop: 4,
+        letterSpacing: 0.5,
+        fontFamily: "'DM Sans', sans-serif",
+    }}
+>
+    CAPACITY UTILIZATION FACTOR
+</h2>
+
+<div
+    style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: 10,
+        marginBottom: 20,
+    }}
+>
+    {/* TODAY */}
+    <div style={statCard}>
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            TODAY
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright,
+            }}
+        >
+            {formatCUF(getTodayCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+    </div>
+
+    {/* MONTH */}
+    <div style={statCard}>
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            MONTH
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright,
+            }}
+        >
+            {formatCUF(getMonthlyCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+    </div>
+
+    {/* YEAR */}
+    <div style={statCard}>
+        <div style={statIconWrap}>
+            <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={P.borderStrong}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+            </svg>
+        </div>
+
+        <div style={statSubLabel}>
+            YEAR
+        </div>
+
+        <div
+            style={{
+                ...statValue,
+                color: P.textAmberBright,
+            }}
+        >
+            {formatCUF(getYearlyCUF())}
+        </div>
+
+        <div style={statUnit}>
+            CUF
+        </div>
+    </div>
+</div>
+
                 {/* ================= AC PARAMETER DETAILS ================= */}
 
                 <h2
                     style={{
                         fontSize: 15,
                         fontWeight: 800,
-                        color: P.textAmber,
+                        color: P.textWhite,
                         marginBottom: 12,
                         marginTop: 4,
                         letterSpacing: 0.5,
@@ -1587,5 +1840,53 @@ export default function VendorHome() {
 
             <VendorFooter />
         </div>
+        </PageBackground>
     );
 }
+
+
+const statCard = {
+    background: P.surface,
+    borderRadius: 14,
+    padding: "14px 10px",
+    textAlign: "center",
+    boxShadow: P.shadowCard,
+    border: `1px solid ${P.border}`,
+};
+
+const statIconWrap = {
+    width: 36,
+    height: 36,
+    borderRadius: "50%",
+    background: P.surfaceAmber,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto 8px",
+};
+
+const statSubLabel = {
+    fontSize: 9,
+    fontWeight: 700,
+    color: P.textLight,
+    letterSpacing: 0.5,
+    fontFamily: "'Inter', sans-serif",
+    marginBottom: 4,
+    textTransform: "uppercase",
+};
+
+const statValue = {
+    fontSize: 20,
+    fontWeight: 800,
+    color: P.textPrimary,
+    fontFamily: "'DM Sans', sans-serif",
+    lineHeight: 1.1,
+};
+
+const statUnit = {
+    fontSize: 11,
+    fontWeight: 500,
+    color: P.textMuted,
+    fontFamily: "'Inter', sans-serif",
+    marginTop: 2,
+};

@@ -370,38 +370,100 @@ export default function VendorDevices() {
 
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   const loadDevices = async () => {
+  //     try {
+  //       const token = localStorage.getItem("vendorToken");
+
+  //       const res = await fetch(
+  //         "http://localhost:3000/api/devices",
+  //         // VPSCHANGE
+  //         // "/api/devices/my-devices",
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       const data = await res.json();
+
+  //       console.log(data);
+
+  //       if (Array.isArray(data)) {
+  //         setDevices(data);
+  //       }
+  //     } catch (err) {
+  //       console.error(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   loadDevices();
+  // }, []);
+
+
   useEffect(() => {
     const loadDevices = async () => {
-      try {
-        const token = localStorage.getItem("vendorToken");
+        try {
+            setLoading(true);
 
-        const res = await fetch(
-          "http://localhost:3000/api/devices/my-devices",
-          // VPSCHANGE
-          // "/api/devices/my-devices",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+            const token = localStorage.getItem("vendorToken");
 
-        const data = await res.json();
+            if (!token) {
+                console.error("No vendor token found");
 
-        console.log(data);
+                setDevices([]);
+                return;
+            }
 
-        if (Array.isArray(data)) {
-          setDevices(data);
+            const res = await fetch(
+    "http://localhost:3000/api/vendor/devices",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await res.json();
+
+            console.log("Vendor devices response:", {
+                status: res.status,
+                data,
+            });
+
+            if (!res.ok) {
+                throw new Error(
+                    data?.error ||
+                    `Request failed with status ${res.status}`
+                );
+            }
+
+            if (!Array.isArray(data)) {
+                throw new Error(
+                    "Invalid devices response from server"
+                );
+            }
+
+            setDevices(data);
+
+        } catch (err) {
+            console.error(
+                "Failed to load vendor devices:",
+                err
+            );
+
+            setDevices([]);
+
+        } finally {
+            setLoading(false);
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
     };
 
     loadDevices();
-  }, []);
+}, []);
 
   return (
     <div

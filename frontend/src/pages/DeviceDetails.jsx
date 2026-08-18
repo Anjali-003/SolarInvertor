@@ -965,6 +965,7 @@ import Footer from "../components/Footer";
 import PageHeader from "../components/PageHeader";
 import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
+import PageBackground from "../components/PageBackground";
 
 const API_BASE = "http://localhost:3000";
 
@@ -1281,12 +1282,12 @@ export default function DeviceDetails() {
     // =====================================================
 
     return (
-
+<PageBackground>
         <div
             style={{
                 minHeight: "100vh",
                 paddingBottom: "90px",
-                background: P.bg,
+                // background: P.bg,
                 fontFamily: "'Inter', sans-serif"
             }}
         >
@@ -1341,7 +1342,7 @@ export default function DeviceDetails() {
                 >
                     DEVICE INFORMATION
                 </h2> */}
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textAmber, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     DEVICE INFORMATION
                 </h2>
 
@@ -1629,6 +1630,7 @@ export default function DeviceDetails() {
             />
 
         </div>
+        </PageBackground>
     );
 }
 
