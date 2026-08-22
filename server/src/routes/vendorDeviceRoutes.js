@@ -1,38 +1,3 @@
-// const express = require("express");
-// const router = express.Router();
-
-// const vendorAuth =
-//   require("../middleware/vendorAuth");
-
-// const deviceController =
-//   require("../controllers/vendorDeviceController");
-
-//   const vendorEnergyController =
-//     require("../controllers/vendorEnergyController");
-
-// router.get(
-//   "/my-devices",
-//   vendorAuth,
-//   deviceController.getVendorDevices
-// );
-
-// router.get(
-//   "/my-devices/:id",
-//   vendorAuth,
-//   deviceController.getDeviceDetails
-// );
-
-// router.get(
-//     "/:id/energy/summary",
-//     vendorAuth,
-//     vendorEnergyController.getVendorEnergySummary
-// );
-
-
-// module.exports = router;
-
-
-
 const express = require("express");
 
 const router = express.Router();
@@ -56,11 +21,6 @@ router.get(
     deviceController.getVendorDevices
 );
 
-// router.get(
-//     "/",
-//     vendorAuth,
-//     deviceController.getVendorDevices
-// );
 
 router.get(
     "/devices/:id",

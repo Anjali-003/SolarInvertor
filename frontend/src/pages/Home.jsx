@@ -6,10 +6,10 @@ import P from "../theme/colors";
 import DeviceInfo from "../components/DeviceInfo";
 import PageBackground from "../components/PageBackground";
 import DeviceMenu from "../components/DeviceMenu";
+import PowerFlowCard from "../components/PowerFlowCard";
+
 
 export default function Home() {
-    // const { data, lastUpdated } = useInverter();
-    // const { data, lastUpdated, energy } = useInverter();
     const {
     data,
     lastUpdated,
@@ -38,15 +38,6 @@ export default function Home() {
     };
 })();
 
-// OLD PARSER
-
-    // const getParameterValue = (parameter) => {
-    //     const entry = Object.entries(data || {}).find(([key]) => {
-    //         if (!key.includes("-")) return false;
-    //         return parseKeyword(key).parameter === parameter;
-    //     });
-    //     return entry ? entry[1] : "--";
-    // };
 
     const getParameterValue = (parameter) => {
     return data?.[parameter] ?? "--";
@@ -213,200 +204,10 @@ const getDCPower = () => {
     }}
 >
 
-        {/* <div
-    style={{
-        height: 64,
-        background: P.surface,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderBottom: "1px solid #ECECEC",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-    }}
->
-    <div
-        style={{
-            fontSize: 18,
-            fontWeight: 700,
-            color: P.textAmber,
-            letterSpacing: 2,
-            fontFamily: "'DM Sans', sans-serif",
-        }}
-    >
-        HOME
-    </div>
-</div> */}
-
-{/* 
-<div
-    style={{
-        height: 64,
-        background: P.surface,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderBottom: "1px solid #ECECEC",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-    }}
->
-
-    <DeviceMenu />
-
-    <div
-        style={{
-            fontSize: 18,
-            fontWeight: 700,
-            color: P.textAmber,
-            letterSpacing: 2,
-            fontFamily: "'DM Sans', sans-serif",
-        }}
-    >
-        HOME
-    </div>
-
-</div> */}
 
 <PageHeader title="HOME" />
 
-            {/* ================= DEVICE INFO CARD ================= */}
-{/* 
-<div
-    style={{
-        margin: "20px 20px 16px",
-        background: P.surface,
-        borderRadius: 16,
-        padding: "16px 18px",
-        border: `1px solid ${P.border}`,
-        boxShadow: P.shadowCard,
-    }}
->
 
-    <div
-        style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            background: P.surfaceGreen,
-            border: `1px solid ${P.borderGreen}`,
-            borderRadius: 20,
-            padding: "4px 10px",
-            flexShrink: 0,
-            marginBottom: 16,
-        }}
-    >
-        <div
-            style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: P.green,
-                boxShadow: `0 0 6px ${P.green}`,
-            }}
-        />
-
-        <span
-            style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: P.textGreen,
-                fontFamily: "'DM Sans', sans-serif",
-            }}
-        >
-            Online
-        </span>
-    </div>
-
-    <div
-        style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 24,
-        }}
-    >
-
-        <div style={{ flex: 1 }}>
-            <div
-                style={{
-                    fontSize: 10,
-                    color: P.textLight,
-                    fontWeight: 500,
-                    letterSpacing: 0.8,
-                    marginBottom: 2,
-                    fontFamily: "'Inter', sans-serif",
-                }}
-            >
-                SERIAL NUMBER
-            </div>
-
-            <div
-                style={{
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: P.textPrimary,
-                    fontFamily: "'DM Sans', sans-serif",
-                }}
-            >
-                {Object.keys(data || {}).find(k => k.startsWith("ASN_"))
-                    ? data[Object.keys(data).find(k => k.startsWith("ASN_"))]
-                    : "--"}
-            </div>
-        </div>
-
-<div
-    style={{
-        textAlign: "right",
-    }}
->
-    <div
-        style={{
-            fontSize: 10,
-            color: P.textLight,
-            fontWeight: 500,
-            letterSpacing: 0.8,
-            marginBottom: 6,
-            fontFamily: "'Inter', sans-serif",
-        }}
-    >
-        LAST UPDATED
-    </div>
-
-    <div
-        style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: P.textPrimary,
-            fontFamily: "'DM Sans', sans-serif",
-            lineHeight: 1.2,
-        }}
-    >
-        {formattedDateTime.date}
-    </div>
-
-    {formattedDateTime.time && (
-        <div
-            style={{
-                marginTop: 3,
-                fontSize: 12,
-                fontWeight: 700,
-                color: P.textPrimary,
-                fontFamily: "'Inter', sans-serif",
-                lineHeight: 1.2,
-            }}
-        >
-        {formattedDateTime.time}
-        </div>
-    )}
-</div>
-    </div>
-
-</div> */}
 
 <DeviceInfo
     data={data}
@@ -414,113 +215,19 @@ const getDCPower = () => {
     devices={devices}
     selectedDeviceId={selectedDeviceId}
 />
-            {/* PAGE CONTENT */}
+
             <div style={{ padding: "0 20px 20px", boxSizing: "border-box", }}>
+
 
                 <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                     INVERTER DETAILS
                 </h2>
+                <PowerFlowCard
+  dcPower={getDCPower()}
+  solarPower={getParameterValue("PPOW")}
+  st3={getParameterValue("ST3")}
+/>
 
-                <div style={{ background: P.borderDark, border: `1.5px solid ${P.borderDark}`, borderRadius: 16, padding: "5px", marginBottom: 20, boxShadow: P.shadowCardRaised, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-
-                    <div style={metricCard}>
-                        <div style={metricIconRow}>
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                            <span style={metricValue}>{getParameterValue("DCV1")} <span style={metricUnit}>V</span></span>
-                        </div>
-                        <div style={metricLabel}>DC Voltage</div>
-                        <div style={metricDesc}>Input Voltage</div>
-                    </div>
-
-                    <div style={metricCard}>
-                        <div style={metricIconRow}>
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                            <span style={metricValue}>{getParameterValue("DCI1")} <span style={metricUnit}>A</span></span>
-                        </div>
-                        <div style={metricLabel}>DC Current</div>
-                        <div style={metricDesc}>Input current</div>
-                    </div>
-{/* 
-                    <div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                            <div style={metricIconRow}><span style={metricIcon}>🔲</span></div>
-                            <div style={metricLabel}>DC Power</div>
-                            <div style={metricDesc}>Total output</div>
-                        </div>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                            {getParameterValue("DCKW1")} <span style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>kW</span>
-                        </div>
-                    </div> */}
-
-                                                {/* I*V = Power */}
-
-<div style={{ ...metricCard, gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-    <div>
-        <div style={metricIconRow}>
-            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-        </div>
-        <div style={metricLabel}>DC Power</div>
-        <div style={metricDesc}>DC Voltage × DC Current</div>
-    </div>
-
-    <div
-        style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: P.textPrimary,
-            fontFamily: "'DM Sans', sans-serif",
-        }}
-    >
-        {getDCPower()}{" "}
-        <span
-            style={{
-                fontSize: 14,
-                fontWeight: 600,
-                color: P.textMuted,
-            }}
-        >
-            kW
-        </span>
-    </div>
-</div>
-
-
-
-
-                </div>
 <h2
     style={{
         fontSize: 15,
@@ -676,10 +383,7 @@ const getDCPower = () => {
                         { key: "DCI1",    label: "AC Current",     desc: "I",    unit: "A"    },
                         { key: "POW",  label: "Export Power",   desc: "POW",  unit: "kW"   },
                         { key: "PF",   label: "Power Factor",   desc: "PF",   unit: ""     },
-                        // { key: "GFREQ", label: "Grid Frequency", desc: "GFREQ", unit: "Hz" },
-
-                        // { key: "APOW", label: "Apparent Power", desc: "POW",  unit: "kVA"  },
-                        // { key: "RPOW", label: "Reactive Power", desc: "RPOW", unit: "kVAr" },
+                  
                     ].map((item) => (
                         <div key={item.key} style={{ ...metricCard, background: P.surface, border: `1px solid ${P.border}`, boxShadow: P.shadowCard}}>
                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
@@ -698,7 +402,6 @@ const getDCPower = () => {
                                     
 {" "}
 {item.label}
-                                {/* <span style={{ fontSize: 10, color: P.textLight, marginLeft: 4 }}>({item.desc})</span> */}
                             </div>
                             <div style={{ fontSize: 20, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
                                 {getParameterValue(item.key)}{" "}

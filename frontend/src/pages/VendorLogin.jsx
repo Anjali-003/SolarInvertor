@@ -58,9 +58,9 @@ useEffect(() => {
       setError("");
 
       const res = await fetch(
-        // "http://localhost:3000/api/vendor/login",
+        "http://localhost:3000/api/vendor/login",
         //VPSCHANGE
-        "/api/vendor/login",
+        // "/api/vendor/login",
         {
           method: "POST",
           headers: {
@@ -149,9 +149,9 @@ localStorage.setItem(
 
     // Register
     const res = await fetch(
-      // "http://localhost:3000/api/vendor/register",
+      "http://localhost:3000/api/vendor/register",
       //VPSCHANGE
-            "/api/vendor/register", 
+            // "/api/vendor/register", 
  
       {
       method: "POST",

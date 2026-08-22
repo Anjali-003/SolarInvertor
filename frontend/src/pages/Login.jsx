@@ -102,8 +102,8 @@ const loginUser = async (data) => {
 
     const devicesRes = await fetch(
       //VPSCHANGE
-      // "http://localhost:3000/api/user/devices",
-            "/api/user/devices",
+      "http://localhost:3000/api/user/devices",
+            // "/api/user/devices",
 
       {
         headers: {
@@ -216,9 +216,9 @@ const loginUser = async (data) => {
 
     try {
       const res = await fetch(
-        // "http://localhost:3000/api/auth/login",
+        "http://localhost:3000/api/auth/login",
         //VPSCHANGE
-                "/api/auth/login",
+                // "/api/auth/login",
 
         {
           method: "POST",
@@ -282,9 +282,9 @@ if (!/^\d{15}$/.test(imei)) {
 
     try {
       const res = await fetch(
-        // "http://localhost:3000/api/auth/setup-device",
+        "http://localhost:3000/api/auth/setup-device",
         //VPSCHANGE
-        "/api/auth/setup-device",
+        // "/api/auth/setup-device",
         {
           method: "POST",
           headers: {
@@ -319,9 +319,9 @@ if (!/^\d{15}$/.test(imei)) {
 // Signup successful, now automatically login
 
 const loginRes = await fetch(
-  // "http://localhost:3000/api/auth/login",
+  "http://localhost:3000/api/auth/login",
   //VPSCHANGE
-  "/api/auth/login",
+  // "/api/auth/login",
   {
     method: "POST",
     headers: {
