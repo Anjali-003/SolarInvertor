@@ -29,10 +29,10 @@ export default function VendorForgotPassword() {
     try {
       const response = await fetch(
         // "http://localhost:3000/api/vendor/forgot-password",
-                "http://192.168.1.29:3000/api/vendor/forgot-password",
+                // "http://192.168.1.29:3000/api/vendor/forgot-password",
 
         // VPSCHANGE:
-        // "/api/vendor/forgot-password",
+        "/api/vendor/forgot-password",
         {
           method: "POST",
           headers: {

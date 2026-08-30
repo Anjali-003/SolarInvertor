@@ -2417,7 +2417,7 @@ import {
 const InverterContext = createContext();
 //VPSCHANGE
 // const API_BASE = "http://localhost:3000";
-const API_BASE = "http://192.168.1.29:3000";
+// const API_BASE = "http://192.168.1.29:3000";
 
 
 const EMPTY_ENERGY = {
@@ -2510,8 +2510,8 @@ export function InverterProvider({ children }) {
 
             const res = await fetch(
                 //VPSCHANGE
-                `${API_BASE}/api/user/devices`,
-                                // `/api/user/devices`,
+                // `${API_BASE}/api/user/devices`,
+                                `/api/user/devices`,
 
                 {
                     method: "GET",
@@ -2652,8 +2652,8 @@ export function InverterProvider({ children }) {
 
             const res = await fetch(
                 //VPSCHANGE
-                `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
-                                // `/api/latest-message?device_id=${selectedDeviceId}`,
+                // `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
+                                `/api/latest-message?device_id=${selectedDeviceId}`,
 
                 {
                     method: "GET",
@@ -2757,8 +2757,8 @@ setData({
 
             const res = await fetch(
                 //VPSCHANGE
-                `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
-                                // `/api/energy/summary?device_id=${selectedDeviceId}`,
+                // `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
+                                `/api/energy/summary?device_id=${selectedDeviceId}`,
 
                 {
                     method: "GET",
