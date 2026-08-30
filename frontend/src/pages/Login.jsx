@@ -6,6 +6,21 @@ import P from "../theme/colors";
 import PasswordInput from "../components/PasswordInput";
 import logo from "../assets/logo.png";
 
+async function getResponseError(response, fallbackMessage) {
+  try {
+    const contentType = response?.headers?.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      return data?.error || data?.message || fallbackMessage;
+    }
+
+    const text = await response.text();
+    return text || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -102,36 +117,40 @@ const loginUser = async (data) => {
 
     const devicesRes = await fetch(
       //VPSCHANGE
-      "http://localhost:3000/api/user/devices",
-            // "/api/user/devices",
+      // "http://localhost:3000/api/user/devices",
+      "http://213.210.21.49:3000/api/user/devices",
+
+      // "/api/user/devices",
 
       {
         headers: {
-          Authorization:
-            `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
 
+    let devicesData = {};
 
-    const devicesData =
-      await devicesRes.json();
+    try {
+      const contentType = devicesRes.headers.get("content-type") || "";
 
+      if (contentType.includes("application/json")) {
+        devicesData = await devicesRes.json();
+      } else {
+        const text = await devicesRes.text();
+        devicesData = text ? { error: text } : {};
+      }
+    } catch (parseError) {
+      console.error("Device response parse error:", parseError);
+      throw new Error("The server returned an invalid response while loading your devices.");
+    }
 
     if (!devicesRes.ok) {
+      console.log("Failed to fetch user devices:", devicesData);
 
-      console.log(
-        "Failed to fetch user devices:",
-        devicesData
-      );
-
-      setError(
-        devicesData.error ||
-        "Failed to load devices"
-      );
-
+      const message = devicesData.error || devicesData.message || "Failed to load devices";
+      setError(message);
       setLoading(false);
-
       return;
     }
 
@@ -194,16 +213,13 @@ const loginUser = async (data) => {
     navigate("/");
 
   } catch (err) {
+    console.error("Device loading error:", err);
 
-    console.error(
-      "Device loading error:",
-      err
-    );
+    const message =
+      err?.message ||
+      "Failed to load user devices. Please check your connection or server status.";
 
-    setError(
-      "Failed to load user devices"
-    );
-
+    setError(message);
     setLoading(false);
   }
 };
@@ -216,15 +232,16 @@ const loginUser = async (data) => {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/login",
+        // "http://localhost:3000/api/auth/login",
+        "http://192.168.1.29:3000/api/auth/login",
+
         //VPSCHANGE
-                // "/api/auth/login",
+        // "/api/auth/login",
 
         {
           method: "POST",
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             identifier,
@@ -233,32 +250,44 @@ const loginUser = async (data) => {
         }
       );
 
-      const data =
-        await res.json();
+      let data = {};
+
+      try {
+        const contentType = res.headers.get("content-type") || "";
+
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          data = text ? { error: text } : {};
+        }
+      } catch (parseError) {
+        console.error("Login response parse error:", parseError);
+        throw new Error("The server returned an invalid login response.");
+      }
 
       if (!res.ok) {
-        setError(
-          data.error ||
-          "Login failed"
-        );
-
+        const message = data?.error || data?.message || `Login failed (${res.status})`;
+        setError(message);
         setLoading(false);
         return;
       }
 
-
       // SAVE USER DATA
       console.log("👤 User data from response:", data.user);
-      loginUser(data);
-
+      await loginUser(data);
     } catch (err) {
+      console.error("Login request failed:", err);
 
-      console.log(err);
+      let message = "Unable to reach the server. Please check your internet connection or server URL.";
 
-      setError(
-        "Server error"
-      );
+      if (err instanceof TypeError) {
+        message = "Network error: the app could not connect to the server.";
+      } else if (err?.message) {
+        message = err.message;
+      }
 
+      setError(message);
       setLoading(false);
     }
   };
@@ -282,7 +311,9 @@ if (!/^\d{15}$/.test(imei)) {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/auth/setup-device",
+        // "http://localhost:3000/api/auth/setup-device",
+                "http://192.168.1.29:3000/api/auth/setup-device",
+
         //VPSCHANGE
         // "/api/auth/setup-device",
         {
@@ -306,49 +337,67 @@ if (!/^\d{15}$/.test(imei)) {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.error || "Setup failed");
-        setLoading(false);
-        return;
-      }
+      // if (!res.ok) {
+      //   setError(data.error || "Setup failed");
+      //   setLoading(false);
+      //   return;
+      // }
 
-      setMode("login");
-      setError("");
-      setSuccess("Device setup successful! Please login.");
+//       setMode("login");
+//       setError("");
+//       setSuccess("Device setup successful! Please login.");
 
-// Signup successful, now automatically login
+// // Signup successful, now automatically login
 
-const loginRes = await fetch(
-  "http://localhost:3000/api/auth/login",
-  //VPSCHANGE
-  // "/api/auth/login",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      identifier: email,
-      password: setupPassword,
-    }),
-  }
-);
+// const loginRes = await fetch(
+//   "http://localhost:3000/api/auth/login",
+//   //VPSCHANGE
+//   // "/api/auth/login",
+//   {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       identifier: email,
+//       password: setupPassword,
+//     }),
+//   }
+// );
 
-const loginData = await loginRes.json();
+// const loginData = await loginRes.json();
 
-if (!loginRes.ok) {
-  setError(loginData.error || "Automatic login failed");
+// if (!loginRes.ok) {
+//   setError(loginData.error || "Automatic login failed");
+//   setLoading(false);
+//   return;
+// }
+
+// loginUser(loginData);
+
+if (!res.ok) {
+  setError(data.error || "Setup failed");
   setLoading(false);
   return;
 }
 
-loginUser(loginData);
+setLoading(false);
 
+navigate("/verify-email", {
+  state: {
+    email: email
+  }
+});
 
 
     } catch (err) {
-      console.log(err);
-      setError("Server error");
+      console.error("Device setup request failed:", err);
+
+      const message =
+        err?.message ||
+        "Unable to finish device setup. Please check the server and try again.";
+
+      setError(message);
       setLoading(false);
     }
   };
@@ -502,6 +551,29 @@ loginUser(loginData);
                 Forgot Password
               </a>
             </div> */}
+
+            <div
+  style={{
+    marginBottom: 20,
+    textAlign: "center",
+  }}
+>
+  <span
+    onClick={() => {
+      navigate("/forgot-password");
+      setError("");
+      setSuccess("");
+    }}
+    style={{
+      fontSize: 13,
+      color: P.textAmberBright,
+      cursor: "pointer",
+      fontWeight: 600,
+    }}
+  >
+    Forgot Password?
+  </span>
+</div>
 
             <p
   style={{

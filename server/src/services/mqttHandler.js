@@ -183,7 +183,13 @@ console.log("INSERT DATA:", {
 // SAVE LKWH ENERGY HISTORY
 // ─────────────────────────────────────────────
 
-const lkwh = Number(parsed.LKWH);
+// const lkwh = Number(parsed.LKWH);
+const LKWH = Number(payload.LKWH) || 0;
+const LKWL = Number(payload.LKWL) || 0;
+
+const lkwh =
+    (((LKWH & 0xFFFF) << 16) | (LKWL & 0xFFFF)) >>> 0;
+
 
 if (Number.isFinite(lkwh)) {
 

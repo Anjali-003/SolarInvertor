@@ -13,7 +13,7 @@ export default function AdminHome() {
         const loginType = localStorage.getItem("loginType");
         localStorage.clear();
         if (loginType === "vendor") {
-            navigate("/login");
+            navigate("/vendor-login");
         } else {
             navigate("/login");
         }

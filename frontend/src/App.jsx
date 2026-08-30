@@ -16,6 +16,10 @@ import Login from "./pages/Login";
 import AddDevice from "./pages/AddDevice";
 import DeviceDetails from "./pages/DeviceDetails";
 
+import VerifyEmail from "./pages/VerifyEmail";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
 // ================= VENDOR PAGES =================
 
 import VendorLogin from "./pages/VendorLogin";
@@ -29,6 +33,10 @@ import VendorDeviceDetails from "./pages/VendorDeviceDetails";
 import VendorHome from "./pages/VendorHome";
 import VendorPower from "./pages/VendorPower";
 import VendorFault from "./pages/VendorFault";
+
+import VendorForgotPassword from "./pages/VendorForgotPassword";
+import VendorResetPassword from "./pages/VendorResetPassword";
+import VendorVerifyEmail from "./pages/VendorVerifyEmail";
 
 // ================= ADMIN PAGES =================
 
@@ -49,6 +57,8 @@ import AdminLayout from "./components/AdminLayout";
 
 import { InverterProvider } from "./context/Context";
 import { VendorDeviceProvider } from "./context/VendorDeviceContext";
+
+
 
 
 function App() {
@@ -207,7 +217,37 @@ function App() {
                     }
                 />
 
+<Route
+    path="/verify-email"
+    element={
+    <VerifyEmail />}
+/>
 
+<Route
+    path="/forgot-password"
+    element={<ForgotPassword />}
+/>
+
+<Route
+    path="/reset-password"
+    element={<ResetPassword />}
+/>
+
+<Route
+    path="/vendor/verify-email"
+    element={
+    <VendorVerifyEmail />}
+/>
+
+<Route
+  path="/vendor/forgot-password"
+  element={<VendorForgotPassword />}
+/>
+
+<Route
+  path="/vendor/reset-password"
+  element={<VendorResetPassword />}
+/>
                 {/* =====================================================
                     DEVICE CREDENTIALS
                 ===================================================== */}

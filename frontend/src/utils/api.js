@@ -1,34 +1,133 @@
 import axios from "axios";
 
-const api = axios.create({
+const API_BASE =
+    import.meta.env.VITE_API_BASE_URL || "/api";
 
-    baseURL: "http://localhost:3000/api"
-    //VPSCHANGE
-        // baseURL: "/api"
+const ROLE_STORAGE_KEYS = {
+    user: "token",
+    vendor: "vendorToken",
+    admin: "adminToken",
+};
 
+const ROLE_REDIRECTS = {
+    user: "/login",
+    vendor: "/vendor-login",
+    admin: "/admin-login",
+};
 
-});
+function clearRoleData(role) {
+    const storageKey = ROLE_STORAGE_KEYS[role];
 
-api.interceptors.request.use(
+    if (storageKey) {
+        localStorage.removeItem(storageKey);
+    }
 
-    (config) => {
+    if (role === "user") {
+        localStorage.removeItem("user");
+    }
+}
 
-        const token =
-            localStorage.getItem("adminToken");
+function redirectForRole(role) {
+    const redirectUrl = ROLE_REDIRECTS[role] || "/login";
 
-        if (token) {
+    if (typeof window !== "undefined") {
+        window.location.href = redirectUrl;
+    }
+}
 
-            config.headers.Authorization =
-                `Bearer ${token}`;
+export function buildApiClient(role = "admin") {
+    const instance = axios.create({
+        baseURL: API_BASE,
+    });
 
+    instance.interceptors.request.use(
+        (config) => {
+            const token = localStorage.getItem(ROLE_STORAGE_KEYS[role]);
+
+            if (token) {
+                config.headers = {
+                    ...config.headers,
+                    Authorization: `Bearer ${token}`,
+                };
+            }
+
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
+
+    instance.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error?.response?.status === 401) {
+                clearRoleData(role);
+                redirectForRole(role);
+            }
+
+            return Promise.reject(error);
         }
+    );
 
-        return config;
+    return instance;
+}
 
-    },
+export const userApi = buildApiClient("user");
+export const vendorApi = buildApiClient("vendor");
+export const adminApi = buildApiClient("admin");
 
-    (error) => Promise.reject(error)
-
-);
+const api = adminApi;
 
 export default api;
+
+export async function apiFetch(
+    url,
+    options = {},
+    role = "user"
+) {
+    const token = localStorage.getItem(ROLE_STORAGE_KEYS[role]);
+
+    const headers = {
+        ...(options.headers || {}),
+    };
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    const finalUrl = url.startsWith("http")
+        ? url
+        : `${API_BASE}${url.startsWith("/") ? "" : "/"}${url.replace(/^\/+/, "")}`;
+
+    const response = await fetch(finalUrl, {
+        ...options,
+        headers,
+    });
+
+    if (response.status === 401) {
+        clearRoleData(role);
+
+        const text = await response
+            .clone()
+            .text()
+            .catch(() => "");
+
+        const parsed = text ? JSON.parse(text) : {};
+
+        redirectForRole(role);
+
+        throw new Error(
+            parsed.error || "Session expired"
+        );
+    }
+
+    return response;
+}
+
+export const userApiFetch = (url, options = {}) =>
+    apiFetch(url, options, "user");
+
+export const vendorApiFetch = (url, options = {}) =>
+    apiFetch(url, options, "vendor");
+
+export const adminApiFetch = (url, options = {}) =>
+    apiFetch(url, options, "admin");

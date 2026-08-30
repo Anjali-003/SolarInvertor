@@ -2416,7 +2416,9 @@ import {
 
 const InverterContext = createContext();
 //VPSCHANGE
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+const API_BASE = "http://192.168.1.29:3000";
+
 
 const EMPTY_ENERGY = {
     today: 0,
@@ -2679,9 +2681,22 @@ export function InverterProvider({ children }) {
                 return;
             }
 
-            setData(
-                result.payload || {}
-            );
+            const payload = result.payload || {};
+
+const lkwh = Number(payload.LKWH) || 0;
+const lkwl = Number(payload.LKWL) || 0;
+
+const combinedLKWH =
+    (((lkwh & 0xFFFF) << 16) | (lkwl & 0xFFFF)) >>> 0;
+
+setData({
+    ...payload,
+    LKWH: combinedLKWH,
+});
+
+            // setData(
+            //     result.payload || {}
+            // );
 
             setLastUpdated(
                 result.created_at || null

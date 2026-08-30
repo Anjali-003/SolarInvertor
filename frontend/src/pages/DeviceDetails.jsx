@@ -7,7 +7,9 @@ import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
 import PageBackground from "../components/PageBackground";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+const API_BASE = "http://192.168.1.29:3000";
+
 //VPSCHANGE
 
 export default function DeviceDetails() {

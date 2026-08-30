@@ -14,6 +14,7 @@ exports.getPendingVendors = async (req, res) => {
                 created_at
             FROM vendors
             WHERE status='pending'
+            AND email_verified = TRUE
             ORDER BY created_at ASC
             `
         );

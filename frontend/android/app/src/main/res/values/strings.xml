@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Energia</string>
+    <string name="title_activity_main">Energia</string>
+    <string name="package_name">com.Statcon.app</string>
+    <string name="custom_url_scheme">com.Statcon.app</string>
+</resources>

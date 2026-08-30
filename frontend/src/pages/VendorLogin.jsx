@@ -58,9 +58,11 @@ useEffect(() => {
       setError("");
 
       const res = await fetch(
-        "http://localhost:3000/api/vendor/login",
+        // "http://localhost:3000/api/vendor/login",
+                // "http://192.168.1.29:3000/api/vendor/login",
+
         //VPSCHANGE
-        // "/api/vendor/login",
+        "/api/vendor/login",
         {
           method: "POST",
           headers: {
@@ -78,15 +80,39 @@ useEffect(() => {
         await res.json();
         
 
+      // if (!res.ok) {
+
+      //   setError(
+      //     data.error ||
+      //     "Login failed"
+      //   );
+
+      //   return;
+      // }
+
+
       if (!res.ok) {
+  if (data.requiresEmailVerification) {
+    const verificationEmail =
+      data.email || login;
 
-        setError(
-          data.error ||
-          "Login failed"
-        );
+    sessionStorage.setItem(
+      "vendorVerificationEmail",
+      verificationEmail
+    );
 
-        return;
-      }
+    navigate("/vendor/verify-email", {
+      state: {
+        email: verificationEmail,
+      },
+    });
+
+    return;
+  }
+
+  setError(data.error || "Login failed");
+  return;
+}
 
       localStorage.setItem(
         "vendorToken",
@@ -149,9 +175,11 @@ localStorage.setItem(
 
     // Register
     const res = await fetch(
-      "http://localhost:3000/api/vendor/register",
+      // "http://localhost:3000/api/vendor/register",
+            // "http://192.168.1.29:3000/api/vendor/register",
+
       //VPSCHANGE
-            // "/api/vendor/register", 
+            "/api/vendor/register", 
  
       {
       method: "POST",
@@ -167,9 +195,49 @@ localStorage.setItem(
     }
 
     // Auto-login after successful registration
-    resetForm();
-setMode("login");
-setSuccess("Registration submitted! Please wait for admin approval before logging in.");
+//     resetForm();
+// setMode("login");
+// setSuccess("Registration submitted! Please wait for admin approval before logging in.");
+
+if (!res.ok) {
+  setError(data.error || "Registration failed");
+  return;
+}
+
+// if (data.requiresEmailVerification) {
+//   resetForm();
+
+//   navigate("/vendor/verify-email", {
+//     state: {
+//       email: data.email || data.vendor?.email || email,
+//     },
+//   });
+
+//   return;
+// }
+
+
+if (data.requiresEmailVerification) {
+  const verificationEmail =
+    data.email ||
+    data.vendor?.email ||
+    email;
+
+  sessionStorage.setItem(
+    "vendorVerificationEmail",
+    verificationEmail
+  );
+
+  resetForm();
+
+  navigate("/vendor/verify-email", {
+    state: {
+      email: verificationEmail,
+    },
+  });
+
+  return;
+}
 
   } catch {
     setError("Server error");
@@ -295,6 +363,27 @@ setSuccess("Registration submitted! Please wait for admin approval before loggin
               {loading ? "Logging In..." : "Login"}
             </button>
 
+            
+<div
+  style={{
+    textAlign: "center",
+    marginBottom: 16,
+  }}
+>
+  <span
+    onClick={() => navigate("/vendor/forgot-password")}
+    style={{
+      color: P.textAmberBright,
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      fontFamily: "'Inter', sans-serif",
+    }}
+  >
+    Forgot Password?
+  </span>
+</div>
+
             <p style={{ fontSize: 13, color: P.textHint, textAlign: "center", fontFamily: "'Inter', sans-serif" }}>
               Don't have an account?{" "}
               <span
@@ -365,6 +454,7 @@ setSuccess("Registration submitted! Please wait for admin approval before loggin
     inputStyle={inputStyle}
   />
 </div>
+
 
             <button
               type="submit"

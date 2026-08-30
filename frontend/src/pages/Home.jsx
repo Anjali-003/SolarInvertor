@@ -413,6 +413,8 @@ const getDCPower = () => {
 
             </div>
             {/* </div> */}
+
+            
             <Footer />
 
         </div>

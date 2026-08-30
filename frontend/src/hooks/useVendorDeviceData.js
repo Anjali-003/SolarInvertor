@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 
 export default function useVendorDeviceData(deviceId) {
 
@@ -43,9 +44,7 @@ export default function useVendorDeviceData(deviceId) {
 
             const res =
                 await axios.get(
-                    `http://localhost:3000/api/vendor/devices/${deviceId}/latest`,
-                    //VPSCHANGE
-                    // "/api/vendor/devices/" + deviceId + "/latest",
+                    `${API_BASE}/api/vendor/devices/${deviceId}/latest`,
                     {
                         headers: {
                             Authorization:

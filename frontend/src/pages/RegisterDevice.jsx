@@ -32,8 +32,10 @@ export default function RegisterDevice() {
       const token = localStorage.getItem("vendorToken");
 
       const res = await fetch(
-        "http://localhost:3000/api/certs/generate",
+        // "http://localhost:3000/api/certs/generate",
         // VPSCHANGE
+                "http://192.168.1.29:3000/api/certs/generate",
+
         // "/api/certs/generate",
         {
           method: "POST",

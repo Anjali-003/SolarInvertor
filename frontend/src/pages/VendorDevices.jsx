@@ -60,7 +60,9 @@ export default function VendorDevices() {
 
             const res = await fetch(
               //VPSCHANGE
-    "http://localhost:3000/api/vendor/devices",
+    // "http://localhost:3000/api/vendor/devices",
+        "http://192.168.1.29:3000/api/vendor/devices",
+
         // "/api/vendor/devices",
 
                 {

@@ -404,6 +404,36 @@ export default function User() {
                     </div>
 
                 </div>
+                {/* <div
+    style={{
+padding: "10px 0 30px",
+        width: "100%",
+        boxSizing: "border-box",
+    }}
+>
+    <button
+        type="button"
+        onClick={() => navigate("/reset-password")}
+        style={{
+            display: "block",
+            width: "100%",
+            minHeight: "50px",
+            padding: "14px 16px",
+            borderRadius: "12px",
+            border: `1px solid ${P.borderAmber}`,
+            background: P.surfaceWarm,
+            color: P.textAmberBright,
+            fontSize: "15px",
+            fontWeight: 700,
+            fontFamily: "'DM Sans', sans-serif",
+            cursor: "pointer",
+            visibility: "visible",
+            opacity: 1,
+        }}
+    >
+        Reset Password
+    </button>
+</div> */}
 
 
                 {/* =================================================
@@ -527,6 +557,8 @@ export default function User() {
                 </button>
 
             </div> */}
+
+            
 
             <Footer />
 
