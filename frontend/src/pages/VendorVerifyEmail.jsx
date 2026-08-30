@@ -41,7 +41,11 @@ export default function VendorVerifyEmail() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/vendor/verify-email",
+        // "http://localhost:3000/api/vendor/verify-email",
+
+        // VPSCHANGE
+                "/api/vendor/verify-email",
+
         {
           method: "POST",
           headers: {
@@ -102,7 +106,10 @@ export default function VendorVerifyEmail() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/vendor/resend-verification",
+        // "http://localhost:3000/api/vendor/resend-verification",
+        // VPSCHANGE
+                "/api/vendor/resend-verification",
+
         {
           method: "POST",
           headers: {

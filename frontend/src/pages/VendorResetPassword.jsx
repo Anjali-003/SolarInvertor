@@ -81,7 +81,10 @@ export default function VendorResetPassword() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/api/vendor/reset-password",
+        // "http://localhost:3000/api/vendor/reset-password",
+        // VPSCHANGE
+                "/api/vendor/reset-password",
+
         {
           method: "POST",
           headers: {

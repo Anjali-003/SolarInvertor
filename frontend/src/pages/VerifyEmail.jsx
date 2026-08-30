@@ -37,7 +37,10 @@ export default function VerifyEmail() {
     try {
 
       const res = await fetch(
-        "http://localhost:3000/api/auth/verify-email",
+        // "http://localhost:3000/api/auth/verify-email",
+        // VPSCHANGE
+                "/api/auth/verify-email",
+
         {
           method: "POST",
           headers: {
@@ -102,7 +105,10 @@ export default function VerifyEmail() {
     try {
 
       const res = await fetch(
-        "http://localhost:3000/api/auth/resend-verification",
+        // "http://localhost:3000/api/auth/resend-verification",
+                "/api/auth/resend-verification",
+                //VPSCHANGE
+
         {
           method: "POST",
           headers: {
