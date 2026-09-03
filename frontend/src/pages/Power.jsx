@@ -610,7 +610,11 @@ export default function Power() {
                                     <div style={metricDesc}>Total output</div>
                                 </div>
                                 <div style={{ fontSize: 22, fontWeight: 800, color: P.textPrimary, fontFamily: "'DM Sans', sans-serif" }}>
-                                    {getParameterValue("PPOW")} <span style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>kW</span>
+                                    {/* {getParameterValue("PPOW")}  */}
+                                       {Number.isFinite(Number(data?.PPOW))
+            ? (Number(data.PPOW) / 1000).toFixed(3)
+            : "--"}
+                                    <span style={{ fontSize: 14, fontWeight: 600, color: P.textMuted }}>kW</span>
                                 </div>
                             </div>
 

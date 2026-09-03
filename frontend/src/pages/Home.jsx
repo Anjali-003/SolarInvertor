@@ -224,7 +224,12 @@ const getDCPower = () => {
                 </h2>
                 <PowerFlowCard
   dcPower={getDCPower()}
-  solarPower={getParameterValue("PPOW")}
+//   solarPower={getParameterValue("PPOW")}
+solarPower={
+        Number.isFinite(Number(data?.PPOW))
+            ? (Number(data.PPOW) / 1000).toFixed(3)
+            : "--"
+    }
   st3={getParameterValue("ST3")}
 />
 

@@ -2416,8 +2416,8 @@ import {
 
 const InverterContext = createContext();
 //VPSCHANGE
-// const API_BASE = "http://localhost:3000";
-// const API_BASE = "http://192.168.1.29:3000";
+const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://213.210.21.49:3001";
 
 
 const EMPTY_ENERGY = {
@@ -2430,6 +2430,12 @@ const EMPTY_CHARTS = {
     today: [],
     monthly: [],
     yearly: [],
+};
+
+const EMPTY_CUF = {
+    today: null,
+    monthly: null,
+    yearly: null,
 };
 
 export function InverterProvider({ children }) {
@@ -2467,6 +2473,8 @@ export function InverterProvider({ children }) {
     const [energyCharts, setEnergyCharts] =
         useState(EMPTY_CHARTS);
 
+        const [cuf, setCuf] =
+    useState(EMPTY_CUF);
 
     // =====================================================
     // SELECT DEVICE
@@ -2510,8 +2518,8 @@ export function InverterProvider({ children }) {
 
             const res = await fetch(
                 //VPSCHANGE
-                // `${API_BASE}/api/user/devices`,
-                                `/api/user/devices`,
+                `${API_BASE}/api/user/devices`,
+                                // `/api/user/devices`,
 
                 {
                     method: "GET",
@@ -2652,8 +2660,8 @@ export function InverterProvider({ children }) {
 
             const res = await fetch(
                 //VPSCHANGE
-                // `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
-                                `/api/latest-message?device_id=${selectedDeviceId}`,
+                `${API_BASE}/api/latest-message?device_id=${selectedDeviceId}`,
+                                // `/api/latest-message?device_id=${selectedDeviceId}`,
 
                 {
                     method: "GET",
@@ -2734,6 +2742,10 @@ setData({
                 ...EMPTY_CHARTS
             });
 
+            setCuf({
+    ...EMPTY_CUF
+});
+
             return;
         }
 
@@ -2750,6 +2762,10 @@ setData({
                 ...EMPTY_CHARTS
             });
 
+                setCuf({
+        ...EMPTY_CUF
+    });
+
             return;
         }
 
@@ -2757,8 +2773,8 @@ setData({
 
             const res = await fetch(
                 //VPSCHANGE
-                // `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
-                                `/api/energy/summary?device_id=${selectedDeviceId}`,
+                `${API_BASE}/api/energy/summary?device_id=${selectedDeviceId}`,
+                                // `/api/energy/summary?device_id=${selectedDeviceId}`,
 
                 {
                     method: "GET",
@@ -2788,6 +2804,13 @@ setData({
                     ...EMPTY_CHARTS
                 });
 
+                 setCuf({
+        ...EMPTY_CUF
+    });
+
+
+                
+
                 return;
             }
 
@@ -2803,6 +2826,12 @@ setData({
                 }
             );
 
+            setCuf(
+    result.cuf || {
+        ...EMPTY_CUF
+    }
+);
+
         } catch (err) {
 
             console.error(
@@ -2817,6 +2846,10 @@ setData({
             setEnergyCharts({
                 ...EMPTY_CHARTS
             });
+
+            setCuf({
+    ...EMPTY_CUF
+});
         }
 
     }, [
@@ -2842,6 +2875,10 @@ setData({
             setEnergyCharts({
                 ...EMPTY_CHARTS
             });
+
+            setCuf({
+    ...EMPTY_CUF
+});
 
             return;
         }
@@ -2931,6 +2968,10 @@ setData({
                 energy,
                 setEnergy,
 
+                
+                    cuf,
+setCuf,
+
                 energyCharts,
                 setEnergyCharts,
 
@@ -2953,6 +2994,8 @@ setData({
 
                 refreshEnergy:
                     fetchEnergy,
+
+
 
                 refreshAll,
             }}

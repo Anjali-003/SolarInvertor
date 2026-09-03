@@ -37,9 +37,11 @@ export default function VerifyEmail() {
     try {
 
       const res = await fetch(
-        // "http://localhost:3000/api/auth/verify-email",
+        "http://localhost:3000/api/auth/verify-email",
         // VPSCHANGE
-                "/api/auth/verify-email",
+                // "http://213.210.21.49:3001/api/auth/verify-email",
+
+                // "/api/auth/verify-email",
 
         {
           method: "POST",
@@ -105,9 +107,11 @@ export default function VerifyEmail() {
     try {
 
       const res = await fetch(
-        // "http://localhost:3000/api/auth/resend-verification",
-                "/api/auth/resend-verification",
+        "http://localhost:3000/api/auth/resend-verification",
+                // "/api/auth/resend-verification",
                 //VPSCHANGE
+                        // "http://213.210.21.49:3000/api/auth/resend-verification",
+
 
         {
           method: "POST",

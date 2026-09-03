@@ -235,7 +235,7 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
             <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: P.textPrimary, lineHeight: 1 }}>
               {solarPower}
             </div>
-            <div style={{ marginTop: 3, fontSize: 11, color: P.textMuted, fontWeight: 500 }}>W</div>
+            <div style={{ marginTop: 3, fontSize: 11, color: P.textMuted, fontWeight: 500 }}>kW</div>
           </div>
         </div>
       </div>

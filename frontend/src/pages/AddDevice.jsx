@@ -66,8 +66,8 @@ export default function AddDevice() {
 
             const res = await fetch(
                 //VPSCHANGE
-                // "http://192.168.1.29:3000/api/user/devices",
-                    // "http://localhost:3000/api/user/devices",
+                // "http://213.210.21.49:3001/api/user/devices",
+                    "http://localhost:3000/api/user/devices",
 
                                 "/api/user/devices",
 

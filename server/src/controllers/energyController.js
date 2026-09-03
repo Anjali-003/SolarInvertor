@@ -503,6 +503,120 @@ function createYearlyChart(
 
 
 // =====================================================
+// CALCULATE CUF
+// =====================================================
+
+function calculateCUF(
+    generatedEnergy,
+    capacityKw,
+    totalHours
+) {
+
+    const energy =
+        Number(generatedEnergy);
+
+    const capacity =
+        Number(capacityKw);
+
+
+    if (
+        !Number.isFinite(energy) ||
+        energy < 0 ||
+        !Number.isFinite(capacity) ||
+        capacity <= 0 ||
+        !Number.isFinite(totalHours) ||
+        totalHours <= 0
+    ) {
+
+        return null;
+    }
+
+
+    const cuf =
+        (
+            energy /
+            (
+                capacity *
+                totalHours
+            )
+        ) *
+        100;
+
+
+    return Number(
+        cuf.toFixed(3)
+    );
+}
+
+
+
+function getHoursInMonth(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        date.getMonth();
+
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    return (
+        daysInMonth *
+        24
+    );
+}
+
+
+function getHoursInYear(date) {
+
+    const year =
+        date.getFullYear();
+
+
+    const isLeapYear =
+        (
+            year % 4 === 0 &&
+            year % 100 !== 0
+        ) ||
+        year % 400 === 0;
+
+
+    return (
+        isLeapYear
+            ? 366
+            : 365
+    ) * 24;
+}
+
+
+function toMysqlDate(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
+}
+
+
+// =====================================================
 // ENERGY SUMMARY API
 // =====================================================
 
@@ -540,12 +654,42 @@ if (
 //   [userId]
 // );
 
+
+
+
+// const [devices] =
+//     await pool.execute(
+//         `
+//         SELECT
+//             d.id,
+//             d.imei
+//         FROM user_devices ud
+
+//         INNER JOIN devices d
+//             ON d.id = ud.device_id
+
+//         WHERE
+//             ud.user_id = ?
+//             AND d.id = ?
+
+//         LIMIT 1
+//         `,
+//         [
+//             userId,
+//             deviceId
+//         ]
+//     );
+
+
+
 const [devices] =
     await pool.execute(
         `
         SELECT
             d.id,
-            d.imei
+            d.imei,
+            d.rated_capacity_kw
+
         FROM user_devices ud
 
         INNER JOIN devices d
@@ -578,6 +722,11 @@ if (devices.length === 0) {
 }
 
 const imei = devices[0].imei;
+
+const capacityKw =
+    Number(
+        devices[0].rated_capacity_kw
+    );
 
 // no longer in use 
 
@@ -802,47 +951,222 @@ const imei = devices[0].imei;
                 );
 
 
+
+
+                // =====================================================
+// LATEST CUMULATIVE GENERATION
+// =====================================================
+
+const [latestEnergyRows] =
+    await pool.execute(
+        `
+        SELECT
+            lkwh
+        FROM energy_history
+
+        WHERE imei = ?
+
+        ORDER BY
+            recorded_at DESC,
+            id DESC
+
+        LIMIT 1
+        `,
+        [
+            imei
+        ]
+    );
+
+
+const cumulativeGeneration =
+    latestEnergyRows.length > 0
+        ? Number(
+            latestEnergyRows[0].lkwh
+        )
+        : 0;
+
+
+
+        // =====================================================
+// CUF
+// =====================================================
+
+const dailyCUF =
+    calculateCUF(
+        today,
+        capacityKw,
+        24
+    );
+
+
+const monthlyCUF =
+    calculateCUF(
+        monthly,
+        capacityKw,
+        getHoursInMonth(now)
+    );
+
+
+const yearlyCUF =
+    calculateCUF(
+        yearly,
+        capacityKw,
+        getHoursInYear(now)
+    );
+
+
+
+    // =====================================================
+// SAVE CURRENT CUF
+// =====================================================
+
+await pool.execute(
+    `
+    INSERT INTO cuf_history
+    (
+        imei,
+        record_date,
+        daily_generated_kwh,
+        cumulative_generation_kwh,
+        daily_cuf,
+        monthly_cuf,
+        yearly_cuf
+    )
+
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+
+    ON DUPLICATE KEY UPDATE
+
+        daily_generated_kwh =
+            VALUES(daily_generated_kwh),
+
+        cumulative_generation_kwh =
+            VALUES(cumulative_generation_kwh),
+
+        daily_cuf =
+            VALUES(daily_cuf),
+
+        monthly_cuf =
+            VALUES(monthly_cuf),
+
+        yearly_cuf =
+            VALUES(yearly_cuf)
+    `,
+    [
+        imei,
+
+        toMysqlDate(now),
+
+        Number(
+            today.toFixed(3)
+        ),
+
+        Number(
+            cumulativeGeneration.toFixed(3)
+        ),
+
+        dailyCUF ?? 0,
+
+        monthlyCUF ?? 0,
+
+        yearlyCUF ?? 0
+    ]
+);
+
             // =================================================
             // RESPONSE
             // =================================================
 
+            // return res.json({
+
+            //     success: true,
+
+            //     imei,
+
+            //     energy: {
+
+            //         today:
+            //             Number(
+            //                 today.toFixed(3)
+            //             ),
+
+            //         monthly:
+            //             Number(
+            //                 monthly.toFixed(3)
+            //             ),
+
+            //         yearly:
+            //             Number(
+            //                 yearly.toFixed(3)
+            //             )
+            //     },
+
+            //     charts: {
+
+            //         today:
+            //             todayChart,
+
+            //         monthly:
+            //             monthlyChart,
+
+            //         yearly:
+            //             yearlyChart
+            //     }
+
+            // });
+
+
+
+
             return res.json({
 
-                success: true,
+    success: true,
 
-                imei,
+    imei,
 
-                energy: {
+    energy: {
 
-                    today:
-                        Number(
-                            today.toFixed(3)
-                        ),
+        today:
+            Number(
+                today.toFixed(3)
+            ),
 
-                    monthly:
-                        Number(
-                            monthly.toFixed(3)
-                        ),
+        monthly:
+            Number(
+                monthly.toFixed(3)
+            ),
 
-                    yearly:
-                        Number(
-                            yearly.toFixed(3)
-                        )
-                },
+        yearly:
+            Number(
+                yearly.toFixed(3)
+            )
+    },
 
-                charts: {
+    cuf: {
 
-                    today:
-                        todayChart,
+        today:
+            dailyCUF,
 
-                    monthly:
-                        monthlyChart,
+        monthly:
+            monthlyCUF,
 
-                    yearly:
-                        yearlyChart
-                }
+        yearly:
+            yearlyCUF
+    },
 
-            });
+    charts: {
+
+        today:
+            todayChart,
+
+        monthly:
+            monthlyChart,
+
+        yearly:
+            yearlyChart
+    }
+
+});
 
         // } 
         // catch (err) {

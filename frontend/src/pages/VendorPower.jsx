@@ -897,11 +897,16 @@ export default function VendorPower() {
                                             "'DM Sans', sans-serif",
                                     }}
                                 >
-                                    {
+                                    {/* {
                                         getParameterValue(
                                             "PPOW"
                                         )
-                                    }{" "}
+                                    }{" "} */}
+
+                                     {Number.isFinite(Number(data?.PPOW))
+            ? (Number(data.PPOW) / 1000).toFixed(3)
+            : "--"}
+            
                                     <span
                                         style={{
                                             fontSize: 14,

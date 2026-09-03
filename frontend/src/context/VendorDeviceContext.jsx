@@ -501,11 +501,11 @@ const [energyCharts, setEnergyCharts] =
             setError(null);
 
             const res = await fetch(
-                // `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
-                // `http://192.168.1.29:3000/api/vendor/devices/${selectedDevice.id}/latest`,
+                `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/latest`,
+                // `http://213.210.21.49:3001/api/vendor/devices/${selectedDevice.id}/latest`,
 
                 // VPSCHANGE
-                `/api/vendor/devices/${selectedDevice.id}/latest`,
+                // `/api/vendor/devices/${selectedDevice.id}/latest`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -638,9 +638,9 @@ const fetchEnergy = useCallback(async () => {
 
         const res = await fetch(
             //VPSCHANGE
-                        // `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/energy/summary`,
-            // `http://192.168.1.29:3000/api/vendor/devices/${selectedDevice.id}/energy/summary`,
-                        `/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+                        `http://localhost:3000/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+            // `http://213.210.21.49:3001/api/vendor/devices/${selectedDevice.id}/energy/summary`,
+                        // `/api/vendor/devices/${selectedDevice.id}/energy/summary`,
 
             {
                 method: "GET",

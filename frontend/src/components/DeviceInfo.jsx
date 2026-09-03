@@ -1,6 +1,64 @@
 import React, { useEffect, useState } from "react";
 import P from "../theme/colors";
 
+
+
+function SignalStrength({ csq }) {
+    const value = Number(csq);
+
+    let activeBars = 0;
+
+    if (Number.isFinite(value)) {
+        if (value >= 26) {
+            activeBars = 5;
+        } else if (value >= 21) {
+            activeBars = 4;
+        } else if (value >= 16) {
+            activeBars = 3;
+        } else if (value >= 11) {
+            activeBars = 2;
+        } else if (value >= 0) {
+            activeBars = 1;
+        }
+    }
+
+    const activeColor = P.green;
+    const inactiveColor = P.border;
+
+    return (
+        <div
+            title={
+                Number.isFinite(value)
+                    ? `Signal strength: ${value}`
+                    : "Signal strength unavailable"
+            }
+            style={{
+                display: "flex",
+                alignItems: "flex-end",
+                gap: 3,
+                height: 22,
+            }}
+        >
+            {[1, 2, 3, 4, 5].map((bar) => (
+                <div
+                    key={bar}
+                    style={{
+                        width: 4,
+                        height: 4 + bar * 3,
+                        borderRadius: 2,
+                        background:
+                            bar <= activeBars
+                                ? activeColor
+                                : inactiveColor,
+                        transition:
+                            "background 0.2s ease",
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
+
 export default function DeviceInfo({
     data,
     lastUpdated,
@@ -60,6 +118,9 @@ export default function DeviceInfo({
         data?.RAT ?? "--";
 
 
+
+const csq =
+    data?.csq;
     // =====================================================
     // ST3 STATUS
     // =====================================================
@@ -356,7 +417,7 @@ export default function DeviceInfo({
                         STATUS
                     ================================================= */}
 
-                    <div
+                    {/* <div
                         style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -386,7 +447,7 @@ export default function DeviceInfo({
 
                                 background:
                                     statusColor,
-
+w
                                 boxShadow:
                                     `0 0 7px ${statusColor}`,
                             }}
@@ -405,8 +466,67 @@ export default function DeviceInfo({
                             {statusText}
                         </span>
 
-                    </div>
+                    </div> */}
 
+
+<div
+    style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        marginBottom: 14,
+    }}
+>
+    {/* STATUS */}
+    <div
+        style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+
+            padding: "5px 10px",
+            borderRadius: 20,
+
+            background:
+                `${statusColor}18`,
+
+            border:
+                `1px solid ${statusColor}`,
+
+            flexShrink: 0,
+        }}
+    >
+        <div
+            style={{
+                width: 8,
+                height: 8,
+                minWidth: 8,
+                borderRadius: "50%",
+
+                background:
+                    statusColor,
+
+                boxShadow:
+                    `0 0 7px ${statusColor}`,
+            }}
+        />
+
+        <span
+            style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: statusColor,
+                fontFamily:
+                    "'DM Sans', sans-serif",
+            }}
+        >
+            {statusText}
+        </span>
+    </div>
+
+    {/* SIGNAL STRENGTH */}
+    <SignalStrength csq={csq} />
+</div>
 
                     {/* =================================================
                         LAST UPDATED
