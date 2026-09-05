@@ -2416,7 +2416,7 @@ import {
 
 const InverterContext = createContext();
 //VPSCHANGE
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
 // const API_BASE = "http://213.210.21.49:3001";
 
 
@@ -2475,6 +2475,17 @@ export function InverterProvider({ children }) {
 
         const [cuf, setCuf] =
     useState(EMPTY_CUF);
+
+    const [chartData, setChartData] =
+    useState([]);
+
+const [chartMeta, setChartMeta] =
+    useState({
+        total: null,
+        unit: null,
+        label: null,
+        range: null,
+    });
 
     // =====================================================
     // SELECT DEVICE
@@ -2936,6 +2947,151 @@ setData({
 
 
     // =====================================================
+// FETCH CHART DATA
+// =====================================================
+
+const fetchEnergyChart =
+    useCallback(
+        async (
+            period,
+            offset = 0
+        ) => {
+
+            if (
+                selectedDeviceId == null
+            ) {
+
+                setChartData([]);
+
+                setChartMeta({
+                    total: null,
+                    unit: null,
+                    label: null,
+                    range: null,
+                });
+
+                return null;
+            }
+
+
+            const token =
+                localStorage.getItem(
+                    "token"
+                );
+
+
+            if (!token) {
+
+                setChartData([]);
+
+                return null;
+            }
+
+
+            try {
+
+                const params =
+                    new URLSearchParams({
+                        device_id:
+                            String(
+                                selectedDeviceId
+                            ),
+
+                        period:
+                            String(period),
+
+                        offset:
+                            String(offset),
+                    });
+
+
+                const res =
+                    await fetch(
+                        `${API_BASE}/api/energy/chart?${params.toString()}`,
+                        {
+                            method:
+                                "GET",
+
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`,
+                            },
+                        }
+                    );
+
+
+                const result =
+                    await res.json();
+
+
+                if (!res.ok) {
+
+                    console.error(
+                        "Chart API error:",
+                        result
+                    );
+
+                    setChartData([]);
+
+                    return null;
+                }
+
+
+                const nextChart =
+                    Array.isArray(
+                        result.chart
+                    )
+                        ? result.chart
+                        : [];
+
+
+                setChartData(
+                    nextChart
+                );
+
+
+                setChartMeta({
+
+                    total:
+                        result.total ??
+                        null,
+
+                    unit:
+                        result.unit ??
+                        null,
+
+                    label:
+                        result.label ??
+                        null,
+
+                    range:
+                        result.range ??
+                        null,
+                });
+
+
+                return result;
+
+            } catch (err) {
+
+                console.error(
+                    "Chart fetch error:",
+                    err
+                );
+
+                setChartData([]);
+
+                return null;
+            }
+
+        },
+        [
+            selectedDeviceId
+        ]
+    );
+
+
+    // =====================================================
     // DEBUG
     // =====================================================
 
@@ -2974,6 +3130,10 @@ setCuf,
 
                 energyCharts,
                 setEnergyCharts,
+
+                chartData,
+chartMeta,
+fetchEnergyChart,
 
                 devices,
                 setDevices,

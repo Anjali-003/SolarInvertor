@@ -845,6 +845,8 @@ import PageHeader from "../components/PageHeader";
 import DeviceInfo from "../components/DeviceInfo";
 import P from "../theme/colors";
 import PageBackground from "../components/PageBackground";
+import DownloadReportCard
+    from "../components/DownloadReportCard";
 
 export default function DeviceDetails() {
 
@@ -996,54 +998,54 @@ export default function DeviceDetails() {
     // =====================================================
 
     return (
-<PageBackground>
-        <div
-            style={{
-                minHeight: "100vh",
-                paddingBottom: "90px",
-                // background: P.bg,
-                fontFamily: "'Inter', sans-serif"
-            }}
-        >
-
-            {/* =================================================
-                HEADER
-            ================================================= */}
-
-            <PageHeader
-                title="DEVICE DETAILS"
-                backPath="/"
-            />
-
-
-            {/* =================================================
-                DEVICE INFO
-            ================================================= */}
-
-            <DeviceInfo
-                data={payload}
-                lastUpdated={lastUpdated}
-                devices={devices}
-                selectedDeviceId={selectedDeviceId}
-            />
-
-
-            {/* =================================================
-                PAGE CONTENT
-            ================================================= */}
-
+        <PageBackground>
             <div
                 style={{
-                    padding:
-                        "0 20px 20px"
+                    minHeight: "100vh",
+                    paddingBottom: "90px",
+                    // background: P.bg,
+                    fontFamily: "'Inter', sans-serif"
                 }}
             >
 
                 {/* =================================================
+                HEADER
+            ================================================= */}
+
+                <PageHeader
+                    title="DEVICE DETAILS"
+                    backPath="/"
+                />
+
+
+                {/* =================================================
+                DEVICE INFO
+            ================================================= */}
+
+                <DeviceInfo
+                    data={payload}
+                    lastUpdated={lastUpdated}
+                    devices={devices}
+                    selectedDeviceId={selectedDeviceId}
+                />
+
+
+                {/* =================================================
+                PAGE CONTENT
+            ================================================= */}
+
+                <div
+                    style={{
+                        padding:
+                            "0 20px 20px"
+                    }}
+                >
+
+                    {/* =================================================
                     HEADING
                 ================================================= */}
 
-                {/* <h2
+                    {/* <h2
                     style={{
                         fontSize: 18,
                         fontWeight: 800,
@@ -1056,157 +1058,157 @@ export default function DeviceDetails() {
                 >
                     DEVICE INFORMATION
                 </h2> */}
-                <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
-                    DEVICE INFORMATION
-                </h2>
+                    <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                        DEVICE INFORMATION
+                    </h2>
 
 
-                {/* =================================================
+                    {/* =================================================
                     INFORMATION CARD
                 ================================================= */}
 
-                <div
-                    style={{
-                        background:
-                            P.surface,
-
-                        border:
-                            `1px solid ${P.border}`,
-
-                        borderRadius: 14,
-
-                        padding:
-                            "8px 16px",
-
-                        boxShadow:
-                            P.shadowCardRaised
-                    }}
-                >
-
-                    <DetailRow
-                        label="DEVICE NO."
-                        value={
-                            device.imei ||
-                            "--"
-                        }
-                    />
-
-
-                    <DetailRow
-                        label="DEVICE TYPE"
-                        value={
-                            device.solution ||
-                            "--"
-                        }
-                    />
-
-
-                    <DetailRow
-                        label="RATING"
-                        value={
-                            payload.RAT != null
-                                ? `${payload.RAT} VA`
-                                : "--"
-                        }
-                    />
-
-
-                    <DetailRow
-                        label="LOCATION"
-                        value={
-                            device.location ||
-                            "--"
-                        }
-                    />
-
-
-                    {/* =================================================
-                        STATUS
-                    ================================================= */}
-
                     <div
                         style={{
-                            display: "flex",
-                            justifyContent:
-                                "space-between",
-                            alignItems: "center",
-                            gap: 20,
+                            background:
+                                P.surface,
+
+                            border:
+                                `1px solid ${P.border}`,
+
+                            borderRadius: 14,
+
                             padding:
-                                "14px 0",
-                            borderBottom:
-                                `1px solid ${P.border}`
+                                "8px 16px",
+
+                            boxShadow:
+                                P.shadowCardRaised
                         }}
                     >
 
-                        <span
-                            style={{
-                                fontSize: 10,
-                                color:
-                                    P.textMuted,
-                                fontWeight: 600,
-                                letterSpacing: 0.8,
-                                fontFamily:
-                                    "'Inter', sans-serif",
-                                flexShrink: 0
-                            }}
-                        >
-                            DEVICE STATUS
-                        </span>
+                        <DetailRow
+                            label="DEVICE NO."
+                            value={
+                                device.imei ||
+                                "--"
+                            }
+                        />
 
+
+                        <DetailRow
+                            label="DEVICE TYPE"
+                            value={
+                                device.solution ||
+                                "--"
+                            }
+                        />
+
+
+                        <DetailRow
+                            label="RATING"
+                            value={
+                                payload.RAT != null
+                                    ? `${payload.RAT} VA`
+                                    : "--"
+                            }
+                        />
+
+
+                        <DetailRow
+                            label="LOCATION"
+                            value={
+                                device.location ||
+                                "--"
+                            }
+                        />
+
+
+                        {/* =================================================
+                        STATUS
+                    ================================================= */}
 
                         <div
                             style={{
-                                display:
-                                    "inline-flex",
-                                alignItems:
-                                    "center",
-                                gap: 7,
+                                display: "flex",
+                                justifyContent:
+                                    "space-between",
+                                alignItems: "center",
+                                gap: 20,
                                 padding:
-                                    "5px 10px",
-                                borderRadius: 20,
-                                background:
-                                    `${statusColor}18`,
-                                border:
-                                    `1px solid ${statusColor}`
+                                    "14px 0",
+                                borderBottom:
+                                    `1px solid ${P.border}`
                             }}
                         >
 
-                            <div
-                                style={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius:
-                                        "50%",
-                                    background:
-                                        statusColor,
-                                    boxShadow:
-                                        `0 0 7px ${statusColor}`
-                                }}
-                            />
-
                             <span
                                 style={{
-                                    fontSize: 12,
-                                    fontWeight: 700,
+                                    fontSize: 10,
                                     color:
-                                        statusColor,
+                                        P.textMuted,
+                                    fontWeight: 600,
+                                    letterSpacing: 0.8,
                                     fontFamily:
-                                        "'DM Sans', sans-serif"
+                                        "'Inter', sans-serif",
+                                    flexShrink: 0
                                 }}
                             >
-                                {statusText}
+                                DEVICE STATUS
                             </span>
+
+
+                            <div
+                                style={{
+                                    display:
+                                        "inline-flex",
+                                    alignItems:
+                                        "center",
+                                    gap: 7,
+                                    padding:
+                                        "5px 10px",
+                                    borderRadius: 20,
+                                    background:
+                                        `${statusColor}18`,
+                                    border:
+                                        `1px solid ${statusColor}`
+                                }}
+                            >
+
+                                <div
+                                    style={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius:
+                                            "50%",
+                                        background:
+                                            statusColor,
+                                        boxShadow:
+                                            `0 0 7px ${statusColor}`
+                                    }}
+                                />
+
+                                <span
+                                    style={{
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        color:
+                                            statusColor,
+                                        fontFamily:
+                                            "'DM Sans', sans-serif"
+                                    }}
+                                >
+                                    {statusText}
+                                </span>
+
+                            </div>
 
                         </div>
 
-                    </div>
 
-
-                    {/* =================================================
+                        {/* =================================================
                         LAST UPDATED
                     ================================================= */}
 
-                    {/* <div
+                        {/* <div
                         style={{
                             padding:
                                 "14px 0"
@@ -1260,90 +1262,118 @@ export default function DeviceDetails() {
                     </div> */}
 
 
-                    {/* =================================
+                        {/* =================================
     LAST UPDATED
 ================================= */}
 
-<div
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 20,
+                                paddingTop: 14
+                            }}
+                        >
+
+                            {/* LEFT — TITLE */}
+                            <div
+                                style={{
+                                    fontSize: 10,
+                                    color: P.textLight,
+                                    fontWeight: 600,
+                                    letterSpacing: 0.8,
+                                    fontFamily: "'Inter', sans-serif",
+                                    flexShrink: 0
+                                }}
+                            >
+                                LAST UPDATED
+                            </div>
+
+
+                            {/* RIGHT — DATE + TIME */}
+                            <div
+                                style={{
+                                    textAlign: "right",
+                                    minWidth: 0,
+                                    marginLeft: "auto"
+                                }}
+                            >
+
+                                <div
+                                    style={{
+                                        fontSize: 14,
+                                        fontWeight: 700,
+                                        color: P.textPrimary,
+                                        fontFamily: "'DM Sans', sans-serif",
+                                        lineHeight: 1.2,
+                                        whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    {formattedDate}
+                                </div>
+
+
+                                <div
+                                    style={{
+                                        marginTop: 3,
+                                        fontSize: 12,
+                                        fontWeight: 600,
+                                        color: P.textMuted,
+                                        fontFamily: "'Inter', sans-serif",
+                                        lineHeight: 1.2,
+                                        whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    {formattedTime}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+<h2
     style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: 20,
-        paddingTop: 14
+        fontSize: 15,
+        fontWeight: 800,
+        color: P.textWhite,
+        marginBottom: 12,
+        marginTop: 24,
+        letterSpacing: 0.5,
+        fontFamily:
+            "'DM Sans', sans-serif"
     }}
 >
-
-    {/* LEFT — TITLE */}
-    <div
-        style={{
-            fontSize: 10,
-            color: P.textLight,
-            fontWeight: 600,
-            letterSpacing: 0.8,
-            fontFamily: "'Inter', sans-serif",
-            flexShrink: 0
-        }}
-    >
-        LAST UPDATED
-    </div>
+    REPORTS
+</h2>
 
 
-    {/* RIGHT — DATE + TIME */}
-    <div
-        style={{
-            textAlign: "right",
-            minWidth: 0,
-            marginLeft: "auto"
-        }}
-    >
+<DownloadReportCard
 
-        <div
-            style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: P.textPrimary,
-                fontFamily: "'DM Sans', sans-serif",
-                lineHeight: 1.2,
-                whiteSpace: "nowrap"
-            }}
-        >
-            {formattedDate}
-        </div>
+    selectedDeviceId={
+        selectedDeviceId
+    }
 
+    imei={
+        device.imei
+    }
 
-        <div
-            style={{
-                marginTop: 3,
-                fontSize: 12,
-                fontWeight: 600,
-                color: P.textMuted,
-                fontFamily: "'Inter', sans-serif",
-                lineHeight: 1.2,
-                whiteSpace: "nowrap"
-            }}
-        >
-            {formattedTime}
-        </div>
-
-    </div>
-
-</div>
-
+/>
                 </div>
 
-            </div>
 
-
-            {/* =================================================
+                {/* =================================================
                 FOOTER
             ================================================= */}
 
-            <Footer
-                data={payload}
-            />
+                <Footer
+                    data={payload}
+                />
 
-        </div>
+            </div>
         </PageBackground>
     );
 }

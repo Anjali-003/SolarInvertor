@@ -15,4 +15,12 @@ router.get(
 );
 
 
+router.get(
+    "/chart",
+    auth,
+    energyController.getEnergyChart
+);
+
+
+
 module.exports = router;

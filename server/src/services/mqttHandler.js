@@ -248,6 +248,45 @@ if (Number.isFinite(lkwh)) {
         `Energy history saved: ${topicInfo.imei} -> LKWH ${lkwh}`
     );
 
+
+    // =====================================================
+// SAVE SOLAR POWER HISTORY
+// PPOW is received in Watts.
+// Store it in kW.
+// =====================================================
+
+const ppowWatts =
+    Number(parsed.PPOW);
+
+if (
+    Number.isFinite(ppowWatts) &&
+    ppowWatts >= 0
+) {
+
+    const powerKw =
+        ppowWatts / 1000;
+
+    await pool.execute(
+        `
+        INSERT INTO solar_power_history
+        (
+            imei,
+            power_kw,
+            recorded_at
+        )
+        VALUES (?, ?, ?)
+        `,
+        [
+            topicInfo.imei,
+            powerKw,
+            new Date()
+        ]
+    );
+
+    console.log(
+        `Solar power saved: ${topicInfo.imei} -> ${powerKw} kW`
+    );
+}
     // =====================================================
     // UPDATE HOURLY ENERGY
     // =====================================================

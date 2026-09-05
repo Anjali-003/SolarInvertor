@@ -19,6 +19,11 @@ const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
 const energyRoutes = require("./src/routes/energyRoutes");
 const userDeviceRoutes = require("./src/routes/userDeviceRoutes");
 
+const reportRoutes =
+    require(
+        "./src/routes/reportRoutes"
+    );
+
 const app = express();
 //const server = http.createServer(app);
 
@@ -51,6 +56,11 @@ app.use("/api/certs",certificateRoutes);
 
 app.use("/api/vendor",vendorRoutes);
 app.use("/api/admin",adminAuthRoutes);
+
+app.use(
+    "/api/reports",
+    reportRoutes
+);
 
 // app.use(
 //   "/api/devices",

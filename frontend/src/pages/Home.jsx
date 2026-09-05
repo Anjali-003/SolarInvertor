@@ -15,6 +15,7 @@ export default function Home() {
     lastUpdated,
     energy,
     devices,
+    cuf,
     selectedDeviceId
 } = useInverter();
     console.log(lastUpdated);
@@ -43,100 +44,113 @@ export default function Home() {
     return data?.[parameter] ?? "--";
 };
 
-const getPlantCapacity = () => {
-    const rat = Number(data?.RAT);
+// const getPlantCapacity = () => {
+//     const rat = Number(data?.RAT);
 
-    if (!Number.isFinite(rat) || rat <= 0) {
-        return null;
-    }
+//     if (!Number.isFinite(rat) || rat <= 0) {
+//         return null;
+//     }
 
-    return rat;
-};
-
-
-const getHoursInCurrentMonth = () => {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    const daysInMonth = new Date(
-        year,
-        month + 1,
-        0
-    ).getDate();
-
-    return daysInMonth * 24;
-};
+//     return rat;
+// };
 
 
-const getHoursInCurrentYear = () => {
-    const now = new Date();
+// const getHoursInCurrentMonth = () => {
+//     const now = new Date();
 
-    const year = now.getFullYear();
+//     const year = now.getFullYear();
+//     const month = now.getMonth();
 
-    const isLeapYear =
-        (year % 4 === 0 && year % 100 !== 0) ||
-        year % 400 === 0;
+//     const daysInMonth = new Date(
+//         year,
+//         month + 1,
+//         0
+//     ).getDate();
 
-    return (isLeapYear ? 366 : 365) * 24;
-};
-
-
-const calculateCUF = (generatedEnergy, totalHours) => {
-
-    const capacity = getPlantCapacity();
-
-    const energyValue = Number(generatedEnergy);
-
-    if (
-        capacity === null ||
-        !Number.isFinite(energyValue) ||
-        energyValue < 0 ||
-        totalHours <= 0
-    ) {
-        return null;
-    }
-
-    const cuf =
-        (energyValue /
-            (capacity * totalHours)) *
-        100;
-
-    return cuf;
-};
+//     return daysInMonth * 24;
+// };
 
 
-const getTodayCUF = () => {
-    return calculateCUF(
-        energy?.today,
-        24
-    );
-};
+// const getHoursInCurrentYear = () => {
+//     const now = new Date();
+
+//     const year = now.getFullYear();
+
+//     const isLeapYear =
+//         (year % 4 === 0 && year % 100 !== 0) ||
+//         year % 400 === 0;
+
+//     return (isLeapYear ? 366 : 365) * 24;
+// };
 
 
-const getMonthlyCUF = () => {
-    return calculateCUF(
-        energy?.monthly,
-        getHoursInCurrentMonth()
-    );
-};
+// const calculateCUF = (generatedEnergy, totalHours) => {
+
+//     const capacity = getPlantCapacity();
+
+//     const energyValue = Number(generatedEnergy);
+
+//     if (
+//         capacity === null ||
+//         !Number.isFinite(energyValue) ||
+//         energyValue < 0 ||
+//         totalHours <= 0
+//     ) {
+//         return null;
+//     }
+
+//     const cuf =
+//         (energyValue /
+//             (capacity * totalHours)) *
+//         100;
+
+//     return cuf;
+// };
 
 
-const getYearlyCUF = () => {
-    return calculateCUF(
-        energy?.yearly,
-        getHoursInCurrentYear()
-    );
-};
+// const getTodayCUF = () => {
+//     return calculateCUF(
+//         energy?.today,
+//         24
+//     );
+// };
+
+
+// const getMonthlyCUF = () => {
+//     return calculateCUF(
+//         energy?.monthly,
+//         getHoursInCurrentMonth()
+//     );
+// };
+
+
+// const getYearlyCUF = () => {
+//     return calculateCUF(
+//         energy?.yearly,
+//         getHoursInCurrentYear()
+//     );
+// };
+
+// const formatCUF = (value) => {
+
+//     if (value === null || !Number.isFinite(value)) {
+//         return "--";
+//     }
+
+//     return `${value.toFixed(2)}%`;
+// };
+
 
 const formatCUF = (value) => {
 
-    if (value === null || !Number.isFinite(value)) {
+    const number =
+        Number(value);
+
+    if (!Number.isFinite(number)) {
         return "--";
     }
 
-    return `${value.toFixed(2)}%`;
+    return `${number.toFixed(2)}%`;
 };
 
 const getDCPower = () => { 
@@ -284,7 +298,8 @@ solarPower={
                 color: P.textAmberBright
             }}
         >
-            {formatCUF(getTodayCUF())}
+            {/* {formatCUF(getTodayCUF())} */}
+            {formatCUF(cuf?.today)}
         </div>
 
         <div style={statUnit}>
@@ -313,7 +328,8 @@ solarPower={
                 color: P.textAmberBright
             }}
         >
-            {formatCUF(getMonthlyCUF())}
+            {/* {formatCUF(getMonthlyCUF())} */}
+            {formatCUF(cuf?.monthly)}
         </div>
 
         <div style={statUnit}>
@@ -352,7 +368,8 @@ solarPower={
                 color: P.textAmberBright
             }}
         >
-            {formatCUF(getYearlyCUF())}
+            {/* {formatCUF(getYearlyCUF())} */}
+            {formatCUF(cuf?.yearly)}
         </div>
 
         <div style={statUnit}>
