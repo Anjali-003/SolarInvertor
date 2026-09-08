@@ -69,7 +69,7 @@ export default function AddDevice() {
                 // "http://213.210.21.49:3001/api/user/devices",
                     "http://localhost:3000/api/user/devices",
 
-                                "/api/user/devices",
+                                // "/api/user/devices",
 
                 {
                     method: "POST",

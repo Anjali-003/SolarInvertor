@@ -36,7 +36,7 @@ export default function RegisterDevice() {
         // VPSCHANGE
                 // "http://213.210.21.49:3001/api/certs/generate",
 
-        "/api/certs/generate",
+        // "/api/certs/generate",
         {
           method: "POST",
 
