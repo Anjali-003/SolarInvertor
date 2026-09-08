@@ -10,7 +10,7 @@ import {
 import UploadIMEI from "./pages/UploadIMEI";
 import Home from "./pages/Home";
 import Fault from "./pages/Fault";
-import Power from "./pages/Power";
+// import Power from "./pages/Power";
 import User from "./pages/User";
 import Login from "./pages/Login";
 import AddDevice from "./pages/AddDevice";
@@ -173,7 +173,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-
+{/* 
                 <Route
                     path="/power"
                     element={
@@ -183,7 +183,7 @@ function App() {
                             </InverterProvider>
                         </ProtectedRoute>
                     }
-                />
+                /> */}
 
                 <Route
                     path="/user"
