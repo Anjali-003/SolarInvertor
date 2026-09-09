@@ -1,62 +1,42 @@
 import React, { useEffect, useState } from "react";
+import { RadioTower } from "lucide-react";
 import P from "../theme/colors";
+import logo from "../assets/logo.png";
+import { formatUpdatedAgo } from "../utils/timeFormat";
 
+// =====================================================================
+// TOP DEVICE HEADER CARD
+//
+// This is the very first thing the user sees after logging in.
+// It is rendered by Home.jsx, Power.jsx and Fault.jsx with the exact
+// same props, so it looks identical and stays "static" (same content,
+// same position, same styling) across all three bottom-nav tabs, and
+// does not change while the user is inside any one of those tabs
+// (it only re-renders when the underlying device data actually
+// changes — switching tabs never alters it).
+//
+// `stickyTop` pins the card while the page scrolls underneath it.
+// Pass it only on pages where this card IS the top header (Home, Fault).
+// Pages that already render their own sticky PageHeader must either
+// leave it out or pass that header's height (64), otherwise the card
+// would scroll up behind it.
+// =====================================================================
 
+/**
+ * RAT comes from the live device payload in VA (e.g. 3000 for a
+ * 3 kW inverter). The header shows it as whole/rounded kW, e.g. "3KW".
+ */
+function formatRatingKW(rat) {
+    const va = Number(rat);
 
-function SignalStrength({ csq }) {
-    const value = Number(csq);
-
-    let activeBars = 0;
-
-    if (Number.isFinite(value)) {
-        if (value >= 26) {
-            activeBars = 5;
-        } else if (value >= 21) {
-            activeBars = 4;
-        } else if (value >= 16) {
-            activeBars = 3;
-        } else if (value >= 11) {
-            activeBars = 2;
-        } else if (value >= 0) {
-            activeBars = 1;
-        }
+    if (!Number.isFinite(va) || va <= 0) {
+        return "--";
     }
 
-    const activeColor = P.green;
-    const inactiveColor = P.border;
+    const kw = va / 1000;
 
-    return (
-        <div
-            title={
-                Number.isFinite(value)
-                    ? `Signal strength: ${value}`
-                    : "Signal strength unavailable"
-            }
-            style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: 3,
-                height: 22,
-            }}
-        >
-            {[1, 2, 3, 4, 5].map((bar) => (
-                <div
-                    key={bar}
-                    style={{
-                        width: 4,
-                        height: 4 + bar * 3,
-                        borderRadius: 2,
-                        background:
-                            bar <= activeBars
-                                ? activeColor
-                                : inactiveColor,
-                        transition:
-                            "background 0.2s ease",
-                    }}
-                />
-            ))}
-        </div>
-    );
+    // Trim trailing zeros: 3.00 -> "3", 3.50 -> "3.5"
+    return String(parseFloat(kw.toFixed(2)));
 }
 
 export default function DeviceInfo({
@@ -64,23 +44,25 @@ export default function DeviceInfo({
     lastUpdated,
     devices,
     selectedDeviceId,
+    stickyTop,
 }) {
 
     // =====================================================
-    // FORCE RE-RENDER EVERY SECOND
+    // TICK EVERY SECOND
     // =====================================================
-    // This allows the 3-minute timeout to happen automatically
-    // without requiring a page refresh or new server response.
+    //
+    // "Updated <n> minutes ago" is derived from the device
+    // timestamp, so it has to be recomputed as time passes —
+    // not only when new data arrives from the API.
 
-    const [, setCurrentTime] =
-        useState(Date.now());
+    const [, setNow] = useState(Date.now());
 
     useEffect(() => {
 
         const timer =
             setInterval(() => {
 
-                setCurrentTime(Date.now());
+                setNow(Date.now());
 
             }, 1000);
 
@@ -91,8 +73,12 @@ export default function DeviceInfo({
 
 
     // =====================================================
-    // SELECTED DEVICE
+    // SELECTED DEVICE / SERIAL NUMBER (IMEI)
     // =====================================================
+    //
+    // `devices` comes from GET /api/user/devices, which selects
+    // devices.imei straight out of the database. Nothing here is
+    // hardcoded — "--" only shows while no device is resolved yet.
 
     const selectedDevice =
         devices?.find(
@@ -101,144 +87,36 @@ export default function DeviceInfo({
                 Number(selectedDeviceId)
         );
 
-
-    // =====================================================
-    // IMEI
-    // =====================================================
-
-    const imei =
+    const serialNumber =
         selectedDevice?.imei ?? "--";
 
 
     // =====================================================
-    // RATING
+    // RATING (VA -> KW)
     // =====================================================
 
-    const rating =
-        data?.RAT ?? "--";
+    const ratingKW =
+        formatRatingKW(data?.RAT);
 
 
-
-const csq =
-    data?.csq;
     // =====================================================
-    // ST3 STATUS
+    // LAST UPDATED, RELATIVE ("Updated 3 hours ago")
     // =====================================================
     //
-    // ST3 bit 2:
-    //
-    // 1 = inverter ON
-    // 0 = inverter OFF
-    //
+    // `lastUpdated` is messages.created_at as returned by
+    // GET /api/latest-message — the real device message time,
+    // never the frontend's own clock.
 
-    const status3 =
-        Number(data?.ST3 ?? 0);
-
-    const inverterOnFromST3 =
-        Boolean(status3 & (1 << 2));
+    const updatedAgo =
+        formatUpdatedAgo(lastUpdated);
 
 
     // =====================================================
-    // LAST UPDATED / DATA AGE
+    // STICKY POSITIONING
     // =====================================================
 
-    const updatedAt =
-        lastUpdated
-            ? new Date(lastUpdated).getTime()
-            : null;
-
-
-    const dataAgeMs =
-        updatedAt
-            ? Date.now() - updatedAt
-            : Infinity;
-
-
-    // =====================================================
-    // CONDITION 1
-    // DATA OLDER THAN OR EQUAL TO 3 MINUTES
-    // =====================================================
-
-    const dataTimedOut =
-        dataAgeMs >=
-        3 * 60 * 1000;
-
-
-    // =====================================================
-    // CONDITION 2
-    // STINTERVAL / 4 >= 1
-    //
-    // Equivalent to:
-    //
-    // STINTERVAL >= 4
-    // =====================================================
-
-    const stInterval =
-        Number(data?.STINTERVAL ?? 0);
-
-
-    const intervalTooHigh =
-        stInterval / 4 >= 1;
-
-
-    // =====================================================
-    // FINAL STATUS
-    // =====================================================
-    //
-    // OFF if:
-    //
-    // 1. Data is >= 3 minutes old
-    // OR
-    // 2. STINTERVAL / 4 >= 1
-    // OR
-    // 3. ST3 says OFF
-    //
-    // Therefore ALL conditions must be healthy
-    // for the inverter to show ON.
-    // =====================================================
-
-    const inverterOn =
-        !dataTimedOut &&
-        !intervalTooHigh &&
-        inverterOnFromST3;
-
-
-    const statusText =
-        inverterOn
-            ? "ON"
-            : "OFF";
-
-
-    const statusColor =
-        inverterOn
-            ? P.green
-            : P.red;
-
-
-    // =====================================================
-    // LAST UPDATED FORMATTING
-    // =====================================================
-
-    const formattedDate =
-        lastUpdated
-            ? new Date(lastUpdated)
-                .toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                })
-            : "--";
-
-
-    const formattedTime =
-        lastUpdated
-            ? new Date(lastUpdated)
-                .toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                })
-            : "--";
+    const isSticky =
+        typeof stickyTop === "number";
 
 
     // =====================================================
@@ -250,9 +128,18 @@ const csq =
             style={{
                 width: "100%",
                 maxWidth: 700,
-                margin: "20px auto 16px",
+                margin: "0 auto 16px",
                 padding: "0 20px",
                 boxSizing: "border-box",
+
+                // Keep the header pinned while the page scrolls.
+                ...(isSticky
+                    ? {
+                        position: "sticky",
+                        top: stickyTop,
+                        zIndex: 50,
+                    }
+                    : null),
             }}
         >
 
@@ -261,147 +148,76 @@ const csq =
                     width: "100%",
                     boxSizing: "border-box",
 
-                    background: P.surface,
+                    background: "rgba(22, 38, 45, 0.88)",
                     borderRadius: 16,
                     padding: "16px 18px",
 
-                    border:
-                        `1px solid ${P.border}`,
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: P.shadowCard,
 
-                    boxShadow:
-                        P.shadowCard,
+                    // Content scrolls underneath the (translucent)
+                    // card, so blur what shows through.
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
 
-                    display: "grid",
-
-                    gridTemplateColumns:
-                        "minmax(0, 1fr) minmax(0, auto)",
-
-                    alignItems: "start",
-                    columnGap: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
 
                     overflow: "hidden",
                 }}
             >
 
-                {/* =================================================
-                    LEFT
-                ================================================= */}
+                {/* =========================================
+                    NETWORK ICON + LOGO (left)
+                ========================================= */}
 
                 <div
                     style={{
-                        minWidth: 0,
                         display: "flex",
-                        flexDirection: "column",
-                        gap: 14,
+                        alignItems: "center",
+                        gap: 10,
+                        minWidth: 0,
+                        maxWidth: "52%",
+                        flexShrink: 0,
                     }}
                 >
 
-                    {/* =================================================
-                        IMEI
-                    ================================================= */}
-
-                    <div
+                    <RadioTower
+                        size={22}
+                        strokeWidth={2}
+                        color="#ffffff"
                         style={{
-                            minWidth: 0,
+                            flexShrink: 0,
+                            opacity: 0.9,
                         }}
-                    >
+                    />
 
-                        <div
-                            style={{
-                                fontSize: 10,
-                                color: P.textMuted,
-                                fontWeight: 500,
-                                letterSpacing: 0.8,
-                                marginBottom: 3,
-                                fontFamily:
-                                    "'Inter', sans-serif",
-                            }}
-                        >
-                            IMEI
-                        </div>
-
-
-                        <div
-                            style={{
-                                fontSize: 16,
-                                fontWeight: 700,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'DM Sans', sans-serif",
-
-                                minWidth: 0,
-                                maxWidth: "100%",
-
-                                overflowWrap:
-                                    "anywhere",
-
-                                wordBreak:
-                                    "break-word",
-                            }}
-                        >
-                            {imei}
-                        </div>
-
-                    </div>
-
-
-                    {/* =================================================
-                        RATING
-                    ================================================= */}
-
-                    <div
+                    <img
+                        src={logo}
+                        alt="Statcon Energiaa"
                         style={{
-                            minWidth: 0,
+                            height: 46,
+                            width: "auto",
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                            flexShrink: 0,
+
+                            // Recolor the (multi-color) logo to a clean
+                            // white silhouette so it reads well on the
+                            // dark header background.
+                            filter: "brightness(0) invert(1)",
+                            opacity: 0.95,
                         }}
-                    >
-
-                        <div
-                            style={{
-                                fontSize: 10,
-                                color: P.textMuted,
-                                fontWeight: 500,
-                                letterSpacing: 0.8,
-                                marginBottom: 3,
-                                fontFamily:
-                                    "'Inter', sans-serif",
-                            }}
-                        >
-                            RATING
-                        </div>
-
-
-                        <div
-                            style={{
-                                fontSize: 16,
-                                fontWeight: 700,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'DM Sans', sans-serif",
-                            }}
-                        >
-
-                            {rating}{" "}
-
-                            <span
-                                style={{
-                                    fontSize: 12,
-                                    fontWeight: 500,
-                                    color: P.textMuted,
-                                }}
-                            >
-                                VA
-                            </span>
-
-                        </div>
-
-                    </div>
+                    />
 
                 </div>
 
 
-                {/* =================================================
-                    RIGHT
-                ================================================= */}
+                {/* =========================================
+                    DEVICE SUMMARY (right, stacked)
+                ========================================= */}
 
                 <div
                     style={{
@@ -410,181 +226,64 @@ const csq =
                         flexDirection: "column",
                         alignItems: "flex-end",
                         textAlign: "right",
+                        gap: 3,
                     }}
                 >
 
-                    {/* =================================================
-                        STATUS
-                    ================================================= */}
-
-                    {/* <div
-                        style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 7,
-
-                            padding: "5px 10px",
-                            borderRadius: 20,
-
-                            background:
-                                `${statusColor}18`,
-
-                            border:
-                                `1px solid ${statusColor}`,
-
-                            marginBottom: 14,
-
-                            flexShrink: 0,
-                        }}
-                    >
-
-                        <div
-                            style={{
-                                width: 8,
-                                height: 8,
-                                minWidth: 8,
-                                borderRadius: "50%",
-
-                                background:
-                                    statusColor,
-w
-                                boxShadow:
-                                    `0 0 7px ${statusColor}`,
-                            }}
-                        />
-
-
-                        <span
-                            style={{
-                                fontSize: 12,
-                                fontWeight: 700,
-                                color: statusColor,
-                                fontFamily:
-                                    "'DM Sans', sans-serif",
-                            }}
-                        >
-                            {statusText}
-                        </span>
-
-                    </div> */}
-
-
-<div
-    style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginBottom: 14,
-    }}
->
-    {/* STATUS */}
-    <div
-        style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 7,
-
-            padding: "5px 10px",
-            borderRadius: 20,
-
-            background:
-                `${statusColor}18`,
-
-            border:
-                `1px solid ${statusColor}`,
-
-            flexShrink: 0,
-        }}
-    >
-        <div
-            style={{
-                width: 8,
-                height: 8,
-                minWidth: 8,
-                borderRadius: "50%",
-
-                background:
-                    statusColor,
-
-                boxShadow:
-                    `0 0 7px ${statusColor}`,
-            }}
-        />
-
-        <span
-            style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: statusColor,
-                fontFamily:
-                    "'DM Sans', sans-serif",
-            }}
-        >
-            {statusText}
-        </span>
-    </div>
-
-    {/* SIGNAL STRENGTH */}
-    <SignalStrength csq={csq} />
-</div>
-
-                    {/* =================================================
-                        LAST UPDATED
-                    ================================================= */}
-
+                    {/* TITLE PLACEHOLDER
+                        The account holder's name is deliberately not
+                        shown here. */}
                     <div
                         style={{
-                            minWidth: 0,
+                            fontSize: 16,
+                            fontWeight: 800,
+                            color: "#ffffff",
+                            fontFamily: "'DM Sans', sans-serif",
                             maxWidth: "100%",
+                            overflowWrap: "anywhere",
                         }}
                     >
+                        --
+                    </div>
 
-                        <div
-                            style={{
-                                fontSize: 10,
-                                color: P.textMuted,
-                                fontWeight: 500,
-                                letterSpacing: 0.8,
-                                marginBottom: 4,
-                                fontFamily:
-                                    "'Inter', sans-serif",
-                                whiteSpace: "nowrap",
-                            }}
-                        >
-                            LAST UPDATED
-                        </div>
+                    {/* SERIAL NUMBER (IMEI) */}
+                    <div
+                        style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "rgba(255,255,255,0.65)",
+                            fontFamily: "'Inter', sans-serif",
+                            maxWidth: "100%",
+                            overflowWrap: "anywhere",
+                        }}
+                    >
+                        {serialNumber}
+                    </div>
 
+                    {/* RATING */}
+                    <div
+                        style={{
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: "rgba(255,255,255,0.85)",
+                            fontFamily: "'Inter', sans-serif",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        Rating: {ratingKW}KW
+                    </div>
 
-                        <div
-                            style={{
-                                fontSize: 13,
-                                fontWeight: 700,
-                                color: P.textPrimary,
-                                fontFamily:
-                                    "'DM Sans', sans-serif",
-                                lineHeight: 1.2,
-                                whiteSpace: "nowrap",
-                            }}
-                        >
-                            {formattedDate}
-                        </div>
-
-
-                        <div
-                            style={{
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color: P.textPrimary,
-                                marginTop: 3,
-                                fontFamily:
-                                    "'Inter', sans-serif",
-                                lineHeight: 1.2,
-                                whiteSpace: "nowrap",
-                            }}
-                        >
-                            {formattedTime}
-                        </div>
-
+                    {/* UPDATED */}
+                    <div
+                        style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "rgba(255,255,255,0.55)",
+                            fontFamily: "'Inter', sans-serif",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
+                        Updated {updatedAgo}
                     </div>
 
                 </div>

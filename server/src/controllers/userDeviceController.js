@@ -397,7 +397,18 @@ exports.getUserDevices = async (req, res) => {
                 d.imei,
                 d.device_version,
                 d.solution,
-                ud.location
+                d.rated_capacity_kw,
+                ud.location,
+
+                (
+                    SELECT eh.lkwh
+                    FROM energy_history eh
+                    WHERE eh.imei = d.imei
+                    ORDER BY
+                        eh.recorded_at DESC,
+                        eh.id DESC
+                    LIMIT 1
+                ) AS total_generation_kwh
 
             FROM user_devices ud
 
@@ -411,6 +422,16 @@ exports.getUserDevices = async (req, res) => {
             [userId]
         );
 
+        // =====================================================
+        // NOTE: nickname / device-type (product type + model
+        // picked in the Add Device wizard) are intentionally
+        // NOT stored in the database — they live in the
+        // browser's localStorage (see frontend/src/utils/deviceMeta.js)
+        // and get merged onto this list client-side. This
+        // endpoint only ever returns values that live in the DB:
+        // imei, rated capacity ("Rating"), and the latest
+        // cumulative generation reading ("Total Generation").
+        // =====================================================
 
         return res.json({
             success: true,

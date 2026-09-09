@@ -378,7 +378,7 @@
 //                     style={{
 //                         fontSize: 18,
 //                         fontWeight: 800,
-//                         color: P.textPrimary,
+//                         color: "#ffffff",
 //                         marginBottom: 14,
 //                         marginTop: 4,
 //                         fontFamily:
@@ -387,7 +387,7 @@
 //                 >
 //                     DEVICE INFORMATION
 //                 </h2> */}
-//                 <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+//                 <h2 style={{ fontSize: 15, fontWeight: 800, color: "#ffffff", marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
 //                     DEVICE INFORMATION
 //                 </h2>
 
@@ -609,7 +609,7 @@
 //     <div
 //         style={{
 //             fontSize: 10,
-//             color: P.textLight,
+//             color: "rgba(255,255,255,0.6)",
 //             fontWeight: 600,
 //             letterSpacing: 0.8,
 //             fontFamily: "'Inter', sans-serif",
@@ -633,7 +633,7 @@
 //             style={{
 //                 fontSize: 14,
 //                 fontWeight: 700,
-//                 color: P.textPrimary,
+//                 color: "#ffffff",
 //                 fontFamily: "'DM Sans', sans-serif",
 //                 lineHeight: 1.2,
 //                 whiteSpace: "nowrap"
@@ -648,7 +648,7 @@
 //                 marginTop: 3,
 //                 fontSize: 12,
 //                 fontWeight: 600,
-//                 color: P.textMuted,
+//                 color: "rgba(255,255,255,0.6)",
 //                 fontFamily: "'Inter', sans-serif",
 //                 lineHeight: 1.2,
 //                 whiteSpace: "nowrap"
@@ -1049,7 +1049,7 @@ export default function DeviceDetails() {
                     style={{
                         fontSize: 18,
                         fontWeight: 800,
-                        color: P.textPrimary,
+                        color: "#ffffff",
                         marginBottom: 14,
                         marginTop: 4,
                         fontFamily:
@@ -1058,7 +1058,7 @@ export default function DeviceDetails() {
                 >
                     DEVICE INFORMATION
                 </h2> */}
-                    <h2 style={{ fontSize: 15, fontWeight: 800, color: P.textWhite, marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                    <h2 style={{ fontSize: 15, fontWeight: 800, color: "#ffffff", marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                         DEVICE INFORMATION
                     </h2>
 
@@ -1070,10 +1070,10 @@ export default function DeviceDetails() {
                     <div
                         style={{
                             background:
-                                P.surface,
+                                "rgba(22, 38, 45, 0.88)",
 
                             border:
-                                `1px solid ${P.border}`,
+                                "1px solid rgba(255,255,255,0.08)",
 
                             borderRadius: 14,
 
@@ -1136,7 +1136,7 @@ export default function DeviceDetails() {
                                 padding:
                                     "14px 0",
                                 borderBottom:
-                                    `1px solid ${P.border}`
+                                    "1px solid rgba(255,255,255,0.08)"
                             }}
                         >
 
@@ -1144,7 +1144,7 @@ export default function DeviceDetails() {
                                 style={{
                                     fontSize: 10,
                                     color:
-                                        P.textMuted,
+                                        "rgba(255,255,255,0.6)",
                                     fontWeight: 600,
                                     letterSpacing: 0.8,
                                     fontFamily:
@@ -1219,7 +1219,7 @@ export default function DeviceDetails() {
                             style={{
                                 fontSize: 10,
                                 color:
-                                    P.textMuted,
+                                    "rgba(255,255,255,0.6)",
                                 fontWeight: 600,
                                 letterSpacing: 0.8,
                                 marginBottom: 6,
@@ -1236,7 +1236,7 @@ export default function DeviceDetails() {
                                 fontSize: 14,
                                 fontWeight: 700,
                                 color:
-                                    P.textPrimary,
+                                    "#ffffff",
                                 fontFamily:
                                     "'DM Sans', sans-serif"
                             }}
@@ -1250,7 +1250,7 @@ export default function DeviceDetails() {
                                 fontSize: 13,
                                 fontWeight: 600,
                                 color:
-                                    P.textMuted,
+                                    "rgba(255,255,255,0.6)",
                                 marginTop: 3,
                                 fontFamily:
                                     "'Inter', sans-serif"
@@ -1280,7 +1280,7 @@ export default function DeviceDetails() {
                             <div
                                 style={{
                                     fontSize: 10,
-                                    color: P.textLight,
+                                    color: "rgba(255,255,255,0.6)",
                                     fontWeight: 600,
                                     letterSpacing: 0.8,
                                     fontFamily: "'Inter', sans-serif",
@@ -1304,7 +1304,7 @@ export default function DeviceDetails() {
                                     style={{
                                         fontSize: 14,
                                         fontWeight: 700,
-                                        color: P.textPrimary,
+                                        color: "#ffffff",
                                         fontFamily: "'DM Sans', sans-serif",
                                         lineHeight: 1.2,
                                         whiteSpace: "nowrap"
@@ -1319,7 +1319,7 @@ export default function DeviceDetails() {
                                         marginTop: 3,
                                         fontSize: 12,
                                         fontWeight: 600,
-                                        color: P.textMuted,
+                                        color: "rgba(255,255,255,0.6)",
                                         fontFamily: "'Inter', sans-serif",
                                         lineHeight: 1.2,
                                         whiteSpace: "nowrap"
@@ -1339,7 +1339,7 @@ export default function DeviceDetails() {
     style={{
         fontSize: 15,
         fontWeight: 800,
-        color: P.textWhite,
+        color: "#ffffff",
         marginBottom: 12,
         marginTop: 24,
         letterSpacing: 0.5,
@@ -1347,7 +1347,7 @@ export default function DeviceDetails() {
             "'DM Sans', sans-serif"
     }}
 >
-    REPORTS
+
 </h2>
 
 
@@ -1400,7 +1400,7 @@ function DetailRow({
                 padding:
                     "14px 0",
                 borderBottom:
-                    `1px solid ${P.border}`
+                    "1px solid rgba(255,255,255,0.08)"
             }}
         >
 
@@ -1408,7 +1408,7 @@ function DetailRow({
                 style={{
                     fontSize: 10,
                     color:
-                        P.textMuted,
+                        "rgba(255,255,255,0.6)",
                     fontWeight: 600,
                     letterSpacing: 0.8,
                     fontFamily:
@@ -1425,7 +1425,7 @@ function DetailRow({
                     fontSize: 14,
                     fontWeight: 700,
                     color:
-                        P.textPrimary,
+                        "#ffffff",
                     fontFamily:
                         "'DM Sans', sans-serif",
                     textAlign: "right",
@@ -1455,7 +1455,7 @@ function Page({
             style={{
                 minHeight: "100vh",
                 paddingBottom: "90px",
-                background: P.bg,
+                background: "transparent",
                 fontFamily:
                     "'Inter', sans-serif"
             }}
@@ -1483,14 +1483,14 @@ function Message({
                     "20px",
 
                 background:
-                    P.surface,
+                    "rgba(22, 38, 45, 0.88)",
 
                 borderRadius: 14,
 
                 padding: 24,
 
                 border:
-                    `1px solid ${P.border}`,
+                    "1px solid rgba(255,255,255,0.08)",
 
                 boxShadow:
                     P.shadowCard,
@@ -1498,7 +1498,7 @@ function Message({
                 color:
                     error
                         ? P.red
-                        : P.textMuted,
+                        : "rgba(255,255,255,0.6)",
 
                 textAlign:
                     "center",

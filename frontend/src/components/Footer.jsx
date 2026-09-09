@@ -9,78 +9,24 @@ export default function Footer() {
 
     // =====================================================
     // NAVIGATION ITEMS
+    //
+    // Matches the 3-icon bottom bar from the app screenshots:
+    //   1. Plant / Home  -> live status + generation summary
+    //                       + CUF + chart + CO2/trees   (left1/left2.jpg)
+    //   2. Parameters    -> PV/AC parameters + status
+    //                       + faults                     (middle1/middle2.jpg)
+    //   3. Reports       -> device details + download
+    //                       report                       (Right.jpeg)
     // =====================================================
 
     const navItems = [
 
         // =================================================
-        // FAULT
+        // 1. PLANT / HOME
         // =================================================
 
         {
-            label: "Fault",
-            path: "/fault",
-
-            icon: (
-                <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-                    <polygon points="12 2 22 20 2 20 12 2" />
-                    <line
-                        x1="12"
-                        y1="8"
-                        x2="12"
-                        y2="13"
-                    />
-                    <circle
-                        cx="12"
-                        cy="17"
-                        r="1"
-                    />
-                </svg>
-            ),
-        },
-
-
-        // =================================================
-        // POWER
-        // =================================================
-
-        // {
-        //     label: "Power",
-        //     path: "/power",
-
-        //     icon: (
-        //         <svg
-        //             width="22"
-        //             height="22"
-        //             viewBox="0 0 24 24"
-        //             fill="none"
-        //             stroke="currentColor"
-        //             strokeWidth="2"
-        //             strokeLinecap="round"
-        //             strokeLinejoin="round"
-        //         >
-        //             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        //         </svg>
-        //     ),
-        // },
-
-
-        
-        // =================================================
-        // HOME
-        // =================================================
-
-        {
-            label: "Home",
+            label: "Plant",
             path: "/",
 
             icon: (
@@ -90,25 +36,56 @@ export default function Footer() {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 >
-                    <path d="M3 10.5L12 3l9 7.5" />
-                    <path d="M5 9.5V21h14V9.5" />
+                    {/* small monitor / plant-overview screen */}
+                    <rect x="3" y="4" width="18" height="12" rx="2" />
+                    <path d="M8 20h8" />
+                    <path d="M12 16v4" />
+                    {/* sun above the screen */}
+                    <circle cx="12" cy="9" r="2.1" />
+                    <path d="M12 4.3v1.1M7.8 6.2l.8.8M16.2 6.2l-.8.8" />
                 </svg>
             ),
         },
 
 
-
-
         // =================================================
-        // DEVICE
+        // 2. PARAMETERS (gauge / speedometer)
         // =================================================
 
         {
-            label: "Device",
+            label: "Parameters",
+            path: "/fault",
+
+            icon: (
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M4.5 16a7.5 7.5 0 1 1 15 0" />
+                    <path d="M4.5 16h15" />
+                    <path d="M12 16l4.2-5.2" />
+                    <circle cx="12" cy="16" r="1.1" fill="currentColor" stroke="none" />
+                </svg>
+            ),
+        },
+
+
+        // =================================================
+        // 3. REPORTS / DETAILS
+        // =================================================
+
+        {
+            label: "Reports",
             path: "/device-details",
 
             icon: (
@@ -118,80 +95,13 @@ export default function Footer() {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 >
-                    {/* Device body */}
-                    <rect
-                        x="5"
-                        y="2"
-                        width="14"
-                        height="20"
-                        rx="2"
-                        ry="2"
-                    />
-
-                    {/* Screen */}
-                    <rect
-                        x="8"
-                        y="5"
-                        width="8"
-                        height="7"
-                        rx="1"
-                    />
-
-                    {/* Bottom indicators */}
-                    <circle
-                        cx="9"
-                        cy="16"
-                        r="1"
-                    />
-
-                    <circle
-                        cx="12"
-                        cy="16"
-                        r="1"
-                    />
-
-                    <circle
-                        cx="15"
-                        cy="16"
-                        r="1"
-                    />
-                </svg>
-            ),
-        },
-
-
-        // =================================================
-        // USER
-        // =================================================
-
-        {
-            label: "User",
-            path: "/user",
-
-            icon: (
-                <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-                    <circle
-                        cx="12"
-                        cy="8"
-                        r="4"
-                    />
-
-                    <path
-                        d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"
-                    />
+                    <path d="M6 2.5h9l3 3V21a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" />
+                    <path d="M14.5 2.5V6h3.5" />
+                    <path d="M8.5 14v3M12 12v5M15.5 15.5V17" />
                 </svg>
             ),
         },
@@ -213,7 +123,6 @@ export default function Footer() {
 
                 boxShadow: P.shadowNav,
 
-                // FIXED
                 borderTop: `1px solid ${P.border}`,
 
                 display: "flex",
@@ -222,12 +131,9 @@ export default function Footer() {
 
                 fontFamily: "'Inter', sans-serif",
 
-                // Make sure it stays above page content
                 zIndex: 1000,
 
-                // Helps on phones with a bottom safe area
-                paddingBottom:
-                    "env(safe-area-inset-bottom)",
+                paddingBottom: "env(safe-area-inset-bottom)",
 
                 boxSizing: "border-box",
             }}
@@ -264,13 +170,11 @@ export default function Footer() {
                                     ? P.amberDark
                                     : P.textLight,
 
-                            transition:
-                                "0.2s",
+                            transition: "0.2s",
 
                             height: "100%",
 
-                            WebkitTapHighlightColor:
-                                "transparent",
+                            WebkitTapHighlightColor: "transparent",
                         }}
                     >
 
@@ -298,8 +202,7 @@ export default function Footer() {
                                         ? 700
                                         : 500,
 
-                                fontFamily:
-                                    "'Inter', sans-serif",
+                                fontFamily: "'Inter', sans-serif",
                             }}
                         >
                             {item.label}

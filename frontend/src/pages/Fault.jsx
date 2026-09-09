@@ -553,6 +553,7 @@ import Footer from "../components/Footer";
 import P from "../theme/colors";
 import DeviceInfo from "../components/DeviceInfo";
 import PageBackground from "../components/PageBackground";
+import { sanitizeReading } from "../utils/sanitizeReading";
 
 
 export default function Fault() {
@@ -577,18 +578,26 @@ export default function Fault() {
 
     const getParameterValue = (
         parameter,
-        fallback = "--"
+        fallback = "--",
+        kind = null
     ) => {
 
         const value =
             data?.[parameter];
 
-        return (
-            value !== undefined &&
-            value !== null
-        )
-            ? value
-            : fallback;
+        if (
+            value === undefined ||
+            value === null
+        ) {
+            return fallback;
+        }
+
+        // Guard against -1 "no data" sentinels that got
+        // unsigned-wrapped into huge numbers (e.g. 4294967295,
+        // 42949672, 429496736) somewhere upstream.
+        return sanitizeReading(value, kind, null) === "--"
+            ? fallback
+            : value;
     };
 
 
@@ -908,6 +917,10 @@ export default function Fault() {
                             selectedDeviceId
                         }
 
+                        stickyTop={
+                            0
+                        }
+
                     />
 
 
@@ -938,7 +951,9 @@ export default function Fault() {
                                 label="PV Voltage"
                                 value={
                                     getParameterValue(
-                                        "PV"
+                                        "PV",
+                                        "--",
+                                        "voltage"
                                     )
                                 }
                                 unit="V"
@@ -949,7 +964,9 @@ export default function Fault() {
                                 label="PV Current"
                                 value={
                                     getParameterValue(
-                                        "PI"
+                                        "PI",
+                                        "--",
+                                        "current"
                                     )
                                 }
                                 unit="A"
@@ -960,7 +977,9 @@ export default function Fault() {
                                 label="Solar Power"
                                 value={
                                     getParameterValue(
-                                        "PPOW"
+                                        "PPOW",
+                                        "--",
+                                        "powerW"
                                     )
                                 }
                                 unit="W"
@@ -970,8 +989,10 @@ export default function Fault() {
                             <ParameterRow
                                 label="Today Gen"
                                 value={
-                                    energy?.today ??
-                                    "--"
+                                    sanitizeReading(
+                                        energy?.today,
+                                        "energyKWh"
+                                    )
                                 }
                                 unit="kWh"
                             />
@@ -981,7 +1002,9 @@ export default function Fault() {
                                 label="Total Gen"
                                 value={
                                     getParameterValue(
-                                        "LKWH"
+                                        "LKWH",
+                                        "--",
+                                        "energyKWh"
                                     )
                                 }
                                 unit="kWh"
@@ -1036,7 +1059,9 @@ export default function Fault() {
                                 label="Grid Voltage"
                                 value={
                                     getParameterValue(
-                                        "VN"
+                                        "VN",
+                                        "--",
+                                        "voltage"
                                     )
                                 }
                                 unit="V"
@@ -1062,7 +1087,9 @@ export default function Fault() {
                                 label="Grid Current"
                                 value={
                                     getParameterValue(
-                                        "DCI1"
+                                        "DCI1",
+                                        "--",
+                                        "current"
                                     )
                                 }
                                 unit="A"
@@ -1073,7 +1100,9 @@ export default function Fault() {
                                 label="Grid Frequency"
                                 value={
                                     getParameterValue(
-                                        "GFREQ"
+                                        "GFREQ",
+                                        "--",
+                                        "frequency"
                                     )
                                 }
                                 unit="Hz"
@@ -1084,7 +1113,9 @@ export default function Fault() {
                                 label="Power Factor"
                                 value={
                                     getParameterValue(
-                                        "PF"
+                                        "PF",
+                                        "--",
+                                        "powerFactor"
                                     )
                                 }
                             />
@@ -1094,7 +1125,9 @@ export default function Fault() {
                                 label="Export Power"
                                 value={
                                     getParameterValue(
-                                        "POW"
+                                        "POW",
+                                        "--",
+                                        "powerW"
                                     )
                                 }
                                 unit="W"
@@ -1145,7 +1178,9 @@ export default function Fault() {
                                 label="Temperature"
                                 value={
                                     getParameterValue(
-                                        "TEMP"
+                                        "TEMP",
+                                        "--",
+                                        "temperature"
                                     )
                                 }
                                 unit="°C"
@@ -1162,10 +1197,10 @@ export default function Fault() {
                         <div
                             style={{
                                 background:
-                                    P.surface,
+                                    "rgba(22, 38, 45, 0.88)",
 
                                 border:
-                                    `1px solid ${P.border}`,
+                                    "1px solid rgba(255,255,255,0.08)",
 
                                 borderRadius:
                                     14,
@@ -1190,7 +1225,7 @@ export default function Fault() {
                                         700,
 
                                     color:
-                                        P.textPrimary,
+                                        "#ffffff",
 
                                     marginBottom:
                                         10,
@@ -1223,7 +1258,7 @@ export default function Fault() {
                                             "12px 10px 5px",
 
                                         color:
-                                            P.textPrimary,
+                                            "#ffffff",
 
                                         fontSize:
                                             15,
@@ -1289,7 +1324,7 @@ export default function Fault() {
                                                             index <
                                                             activeFaults.length - 1
 
-                                                                ? `1px solid ${P.border}`
+                                                                ? "1px solid rgba(255,255,255,0.08)"
 
                                                                 : "none"
                                                     }}
@@ -1301,7 +1336,7 @@ export default function Fault() {
                                                                 14,
 
                                                             color:
-                                                                P.textPrimary,
+                                                                "#ffffff",
 
                                                             fontFamily:
                                                                 "'Inter', sans-serif",
@@ -1392,10 +1427,10 @@ function ParameterCard({
         <div
             style={{
                 background:
-                    P.surface,
+                    "rgba(22, 38, 45, 0.88)",
 
                 border:
-                    `1px solid ${P.border}`,
+                    "1px solid rgba(255,255,255,0.08)",
 
                 borderRadius:
                     14,
@@ -1420,7 +1455,7 @@ function ParameterCard({
                         700,
 
                     color:
-                        P.textPrimary,
+                        "#ffffff",
 
                     padding:
                         "0 0 8px 0",
@@ -1489,7 +1524,7 @@ function ParameterRow({
                 borderBottom:
                     last
                         ? "none"
-                        : `1px solid ${P.border}`,
+                        : "1px solid rgba(255,255,255,0.08)",
 
                 boxSizing:
                     "border-box"
@@ -1507,7 +1542,7 @@ function ParameterRow({
                         500,
 
                     color:
-                        P.textPrimary,
+                        "rgba(255,255,255,0.85)",
 
                     fontFamily:
                         "'Inter', sans-serif",
@@ -1532,7 +1567,7 @@ function ParameterRow({
 
                     color:
                         valueColor ||
-                        P.textPrimary,
+                        "#ffffff",
 
                     textAlign:
                         "left",
@@ -1555,7 +1590,7 @@ function ParameterRow({
                             <span
                                 style={{
                                     color:
-                                        P.textMuted
+                                        "rgba(255,255,255,0.6)"
                                 }}
                             >
                                 {unit}

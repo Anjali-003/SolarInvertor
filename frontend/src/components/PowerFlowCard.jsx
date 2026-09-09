@@ -105,10 +105,10 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
         style={{
           width: "100%",
           boxSizing: "border-box",
-          background: P.surface,
-          borderRadius: 16,
+          background: "rgba(22, 38, 45, 0.88)",
+          borderRadius: 20,
           padding: "16px 18px",
-          border: `1px solid ${P.border}`,
+          border: "1px solid rgba(255,255,255,0.35)",
           boxShadow: P.shadowCard,
           fontFamily: "'DM Sans', sans-serif",
         }}
@@ -117,10 +117,10 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
           {/* GRID */}
           <div style={{ textAlign: "center", width: 90, minWidth: 0 }}>
             <TowerIcon size={44} color={P.textAmberBright} />
-            <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: P.textPrimary, lineHeight: 1 }}>
+            <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
               {dcPower}
             </div>
-            <div style={{ marginTop: 3, fontSize: 11, color: P.textMuted, fontWeight: 500 }}>kW</div>
+            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>kW</div>
           </div>
 
           {/* arrow: grid -> inverter (points right, into inverter) */}
@@ -179,7 +179,7 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
                 marginTop: 10,
                 fontSize: 11,
                 fontWeight: 700,
-                color: "#000000",
+                color: "#ffffff",
                 letterSpacing: 0.3,
                 whiteSpace: "nowrap",
               }}
@@ -214,7 +214,7 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
             marginTop: 8,
             fontSize: 11,
             fontWeight: 700,
-            color: "#000000",
+            color: "#ffffff",
             letterSpacing: 0.3,
             whiteSpace: "nowrap",
         }}
@@ -232,10 +232,10 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
           {/* SOLAR */}
           <div style={{ textAlign: "center", width: 90, minWidth: 0 }}>
             <SolarIcon size={46} color={P.textAmberBright} />
-            <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: P.textPrimary, lineHeight: 1 }}>
+            <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
               {solarPower}
             </div>
-            <div style={{ marginTop: 3, fontSize: 11, color: P.textMuted, fontWeight: 500 }}>kW</div>
+            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>kW</div>
           </div>
         </div>
       </div>
