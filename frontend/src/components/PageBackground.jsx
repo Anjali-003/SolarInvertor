@@ -1,5 +1,5 @@
 import React from "react";
-import backgroundImage from "../assets/bg.jpg";
+import backgroundImage from "../assets/bg-2.jpeg";
 import P from "../theme/colors";
 
 export default function PageBackground({ children }) {
@@ -19,7 +19,12 @@ export default function PageBackground({ children }) {
                     minHeight: "100vh",
                     margin: "0 auto",
                     position: "relative",
-                    overflow: "hidden",
+
+                    // "clip" instead of "hidden": both clip overflowing
+                    // children the same way, but "hidden" turns this box
+                    // into a scroll container, which would stop the
+                    // sticky header in DeviceInfo from ever sticking.
+                    overflow: "clip",
                 }}
             >
                 {/* FIXED BACKGROUND IMAGE */}

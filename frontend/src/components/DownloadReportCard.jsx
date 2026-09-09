@@ -1601,16 +1601,16 @@ const safeImei =
             "border-box",
 
         border:
-            `1px solid ${P.border}`,
+            "1px solid rgba(255,255,255,0.12)",
 
         borderRadius:
             10,
 
         background:
-            P.surfaceForm,
+            "#ffffff",
 
         color:
-            P.textPrimary,
+            "#rgba(255,255,255,0.06)",
 
         fontSize:
             13,
@@ -1666,7 +1666,7 @@ const safeImei =
             0.6,
 
         color:
-            P.textMuted,
+            "rgba(255,255,255,0.6)",
 
         fontFamily:
             "'Inter', sans-serif"
@@ -1694,10 +1694,10 @@ const safeImei =
                     "border-box",
 
                 background:
-                    P.surface,
+                    "rgba(22, 38, 45, 0.88)",
 
                 border:
-                    `1px solid ${P.border}`,
+                    "1px solid rgba(255,255,255,0.08)",
 
                 borderRadius:
                     14,
@@ -1726,7 +1726,7 @@ const safeImei =
                         800,
 
                     color:
-                        P.textPrimary,
+                        "#ffffff",
 
                     fontFamily:
                         "'DM Sans', sans-serif",
@@ -1739,26 +1739,7 @@ const safeImei =
             </div>
 
 
-            <div
-                style={{
-                    fontSize:
-                        11,
-
-                    lineHeight:
-                        1.45,
-
-                    color:
-                        P.textMuted,
-
-                    fontFamily:
-                        "'Inter', sans-serif",
-
-                    marginBottom:
-                        18
-                }}
-            >
-Choose a report type to download device data.
-            </div>
+            
 
 
             {/* =================================================
@@ -1778,13 +1759,7 @@ Choose a report type to download device data.
                 }}
             >
 
-                <label
-                    style={
-                        labelStyle
-                    }
-                >
-                    REPORT TYPE
-                </label>
+                
 
 
                 <div
@@ -1944,7 +1919,7 @@ Choose a report type to download device data.
                                 "none",
 
                             color:
-                                P.textMuted,
+                                "rgba(255,255,255,0.6)",
 
                             fontSize:
                                 12
@@ -2321,12 +2296,12 @@ Choose a report type to download device data.
                     background:
                         canDownload
                             ? P.btnPrimary
-                            : P.surfaceForm,
+                            : "rgba(255,255,255,0.08)",
 
                     color:
                         canDownload
                             ? P.textWhite
-                            : P.textMuted,
+                            : "rgba(255,255,255,0.4)",
 
                     fontSize:
                         14,

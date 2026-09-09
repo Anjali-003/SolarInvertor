@@ -15,6 +15,8 @@ import User from "./pages/User";
 import Login from "./pages/Login";
 import AddDevice from "./pages/AddDevice";
 import DeviceDetails from "./pages/DeviceDetails";
+import SelectOption from "./pages/SelectOption";
+import MyDevices from "./pages/MyDevices";
 
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -73,6 +75,20 @@ function App() {
                 <Route
                     path="/login"
                     element={<Login />}
+                />
+
+
+                {/* =====================================================
+                    SELECT OPTION (PREVIEW)
+
+                    TEMP standalone route for review only.
+                    Will later replace the post-login landing
+                    destination instead of living at its own path.
+                ===================================================== */}
+
+                <Route
+                    path="/select-option"
+                    element={<SelectOption />}
                 />
 
 
@@ -202,6 +218,25 @@ function App() {
                         <ProtectedRoute>
                             <InverterProvider>
                                 <AddDevice />
+                            </InverterProvider>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* =====================================================
+                    SAVED DEVICES LIST (USER SIDE)
+
+                    NOTE: "/my-devices" is already taken by the
+                    VENDOR device list above, so this user-facing
+                    list lives at "/saved-devices" instead.
+                ===================================================== */}
+
+                <Route
+                    path="/saved-devices"
+                    element={
+                        <ProtectedRoute>
+                            <InverterProvider>
+                                <MyDevices />
                             </InverterProvider>
                         </ProtectedRoute>
                     }

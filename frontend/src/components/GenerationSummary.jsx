@@ -1,4 +1,5 @@
 import P from "../theme/colors";
+import { sanitizeReading } from "../utils/sanitizeReading";
 
 export default function GenerationSummary({
     energy,
@@ -9,20 +10,17 @@ export default function GenerationSummary({
         {
             label: "TODAY",
             value:
-                energy?.today ??
-                "--",
+                sanitizeReading(energy?.today, "energyKWh"),
         },
         {
             label: "MONTH",
             value:
-                energy?.monthly ??
-                "--",
+                sanitizeReading(energy?.monthly, "energyKWh"),
         },
         {
             label: "TOTAL",
             value:
-                total ??
-                "--",
+                sanitizeReading(total, "energyKWh"),
         },
     ];
 

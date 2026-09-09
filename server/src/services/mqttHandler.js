@@ -215,11 +215,21 @@ const LKWL = Number(parsed.LKWL) || 0;
 // const LKWH = Number(payload.LKWH) || 0;
 // const LKWL = Number(payload.LKWL) || 0;
 
+// -1 on either register means "no reading yet" from the
+// device. Combining -1 registers with `>>> 0` (unsigned)
+// wraps them into ~4294967295 instead of a real reading, so
+// skip the combine (and the DB insert below) entirely when
+// either half is the -1 sentinel.
+const hasNoLkwhReading =
+    LKWH === -1 || LKWL === -1;
+
 const lkwh =
-    (((LKWH & 0xFFFF) << 16) | (LKWL & 0xFFFF)) >>> 0;
+    hasNoLkwhReading
+        ? null
+        : (((LKWH & 0xFFFF) << 16) | (LKWL & 0xFFFF)) >>> 0;
 
 
-if (Number.isFinite(lkwh)) {
+if (!hasNoLkwhReading && Number.isFinite(lkwh)) {
 
     const recordedAt = new Date();
 

@@ -513,6 +513,7 @@ import CUFSummary from "../components/CUFSummary";
 import GenerationChartCard from "../components/GenerationChartCard";
 
 import PageBackground from "../components/PageBackground";
+import { sanitizeReading, isValidReading } from "../utils/sanitizeReading";
 
 
 export default function Home() {
@@ -532,6 +533,7 @@ export default function Home() {
         selectedDeviceId,
 
         refreshEnergy,
+        refreshLatest,
 
         chartData,
         chartMeta,
@@ -649,6 +651,8 @@ export default function Home() {
 
                 await Promise.all([
 
+                    refreshLatest?.(),
+
                     refreshEnergy?.(),
 
                     fetchEnergyChart?.(
@@ -707,8 +711,8 @@ export default function Home() {
 
 
         if (
-            !Number.isFinite(voltage) ||
-            !Number.isFinite(current)
+            !isValidReading(voltage, "voltage") ||
+            !isValidReading(current, "current")
         ) {
 
             return "--";
@@ -739,7 +743,7 @@ export default function Home() {
 
 
         if (
-            !Number.isFinite(power)
+            !isValidReading(power, "powerW")
         ) {
 
             return "--";
@@ -758,8 +762,9 @@ export default function Home() {
     // =====================================================
 
     const totalGeneration =
-        getParameterValue(
-            "LKWH"
+        sanitizeReading(
+            getParameterValue("LKWH"),
+            "energyKWh"
         );
 
 
@@ -788,8 +793,10 @@ export default function Home() {
                     boxSizing:
                         "border-box",
 
+                    // "clip" instead of "hidden" so the sticky header
+                    // in DeviceInfo keeps working (see PageBackground).
                     overflowX:
-                        "hidden"
+                        "clip"
                 }}
             >
 
@@ -813,6 +820,10 @@ export default function Home() {
 
                     selectedDeviceId={
                         selectedDeviceId
+                    }
+
+                    stickyTop={
+                        0
                     }
                 />
 
@@ -984,6 +995,13 @@ export default function Home() {
                         }
 
                     />
+
+
+                    {/* =================================================
+                        CO2 SAVED / TREES PLANTED
+                    ================================================= */}
+
+                    
 
 
                 </div>
