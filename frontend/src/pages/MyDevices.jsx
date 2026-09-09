@@ -105,7 +105,7 @@ export default function MyDevices() {
     const handleOpenDevice = (device) => {
         if (selectMode) return;
         setSelectedDeviceId(device.id);
-        navigate("/device-details");
+        navigate("/");
     };
 
     return (

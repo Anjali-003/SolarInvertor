@@ -54,6 +54,7 @@ export default function AddDevice() {
     const navigate = useNavigate();
 
     const {
+        devices,
         refreshDevices,
         setSelectedDeviceId,
     } = useInverter();
@@ -64,8 +65,9 @@ export default function AddDevice() {
     // "scan"        -> pg-2  (barcode / quick access screen, always mounted)
     // "productType" -> pg-3  (popup)
     // "model"       -> pg-4  (popup)
-    // "details"     -> pg-5  (popup)
-    // "confirm"     -> pg-6  (popup)
+    // "confirmAdd"  -> pg-5  (popup) "Add Device" Yes/No — asked right
+    //                  after the model is picked, BEFORE nickname/address
+    // "details"     -> pg-6  (popup) nickname + address — Save submits
     // =====================================================
 
     const [popup, setPopup] = useState(null);
@@ -78,6 +80,18 @@ export default function AddDevice() {
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // =====================================================
+    // "DEVICE ALREADY EXISTS" TOAST
+    //
+    // Shown when the scanned/entered code matches a device
+    // the user already has in "My Devices" — the guided
+    // add-device wizard (product type / model / confirm /
+    // nickname) is skipped entirely and we jump straight to
+    // that existing device instead.
+    // =====================================================
+
+    const [toast, setToast] = useState("");
 
     // =====================================================
     // CAMERA SCANNER
@@ -206,6 +220,23 @@ export default function AddDevice() {
 
     const handleSelectModel = (selectedModel) => {
         setModel(selectedModel);
+        setPopup("confirmAdd");
+    };
+
+    // =====================================================
+    // STEP 3.5 : CONFIRM ADD DEVICE
+    // (asked right after model is picked, before nickname etc.)
+    // =====================================================
+
+    const handleConfirmAddNo = () => {
+        // No backs out of the whole guided flow and returns
+        // to the scan screen, ready to try again.
+        setPopup(null);
+        setProductType("");
+        setModel("");
+    };
+
+    const handleConfirmAddYes = () => {
         setPopup("details");
     };
 
@@ -231,18 +262,18 @@ export default function AddDevice() {
             return;
         }
 
-        setPopup("confirm");
+        addDevice();
     };
 
     // =====================================================
-    // STEP 5 : CONFIRM ADD DEVICE
+    // STEP 5 : SAVE THE DEVICE
+    // (the "add this device?" confirmation already happened
+    // up front in STEP 3.5; here we also check whether the
+    // scanned IMEI is already in "My Devices" before calling
+    // the API — if so we jump straight to that device instead)
     // =====================================================
 
-    const handleConfirmNo = () => {
-        setPopup("details");
-    };
-
-    const handleConfirmYes = async () => {
+    const addDevice = async () => {
         setError("");
 
         const cleanImei = imei.trim();
@@ -250,6 +281,27 @@ export default function AddDevice() {
         if (!/^\d{15}$/.test(cleanImei)) {
             setError("IMEI must be exactly 15 digits");
             setPopup("details");
+            return;
+        }
+
+        // -----------------------------------------------
+        // Already in "My Devices"? Skip the API call, show
+        // the toast, and jump straight to that device.
+        // -----------------------------------------------
+
+        const existing = (devices || []).find(
+            (d) => String(d.imei) === cleanImei
+        );
+
+        if (existing) {
+            setPopup(null);
+            setToast("Device already exists");
+            setSelectedDeviceId(existing.id);
+
+            setTimeout(() => {
+                navigate("/");
+            }, 1200);
+
             return;
         }
 
@@ -547,17 +599,20 @@ export default function AddDevice() {
                         Open Quick Access
                     </button>
 
-                    <div
-                        style={{
-                            marginTop: 8,
-                            fontSize: 11,
-                            color: "#d8d8d8",
-                            fontFamily: "'Inter', sans-serif",
-                        }}
-                    >
-                        Place a barcode inside the viewfinder rectangle to
-                        scan it.
-                    </div>
+                   <div
+    style={{
+        marginTop: 8,
+        fontSize: 11,
+        color: "#d8d8d8",
+        fontFamily: "'Inter', sans-serif",
+        width: "100%",
+        textAlign: "center",
+        boxSizing: "border-box",
+        padding: "0 16px",
+    }}
+>
+    Place a barcode inside the viewfinder rectangle to scan it.
+</div>
 
                     {error && popup === null && (
                         <div
@@ -619,7 +674,41 @@ export default function AddDevice() {
             )}
 
             {/* =====================================================
-                PG-5 : ENTER DEVICE DETAILS
+                PG-5 : ADD DEVICE CONFIRMATION
+                (asked right after the model is picked, before nickname)
+            ===================================================== */}
+
+            {popup === "confirmAdd" && (
+                <PopupOverlay>
+                    <PopupCard
+                        title="Add Device"
+                        subtitle="Do you want to add this device to your list?"
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                gap: 22,
+                                marginTop: 18,
+                            }}
+                        >
+                            <PopupTextButton onClick={handleConfirmAddNo}>
+                                NO
+                            </PopupTextButton>
+
+                            <PopupTextButton
+                                onClick={handleConfirmAddYes}
+                                strong
+                            >
+                                YES
+                            </PopupTextButton>
+                        </div>
+                    </PopupCard>
+                </PopupOverlay>
+            )}
+
+            {/* =====================================================
+                PG-6 : ENTER DEVICE DETAILS
             ===================================================== */}
 
             {popup === "details" && (
@@ -665,52 +754,19 @@ export default function AddDevice() {
                                 marginTop: 18,
                             }}
                         >
-                            <PopupTextButton onClick={handleDetailsCancel}>
+                            <PopupTextButton
+                                onClick={handleDetailsCancel}
+                                disabled={loading}
+                            >
                                 CANCEL
                             </PopupTextButton>
 
                             <PopupTextButton
                                 onClick={handleDetailsSave}
                                 strong
-                            >
-                                SAVE
-                            </PopupTextButton>
-                        </div>
-                    </PopupCard>
-                </PopupOverlay>
-            )}
-
-            {/* =====================================================
-                PG-6 : ADD DEVICE CONFIRMATION
-            ===================================================== */}
-
-            {popup === "confirm" && (
-                <PopupOverlay>
-                    <PopupCard
-                        title="Add Device"
-                        subtitle="Do you want to add this device to your list?"
-                    >
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                gap: 22,
-                                marginTop: 18,
-                            }}
-                        >
-                            <PopupTextButton
-                                onClick={handleConfirmNo}
                                 disabled={loading}
                             >
-                                NO
-                            </PopupTextButton>
-
-                            <PopupTextButton
-                                onClick={handleConfirmYes}
-                                strong
-                                disabled={loading}
-                            >
-                                {loading ? "ADDING..." : "YES"}
+                                {loading ? "ADDING..." : "SAVE"}
                             </PopupTextButton>
                         </div>
                     </PopupCard>
@@ -725,40 +781,55 @@ export default function AddDevice() {
             ===================================================== */}
 
             <div
-                style={{
-                    position: "absolute",
-                    left: 30,
-                    bottom: "calc(36px + env(safe-area-inset-bottom))",
-                    zIndex: 3000,
-                }}
-            >
-                <button
-                    type="button"
-                    onClick={handleBack}
-                    aria-label="Back"
+    style={{
+        position: "absolute",
+        top: 16,
+        left: 16,
+        zIndex: 10,
+    }}
+>
+    <button
+        onClick={handleBack}
+        style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            backgroundColor: "#fff",
+            border: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        }}
+    >
+        ←
+    </button>
+</div>
+
+            {/* =====================================================
+                "DEVICE ALREADY EXISTS" TOAST
+            ===================================================== */}
+
+            {toast && (
+                <div
                     style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: "50%",
-                        border: `1px solid ${P.border}`,
-                        background: P.surface,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 0,
-                        cursor: "pointer",
-                        color: P.textSecond,
-                        fontSize: 22,
-                        fontWeight: 500,
-                        lineHeight: 1,
+                        position: "absolute",
+                        left: "50%",
+                        top: "46%",
+                        transform: "translate(-50%, -50%)",
+                        background: "rgba(40, 40, 40, 0.92)",
+                        color: "#fff",
+                        padding: "10px 20px",
+                        borderRadius: 20,
+                        fontSize: 13,
                         fontFamily: "'Inter', sans-serif",
-                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.16)",
-                        WebkitTapHighlightColor: "transparent",
+                        whiteSpace: "nowrap",
+                        zIndex: 4000,
+                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
                     }}
                 >
-                    ←
-                </button>
-            </div>
+                    {toast}
+                </div>
+            )}
 
             </div>
         </div>
