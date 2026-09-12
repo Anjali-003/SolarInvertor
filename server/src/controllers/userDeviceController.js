@@ -433,6 +433,8 @@ exports.getUserDevices = async (req, res) => {
         // cumulative generation reading ("Total Generation").
         // =====================================================
 
+        res.set("Cache-Control", "no-store");
+
         return res.json({
             success: true,
             devices
@@ -751,6 +753,72 @@ exports.getDeviceDetails = async (req, res) => {
 
         return res.status(500).json({
             error: "Failed to fetch device details"
+        });
+    }
+};
+
+
+// =====================================================
+// DELETE (REMOVE) A SAVED DEVICE FROM THE CURRENT USER
+//
+// This only removes the user_devices link row — i.e. it
+// unassigns the device from this user's account. The
+// underlying "devices" row (registered by the vendor)
+// is left untouched.
+// =====================================================
+
+exports.deleteUserDevice = async (req, res) => {
+
+    try {
+
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({
+                error: "Unauthorized"
+            });
+        }
+
+        const deviceId = Number(req.params.id);
+
+        if (!Number.isInteger(deviceId) || deviceId <= 0) {
+            return res.status(400).json({
+                error: "Invalid device id"
+            });
+        }
+
+        const [result] = await pool.execute(
+            `
+            DELETE FROM user_devices
+            WHERE user_id = ?
+              AND device_id = ?
+            `,
+            [
+                userId,
+                deviceId
+            ]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                error: "Device not found in your account"
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Device deleted successfully"
+        });
+
+    } catch (err) {
+
+        console.error(
+            "DELETE USER DEVICE ERROR:",
+            err
+        );
+
+        return res.status(500).json({
+            error: "Failed to delete device"
         });
     }
 };

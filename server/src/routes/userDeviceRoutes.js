@@ -28,4 +28,10 @@ router.get(
     controller.getDeviceDetails
 );
 
+router.delete(
+    "/devices/:id",
+    auth,
+    controller.deleteUserDevice
+);
+
 module.exports = router;

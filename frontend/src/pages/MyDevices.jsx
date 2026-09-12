@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInverter } from "../context/Context";
-import { getDeviceMeta } from "../utils/deviceMeta";
+import { getDeviceMeta, clearDeviceMeta } from "../utils/deviceMeta";
 import PageBackground from "../components/PageBackground";
 import P from "../theme/colors";
+
+// How long (ms) a press has to be held before it counts as
+// a "long press" and opens the delete option.
+const LONG_PRESS_MS = 500;
 
 // =====================================================
 // MY DEVICES (SAVED DEVICES)
@@ -35,6 +39,16 @@ export default function MyDevices() {
     const [error, setError] = useState("");
     const [selectMode, setSelectMode] = useState(false);
 
+    // Device currently showing the "Delete" long-press option.
+    const [deleteTarget, setDeleteTarget] = useState(null);
+
+    // Device id currently being deleted (disables its card).
+    const [deletingId, setDeletingId] = useState(null);
+
+    // "Device deleted" black toast, shown briefly after a
+    // successful delete.
+    const [toastVisible, setToastVisible] = useState(false);
+
     // =====================================================
     // FETCH SAVED (DB-BACKED) DEVICE FIELDS
     // =====================================================
@@ -57,6 +71,7 @@ export default function MyDevices() {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
+                    cache: "no-store",
                 });
 
                 const result = await res.json();
@@ -105,7 +120,71 @@ export default function MyDevices() {
     const handleOpenDevice = (device) => {
         if (selectMode) return;
         setSelectedDeviceId(device.id);
-        navigate("/");
+        navigate("/home");
+    };
+
+    // Called on a long-press of a device card — opens the
+    // Cancel / Delete / Edit action sheet for that device.
+    const handleLongPressDevice = (device) => {
+        if (selectMode) return;
+        setDeleteTarget(device);
+    };
+
+    // Called when "EDIT" is tapped in the action sheet.
+    // TODO: point this at whatever screen/modal is meant to
+    // edit the nickname + device type (currently no such
+    // screen exists in the files shared, so this just closes
+    // the sheet for now).
+    const handleEditDevice = (device) => {
+        setDeleteTarget(null);
+        // navigate("/add-device", { state: { editDevice: device } });
+    };
+
+    // Confirms deletion of the device the long-press option
+    // was opened for.
+    const handleConfirmDelete = async () => {
+        const device = deleteTarget;
+        if (!device) return;
+
+        setDeletingId(device.id);
+        setDeleteTarget(null);
+
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(
+                `${API_BASE}/api/user/devices/${device.id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    cache: "no-store",
+                }
+            );
+
+            const result = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(result?.error || "Failed to delete device");
+            }
+
+            // Nickname / device type / added-on live only in
+            // localStorage — clean that up too.
+            clearDeviceMeta(device.imei);
+
+            setRawDevices((prev) =>
+                prev.filter((d) => d.id !== device.id)
+            );
+
+            setToastVisible(true);
+            setTimeout(() => setToastVisible(false), 1500);
+        } catch (err) {
+            console.error("Failed to delete device:", err);
+            setError("Couldn't delete the device. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
     };
 
     return (
@@ -188,27 +267,6 @@ export default function MyDevices() {
                     {!loading && !error && devices.length === 0 && (
                         <div style={{ marginTop: 40 }}>
                             <StateMessage text="No devices added yet." />
-                            <button
-                                type="button"
-                                onClick={() => navigate("/add-device")}
-                                style={{
-                                    display: "block",
-                                    margin: "18px auto 0",
-                                    padding: "13px 28px",
-                                    border: "none",
-                                    borderRadius: 10,
-                                    background:
-                                        "linear-gradient(180deg, #2F8FD1 0%, #1F6FB5 100%)",
-                                    color: P.textWhite,
-                                    fontSize: 14,
-                                    fontWeight: 700,
-                                    letterSpacing: 0.5,
-                                    fontFamily: "'DM Sans', sans-serif",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                + Add Device
-                            </button>
                         </div>
                     )}
 
@@ -219,11 +277,32 @@ export default function MyDevices() {
                                 key={device.id}
                                 device={device}
                                 selectMode={selectMode}
+                                deleting={deletingId === device.id}
                                 onOpen={() => handleOpenDevice(device)}
+                                onLongPress={() => handleLongPressDevice(device)}
                             />
                         ))}
                 </div>
             </div>
+
+            {/* =================================================
+                DELETE OPTION (shown after a long-press)
+            ================================================= */}
+
+            {deleteTarget && (
+                <DeviceActionSheet
+                    device={deleteTarget}
+                    onCancel={() => setDeleteTarget(null)}
+                    onDelete={handleConfirmDelete}
+                    onEdit={() => handleEditDevice(deleteTarget)}
+                />
+            )}
+
+            {/* =================================================
+                "DEVICE DELETED" TOAST
+            ================================================= */}
+
+            {toastVisible && <DeletedToast />}
         </PageBackground>
     );
 }
@@ -232,8 +311,51 @@ export default function MyDevices() {
 // DEVICE CARD
 // =====================================================
 
-function DeviceCard({ device, selectMode, onOpen }) {
+function DeviceCard({ device, selectMode, deleting, onOpen, onLongPress }) {
     const [selected, setSelected] = useState(false);
+
+    // =====================================================
+    // LONG PRESS DETECTION
+    //
+    // Works for both touch (mobile) and mouse (desktop).
+    // A press held for LONG_PRESS_MS opens the delete
+    // option instead of opening the device.
+    // =====================================================
+
+    const pressTimer = useRef(null);
+    const longPressFired = useRef(false);
+
+    const startPress = () => {
+        if (selectMode || deleting) return;
+        longPressFired.current = false;
+
+        pressTimer.current = setTimeout(() => {
+            longPressFired.current = true;
+            onLongPress();
+        }, LONG_PRESS_MS);
+    };
+
+    const cancelPress = () => {
+        if (pressTimer.current) {
+            clearTimeout(pressTimer.current);
+            pressTimer.current = null;
+        }
+    };
+
+    const handleClick = () => {
+        // Swallow the click that follows a long-press so it
+        // doesn't also open the device.
+        if (longPressFired.current) {
+            longPressFired.current = false;
+            return;
+        }
+
+        if (selectMode) {
+            setSelected((v) => !v);
+            return;
+        }
+        onOpen();
+    };
 
     const handleShare = async (e) => {
         e.stopPropagation();
@@ -253,13 +375,14 @@ function DeviceCard({ device, selectMode, onOpen }) {
 
     return (
         <div
-            onClick={() => {
-                if (selectMode) {
-                    setSelected((v) => !v);
-                    return;
-                }
-                onOpen();
-            }}
+            onClick={handleClick}
+            onMouseDown={startPress}
+            onMouseUp={cancelPress}
+            onMouseLeave={cancelPress}
+            onTouchStart={startPress}
+            onTouchEnd={cancelPress}
+            onTouchMove={cancelPress}
+            onContextMenu={(e) => e.preventDefault()}
             style={{
                 width: "100%",
                 background: P.surface,
@@ -272,6 +395,11 @@ function DeviceCard({ device, selectMode, onOpen }) {
                     : `1px solid ${P.border}`,
                 boxSizing: "border-box",
                 cursor: "pointer",
+                opacity: deleting ? 0.5 : 1,
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                WebkitTapHighlightColor: "transparent",
+                transition: "opacity 0.2s",
             }}
         >
             {/* NICKNAME + SHARE / SELECT */}
@@ -434,6 +562,151 @@ function MetricColumn({ value, label, color }) {
             >
                 {label}
             </div>
+        </div>
+    );
+}
+
+// =====================================================
+// DEVICE ACTION SHEET
+//
+// Opens when a device card is long-pressed. Small centered
+// dialog — serial (IMEI) as title, "What would you like to
+// do?" as the message, and CANCEL / DELETE / EDIT as flat
+// text actions — matching the reference screenshot. Tapping
+// outside (the dim backdrop) also cancels.
+// =====================================================
+
+function DeviceActionSheet({ device, onCancel, onDelete, onEdit }) {
+    return (
+        <div
+            onClick={onCancel}
+            style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.45)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 2000,
+                padding: 24,
+                boxSizing: "border-box",
+            }}
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                    width: "100%",
+                    maxWidth: 320,
+                    background: P.surface,
+                    borderRadius: 10,
+                    padding: "22px 20px 8px",
+                    boxSizing: "border-box",
+                    fontFamily: "'Inter', sans-serif",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                }}
+            >
+                <div
+                    style={{
+                        fontSize: 17,
+                        fontWeight: 700,
+                        color: P.textPrimary,
+                        marginBottom: 10,
+                        overflowWrap: "anywhere",
+                        fontFamily: "'DM Sans', sans-serif",
+                    }}
+                >
+                    {device.imei}
+                </div>
+
+                <div
+                    style={{
+                        fontSize: 14,
+                        color: P.textMuted,
+                        marginBottom: 22,
+                    }}
+                >
+                    What would you like to do?
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        paddingBottom: 8,
+                    }}
+                >
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        style={actionSheetBtn}
+                    >
+                        CANCEL
+                    </button>
+
+                    <div style={{ display: "flex", gap: 22 }}>
+                        <button
+                            type="button"
+                            onClick={onDelete}
+                            style={actionSheetBtn}
+                        >
+                            DELETE
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onEdit}
+                            style={actionSheetBtn}
+                        >
+                            EDIT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const actionSheetBtn = {
+    border: "none",
+    background: "transparent",
+    padding: "10px 2px",
+    fontSize: 13,
+    fontWeight: 700,
+    letterSpacing: 0.4,
+    color: "#2F6FD1",
+    cursor: "pointer",
+    fontFamily: "'Inter', sans-serif",
+    WebkitTapHighlightColor: "transparent",
+};
+
+// =====================================================
+// "DEVICE DELETED" TOAST
+//
+// Small black pill, shown briefly after a successful
+// delete, then auto-dismisses.
+// =====================================================
+
+function DeletedToast() {
+    return (
+        <div
+            style={{
+                position: "fixed",
+                left: "50%",
+                bottom: 100,
+                transform: "translateX(-50%)",
+                background: "rgba(0,0,0,0.85)",
+                color: "#fff",
+                padding: "12px 24px",
+                borderRadius: 24,
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "'Inter', sans-serif",
+                boxShadow: "0 6px 18px rgba(0,0,0,0.3)",
+                zIndex: 2100,
+                whiteSpace: "nowrap",
+            }}
+        >
+            Device deleted
         </div>
     );
 }

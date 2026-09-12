@@ -68,6 +68,7 @@ console.log("==================================");
 
         let parsed;
 
+        //parsed is the JS object of the payload from MQTT
         try {
             parsed = JSON.parse(payload);
         } catch {
@@ -101,6 +102,35 @@ console.log("==================================");
                 topicInfo.imei
             );
             return;
+        }
+
+        // =====================================================
+        // UPDATE DEVICE RATED CAPACITY
+        // RAT comes from inverter in Watts.
+        // Store capacity in kW.
+        // =====================================================
+
+        const ratWatts = Number(parsed.RAT);
+
+        if (
+            Number.isFinite(ratWatts) &&
+            ratWatts > 0
+        ) {
+
+            const ratedCapacityKw =
+                ratWatts / 1000;
+
+            await pool.execute(
+                `
+                UPDATE devices
+                SET rated_capacity_kw = ?
+                WHERE imei = ?
+                `,
+                [
+                    ratedCapacityKw,
+                    topicInfo.imei
+                ]
+            );
         }
 
         // ─────────────────────────────────────────────

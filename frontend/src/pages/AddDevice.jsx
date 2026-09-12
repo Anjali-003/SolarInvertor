@@ -299,7 +299,7 @@ export default function AddDevice() {
             setSelectedDeviceId(existing.id);
 
             setTimeout(() => {
-                navigate("/");
+                navigate("/home");
             }, 1200);
 
             return;
@@ -362,7 +362,7 @@ export default function AddDevice() {
                 setSelectedDeviceId(result.device.id);
             }
 
-            navigate("/");
+            navigate("/home");
 
         } catch (err) {
             console.error("Add device error:", err);

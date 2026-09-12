@@ -517,7 +517,7 @@ padding: "10px 0 30px",
             >
 
                 <button
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/home")}
                     aria-label="Back to home"
                     style={{
                         width: 44,

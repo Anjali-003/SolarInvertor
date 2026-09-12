@@ -27,7 +27,7 @@ export default function Footer() {
 
         {
             label: "Plant",
-            path: "/",
+            path: "/home",
 
             icon: (
                 <svg
