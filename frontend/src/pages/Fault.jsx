@@ -667,50 +667,185 @@ export default function Fault() {
     //
     // =====================================================
 
-    const st3 =
-        Number(
-            data?.ST3 ?? 0
-        );
+    // const st3 =
+    //     Number(
+    //         data?.ST3 ?? 0
+    //     );
 
 
-    const inverterRelayConnected =
-        Boolean(
-            st3 & (1 << 0)
-        );
+    // const inverterRelayConnected =
+    //     Boolean(
+    //         st3 & (1 << 0)
+    //     );
 
 
-    const gridRelayConnected =
-        Boolean(
-            st3 & (1 << 1)
-        );
+    // const gridRelayConnected =
+    //     Boolean(
+    //         st3 & (1 << 1)
+    //     );
 
 
-    const inverterRunning =
-        Boolean(
-            st3 & (1 << 2)
-        );
+    // const inverterRunning =
+    //     Boolean(
+    //         st3 & (1 << 2)
+    //     );
 
 
     // =====================================================
     // STATUS TEXT
     // =====================================================
 
-    const inverterRelayText =
-        inverterRelayConnected
-            ? "Connected"
-            : "Disconnected";
+    // const inverterRelayText =
+    //     inverterRelayConnected
+    //         ? "Connected"
+    //         : "Disconnected";
 
 
-    const gridRelayText =
-        gridRelayConnected
-            ? "Connected"
-            : "Disconnected";
+    // const gridRelayText =
+    //     gridRelayConnected
+    //         ? "Connected"
+    //         : "Disconnected";
 
 
-    const systemStatusText =
-        inverterRunning
-            ? "ON"
-            : "OFF";
+    // const systemStatusText =
+    //     inverterRunning
+    //         ? "ON"
+    //         : "OFF";
+
+
+
+
+    // =====================================================
+// ST3 STATUS
+// =====================================================
+//
+// ST3
+//
+// bit 0 = inverter relay
+// bit 1 = grid relay
+// bit 2 = inverter/system status
+// bit 3 = PF status
+//
+// =====================================================
+
+const st3 =
+    Number(
+        data?.ST3 ?? 0
+    );
+
+
+// =====================================================
+// RELAY STATUS
+// =====================================================
+
+const inverterRelayConnected =
+    Boolean(
+        st3 & (1 << 0)
+    );
+
+
+const gridRelayConnected =
+    Boolean(
+        st3 & (1 << 1)
+    );
+
+
+// =====================================================
+// INVERTER STATUS FROM ST3 BIT 2
+// =====================================================
+
+const statusFromST3 =
+    Boolean(
+        st3 & (1 << 2)
+    );
+
+
+// =====================================================
+// STINTERVAL CONDITION
+//
+// inverter must be OFF when:
+//
+// STINTERVAL / 4 >= 1
+//
+// which is equivalent to STINTERVAL >= 4
+// =====================================================
+
+const stInterval =
+    Number(
+        data?.STINTERVAL ?? 0
+    );
+
+
+const intervalTooLarge =
+    stInterval / 4 >= 1;
+
+
+// =====================================================
+// LAST UPDATED CONDITION
+//
+// inverter must be OFF if latest data
+// is 3 minutes old or more.
+// =====================================================
+
+const updatedAt =
+    lastUpdated
+        ? new Date(
+            lastUpdated
+        ).getTime()
+        : null;
+
+
+const dataTooOld =
+    !updatedAt ||
+    (
+        Date.now() -
+        updatedAt
+    ) >=
+    3 * 60 * 1000;
+
+
+// =====================================================
+// FINAL SYSTEM / INVERTER STATUS
+//
+// ON only when:
+//
+// 1. ST3 bit 2 = 1
+// 2. data is fresh
+// 3. STINTERVAL is healthy
+// =====================================================
+
+const inverterRunning =
+    statusFromST3 &&
+    !dataTooOld &&
+    !intervalTooLarge;
+
+
+// =====================================================
+// STATUS TEXT
+// =====================================================
+
+const inverterRelayText =
+    inverterRelayConnected
+        ? "Connected"
+        : "Disconnected";
+
+
+const gridRelayText =
+    gridRelayConnected
+        ? "Connected"
+        : "Disconnected";
+
+
+const systemStatusText =
+    inverterRunning
+        ? "ON"
+        : "OFF";
+
+
+const systemStatusColor =
+    inverterRunning
+        ? P.green
+        : P.red;
 
 
     // =====================================================
@@ -890,8 +1025,8 @@ export default function Fault() {
                         boxSizing:
                             "border-box",
 
-                        paddingTop:
-                            4
+                        // paddingTop:
+                        //     4
                     }}
                 >
 
@@ -1160,7 +1295,7 @@ export default function Fault() {
                                 }
                             />
 
-
+{/* 
                             <ParameterRow
                                 label="System Status"
                                 value={
@@ -1171,7 +1306,13 @@ export default function Fault() {
                                         ? P.green
                                         : P.red
                                 }
-                            />
+                            /> */}
+
+                            <ParameterRow
+    label="System Status"
+    value={systemStatusText}
+    valueColor={systemStatusColor}
+/>
 
 
                             <ParameterRow
@@ -1524,7 +1665,7 @@ function ParameterRow({
                 borderBottom:
                     last
                         ? "none"
-                        : "1px solid rgba(255,255,255,0.08)",
+                : "2px solid rgba(255,255,255,0.75)",
 
                 boxSizing:
                     "border-box"

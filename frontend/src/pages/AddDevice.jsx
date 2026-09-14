@@ -5,7 +5,8 @@ import { useInverter } from "../context/Context";
 import { saveDeviceMeta } from "../utils/deviceMeta";
 import P from "../theme/colors";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+// VPSCHANGE
 
 // =====================================================
 // STATIC OPTIONS
@@ -317,7 +318,9 @@ export default function AddDevice() {
 
         try {
             const res = await fetch(
-                `${API_BASE}/api/user/devices`,
+                // `${API_BASE}/api/user/devices`,
+                `/api/user/devices`,
+                // VPSCHANGE
                 {
                     method: "POST",
                     headers: {

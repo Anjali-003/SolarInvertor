@@ -103,6 +103,32 @@ console.log("==================================");
             return;
         }
 
+
+
+        const ratWatts = Number(parsed.RAT);
+
+if (
+    Number.isFinite(ratWatts) &&
+    ratWatts > 0
+) {
+
+    const ratedCapacityKw =
+        ratWatts / 1000;
+
+    await pool.execute(
+        `
+        UPDATE devices
+        SET rated_capacity_kw = ?
+        WHERE imei = ?
+        `,
+        [
+            ratedCapacityKw,
+            topicInfo.imei
+        ]
+    );
+}
+
+
         // ─────────────────────────────────────────────
         // ENCRYPT PAYLOAD
         // ─────────────────────────────────────────────

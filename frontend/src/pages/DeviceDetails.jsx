@@ -1058,284 +1058,179 @@ export default function DeviceDetails() {
                 >
                     DEVICE INFORMATION
                 </h2> */}
-                    <h2 style={{ fontSize: 15, fontWeight: 800, color: "#ffffff", marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
+                    {/* <h2 style={{ fontSize: 15, fontWeight: 800, color: "#ffffff", marginBottom: 12, marginTop: 4, letterSpacing: 0.5, fontFamily: "'DM Sans', sans-serif" }}>
                         DEVICE INFORMATION
-                    </h2>
+                    </h2> */}
 
 
                     {/* =================================================
                     INFORMATION CARD
                 ================================================= */}
+<div
+    style={{
+        background: "rgba(22, 38, 45, 0.88)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 14,
+        padding: "14px 16px 8px",
+        boxShadow: P.shadowCardRaised
+    }}
+>
+    {/* CARD TITLE */}
+    <div
+        style={{
+            fontSize: 20,
+            fontWeight: 500,
+            color: "#ffffff",
+            marginBottom: 10,
+            fontFamily: "'DM Sans', sans-serif"
+        }}
+    >
+        Details
+    </div>
 
-                    <div
-                        style={{
-                            background:
-                                "rgba(22, 38, 45, 0.88)",
+    <DetailRow
+        label="DEVICE NO."
+        value={device.imei || "--"}
+    />
 
-                            border:
-                                "1px solid rgba(255,255,255,0.08)",
+    <DetailRow
+        label="DEVICE TYPE"
+        value={device.solution || "--"}
+    />
 
-                            borderRadius: 14,
+    <DetailRow
+        label="RATING"
+        value={
+            payload.RAT != null
+                ? `${payload.RAT} VA`
+                : "--"
+        }
+    />
 
-                            padding:
-                                "8px 16px",
+    <DetailRow
+        label="LOCATION"
+        value={device.location || "--"}
+    />
 
-                            boxShadow:
-                                P.shadowCardRaised
-                        }}
-                    >
+    {/* DEVICE STATUS */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 20,
+            padding: "14px 0",
+            borderBottom: "2px solid rgba(255,255,255,0.95)"
+        }}
+    >
+        <span
+            style={{
+                fontSize: 10,
+                color: "rgba(255,255,255,0.75)",
+                fontWeight: 600,
+                letterSpacing: 0.8,
+                fontFamily: "'Inter', sans-serif",
+                flexShrink: 0
+            }}
+        >
+            DEVICE STATUS
+        </span>
 
-                        <DetailRow
-                            label="DEVICE NO."
-                            value={
-                                device.imei ||
-                                "--"
-                            }
-                        />
+        <div
+            style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "5px 10px",
+                borderRadius: 20,
+                background: `${statusColor}18`,
+                border: `1px solid ${statusColor}`
+            }}
+        >
+            <div
+                style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: statusColor,
+                    boxShadow: `0 0 7px ${statusColor}`
+                }}
+            />
 
+            <span
+                style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: statusColor,
+                    fontFamily: "'DM Sans', sans-serif"
+                }}
+            >
+                {statusText}
+            </span>
+        </div>
+    </div>
 
-                        <DetailRow
-                            label="DEVICE TYPE"
-                            value={
-                                device.solution ||
-                                "--"
-                            }
-                        />
+    {/* LAST UPDATED */}
+    <div
+        style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 20,
+            padding: "14px 0 8px"
+        }}
+    >
+        <div
+            style={{
+                fontSize: 10,
+                color: "rgba(255,255,255,0.75)",
+                fontWeight: 600,
+                letterSpacing: 0.8,
+                fontFamily: "'Inter', sans-serif",
+                flexShrink: 0
+            }}
+        >
+            LAST UPDATED
+        </div>
 
+        <div
+            style={{
+                textAlign: "right",
+                minWidth: 0,
+                marginLeft: "auto"
+            }}
+        >
+            <div
+                style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: "#ffffff",
+                    fontFamily: "'DM Sans', sans-serif",
+                    lineHeight: 1.2,
+                    whiteSpace: "nowrap"
+                }}
+            >
+                {formattedDate}
+            </div>
 
-                        <DetailRow
-                            label="RATING"
-                            value={
-                                payload.RAT != null
-                                    ? `${payload.RAT} VA`
-                                    : "--"
-                            }
-                        />
+            <div
+                style={{
+                    marginTop: 3,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "rgba(255,255,255,0.65)",
+                    fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1.2,
+                    whiteSpace: "nowrap"
+                }}
+            >
+                {formattedTime}
+            </div>
+        </div>
+    </div>
+</div>
 
-
-                        <DetailRow
-                            label="LOCATION"
-                            value={
-                                device.location ||
-                                "--"
-                            }
-                        />
-
-
-                        {/* =================================================
-                        STATUS
-                    ================================================= */}
-
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent:
-                                    "space-between",
-                                alignItems: "center",
-                                gap: 20,
-                                padding:
-                                    "14px 0",
-                                borderBottom:
-                                    "1px solid rgba(255,255,255,0.08)"
-                            }}
-                        >
-
-                            <span
-                                style={{
-                                    fontSize: 10,
-                                    color:
-                                        "rgba(255,255,255,0.6)",
-                                    fontWeight: 600,
-                                    letterSpacing: 0.8,
-                                    fontFamily:
-                                        "'Inter', sans-serif",
-                                    flexShrink: 0
-                                }}
-                            >
-                                DEVICE STATUS
-                            </span>
-
-
-                            <div
-                                style={{
-                                    display:
-                                        "inline-flex",
-                                    alignItems:
-                                        "center",
-                                    gap: 7,
-                                    padding:
-                                        "5px 10px",
-                                    borderRadius: 20,
-                                    background:
-                                        `${statusColor}18`,
-                                    border:
-                                        `1px solid ${statusColor}`
-                                }}
-                            >
-
-                                <div
-                                    style={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius:
-                                            "50%",
-                                        background:
-                                            statusColor,
-                                        boxShadow:
-                                            `0 0 7px ${statusColor}`
-                                    }}
-                                />
-
-                                <span
-                                    style={{
-                                        fontSize: 12,
-                                        fontWeight: 700,
-                                        color:
-                                            statusColor,
-                                        fontFamily:
-                                            "'DM Sans', sans-serif"
-                                    }}
-                                >
-                                    {statusText}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* =================================================
-                        LAST UPDATED
-                    ================================================= */}
-
-                        {/* <div
-                        style={{
-                            padding:
-                                "14px 0"
-                        }}
-                    >
-
-                        <div
-                            style={{
-                                fontSize: 10,
-                                color:
-                                    "rgba(255,255,255,0.6)",
-                                fontWeight: 600,
-                                letterSpacing: 0.8,
-                                marginBottom: 6,
-                                fontFamily:
-                                    "'Inter', sans-serif"
-                            }}
-                        >
-                            LAST UPDATED
-                        </div>
-
-
-                        <div
-                            style={{
-                                fontSize: 14,
-                                fontWeight: 700,
-                                color:
-                                    "#ffffff",
-                                fontFamily:
-                                    "'DM Sans', sans-serif"
-                            }}
-                        >
-                            {formattedDate}
-                        </div>
-
-
-                        <div
-                            style={{
-                                fontSize: 13,
-                                fontWeight: 600,
-                                color:
-                                    "rgba(255,255,255,0.6)",
-                                marginTop: 3,
-                                fontFamily:
-                                    "'Inter', sans-serif"
-                            }}
-                        >
-                            {formattedTime}
-                        </div>
-
-                    </div> */}
-
-
-                        {/* =================================
-    LAST UPDATED
-================================= */}
-
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                gap: 20,
-                                paddingTop: 14
-                            }}
-                        >
-
-                            {/* LEFT — TITLE */}
-                            <div
-                                style={{
-                                    fontSize: 10,
-                                    color: "rgba(255,255,255,0.6)",
-                                    fontWeight: 600,
-                                    letterSpacing: 0.8,
-                                    fontFamily: "'Inter', sans-serif",
-                                    flexShrink: 0
-                                }}
-                            >
-                                LAST UPDATED
-                            </div>
-
-
-                            {/* RIGHT — DATE + TIME */}
-                            <div
-                                style={{
-                                    textAlign: "right",
-                                    minWidth: 0,
-                                    marginLeft: "auto"
-                                }}
-                            >
-
-                                <div
-                                    style={{
-                                        fontSize: 14,
-                                        fontWeight: 700,
-                                        color: "#ffffff",
-                                        fontFamily: "'DM Sans', sans-serif",
-                                        lineHeight: 1.2,
-                                        whiteSpace: "nowrap"
-                                    }}
-                                >
-                                    {formattedDate}
-                                </div>
-
-
-                                <div
-                                    style={{
-                                        marginTop: 3,
-                                        fontSize: 12,
-                                        fontWeight: 600,
-                                        color: "rgba(255,255,255,0.6)",
-                                        fontFamily: "'Inter', sans-serif",
-                                        lineHeight: 1.2,
-                                        whiteSpace: "nowrap"
-                                    }}
-                                >
-                                    {formattedTime}
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-<h2
+{/* <h2
     style={{
         fontSize: 15,
         fontWeight: 800,
@@ -1348,9 +1243,9 @@ export default function DeviceDetails() {
     }}
 >
 
-</h2>
+</h2> */}
 
-
+{/* 
 <DownloadReportCard
 
     selectedDeviceId={
@@ -1361,7 +1256,15 @@ export default function DeviceDetails() {
         device.imei
     }
 
-/>
+/> */}
+<div style={{ marginTop: 28 }}>
+    <DownloadReportCard
+        selectedDeviceId={selectedDeviceId}
+        imei={device.imei}
+    />
+    </div>
+
+
                 </div>
 
 
@@ -1400,7 +1303,7 @@ function DetailRow({
                 padding:
                     "14px 0",
                 borderBottom:
-                    "1px solid rgba(255,255,255,0.08)"
+                    "2px solid rgba(255,255,255,0.95)"
             }}
         >
 

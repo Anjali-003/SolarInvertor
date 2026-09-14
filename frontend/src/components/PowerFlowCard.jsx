@@ -1,21 +1,211 @@
 import P from "../theme/colors";
 import inverterImage from "../assets/inverter.png";
 
+// function parseGridStatus(st3) {
+//   const val = Number(st3);
+//   if (!Number.isFinite(val)) {
+//     return { inverterConnected: false, gridConnected: false, label: "NO DATA" };
+//   }
+//   const inverterConnected = (val & 0b01) === 0b01;
+//   const gridConnected = (val & 0b10) === 0b10;
+
+//   let label = "DISCONNECTED";
+//   if (gridConnected && inverterConnected) label = "GRID CONNECTED";
+//   else if (inverterConnected) label = "OFF-GRID";
+//   else if (gridConnected) label = "GRID ONLY";
+
+//   return { inverterConnected, gridConnected, label };
+// }
+
+
 function parseGridStatus(st3) {
-  const val = Number(st3);
-  if (!Number.isFinite(val)) {
-    return { inverterConnected: false, gridConnected: false, label: "NO DATA" };
-  }
-  const inverterConnected = (val & 0b01) === 0b01;
-  const gridConnected = (val & 0b10) === 0b10;
+    const val =
+        Number(st3);
 
-  let label = "DISCONNECTED";
-  if (gridConnected && inverterConnected) label = "GRID CONNECTED";
-  else if (inverterConnected) label = "OFF-GRID";
-  else if (gridConnected) label = "GRID ONLY";
+    if (!Number.isFinite(val)) {
+        return {
+            inverterConnected: false,
+            gridConnected: false,
+            label: "NO DATA"
+        };
+    }
 
-  return { inverterConnected, gridConnected, label };
+    // ST3 bit 0
+    const inverterConnected =
+        Boolean(
+            val &
+            (1 << 0)
+        );
+
+    // ST3 bit 1
+    const gridConnected =
+        Boolean(
+            val &
+            (1 << 1)
+        );
+
+    let label =
+        "DISCONNECTED";
+
+    if (
+        inverterConnected &&
+        gridConnected
+    ) {
+        label =
+            "GRID CONNECTED";
+
+    } else if (
+        inverterConnected
+    ) {
+        label =
+            "OFF-GRID";
+
+    } else if (
+        gridConnected
+    ) {
+        label =
+            "GRID ONLY";
+    }
+
+    return {
+        inverterConnected,
+        gridConnected,
+        label
+    };
 }
+
+function getInverterStatus({
+    st3,
+    stInterval,
+    lastUpdated
+}) {
+    // =====================================================
+    // ST3 BIT 2
+    // =====================================================
+
+    const status3 =
+        Number(st3 ?? 0);
+
+    const statusFromST3 =
+        Boolean(
+            status3 &
+            (1 << 2)
+        );
+
+
+    // =====================================================
+    // STINTERVAL
+    // =====================================================
+
+    const interval =
+        Number(stInterval ?? 0);
+
+    const intervalTooLarge =
+        interval / 4 >= 1;
+
+
+    // =====================================================
+    // LAST UPDATED
+    // =====================================================
+
+    const updatedAt =
+        lastUpdated
+            ? new Date(lastUpdated).getTime()
+            : null;
+
+    const dataTooOld =
+        !updatedAt ||
+        (
+            Date.now() -
+            updatedAt
+        ) >=
+        3 * 60 * 1000;
+
+
+    // =====================================================
+    // FINAL INVERTER STATUS
+    // =====================================================
+
+    const inverterOn =
+        statusFromST3 &&
+        !dataTooOld &&
+        !intervalTooLarge;
+
+
+    return {
+        inverterOn,
+        statusText:
+            inverterOn
+                ? "INVERTER ON"
+                : "INVERTER OFF",
+
+        statusColor:
+            inverterOn
+                ? P.green
+                : P.red,
+
+        statusFromST3,
+        intervalTooLarge,
+        dataTooOld
+    };
+}
+
+// function parseGridStatus(st3) {
+//     const val = Number(st3);
+
+//     if (!Number.isFinite(val)) {
+//         return {
+//             inverterConnected: false,
+//             gridConnected: false,
+//             inverterOn: false,
+//             connectionLabel: "NO DATA",
+//             inverterStatusLabel: "NO DATA",
+//         };
+//     }
+
+//     // ST3 bit 0
+//     const inverterConnected =
+//         (val & (1 << 0)) !== 0;
+
+//     // ST3 bit 1
+//     const gridConnected =
+//         (val & (1 << 1)) !== 0;
+
+//     // ST3 bit 2
+//     const inverterOn =
+//         (val & (1 << 2)) !== 0;
+
+//     let connectionLabel = "DISCONNECTED";
+
+//     if (
+//         gridConnected &&
+//         inverterConnected
+//     ) {
+//         connectionLabel = "GRID CONNECTED";
+//     } else if (
+//         inverterConnected
+//     ) {
+//         connectionLabel = "OFF-GRID";
+//     } else if (
+//         gridConnected
+//     ) {
+//         connectionLabel = "GRID ONLY";
+//     }
+
+//     const inverterStatusLabel =
+//         inverterOn
+//             ? "INVERTER ON"
+//             : "INVERTER OFF";
+
+//     return {
+//         inverterConnected,
+//         gridConnected,
+//         inverterOn,
+//         connectionLabel,
+//         inverterStatusLabel,
+//     };
+// }
+
 
 function TowerIcon({ size = 44, color }) {
   return (
@@ -89,8 +279,44 @@ function SolarIcon({ size = 46, color }) {
   );
 }
 
-export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 = null }) {
-  const { inverterConnected, gridConnected, label } = parseGridStatus(st3);
+// export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 = null }) {
+//   // const { inverterConnected, gridConnected, label } = parseGridStatus(st3);
+//   const {
+//     inverterConnected,
+//     gridConnected,
+//     inverterOn,
+//     connectionLabel,
+//     inverterStatusLabel
+// } = parseGridStatus(st3);
+
+export default function PowerFlowCard({
+    dcPower = "--",
+    solarPower = "--",
+    st3 = null,
+    stInterval = null,
+    lastUpdated = null
+}) {
+
+    const {
+        inverterConnected,
+        gridConnected,
+        label
+    } =
+        parseGridStatus(
+            st3
+        );
+
+
+    const {
+        inverterOn,
+        statusText,
+        statusColor
+    } =
+        getInverterStatus({
+            st3,
+            stInterval,
+            lastUpdated
+        });
 
   return (
     <div
@@ -115,12 +341,13 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
       >
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
           {/* GRID */}
-          <div style={{ textAlign: "center", width: 90, minWidth: 0 }}>
-            <TowerIcon size={44} color={P.textAmberBright} />
+          <div style={{ textAlign: "center", width: 90, minWidth: 0, paddingTop: 50 }}>
+            {/* <TowerIcon size={44} color={P.textAmberBright} /> */}
+            <TowerIcon size={44} color="#ffffff" />
             <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
               {dcPower}
             </div>
-            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>kW</div>
+            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>VA</div>
           </div>
 
           {/* arrow: grid -> inverter (points right, into inverter) */}
@@ -129,9 +356,9 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
             <path d="M22 3L30 10L22 17" stroke={gridConnected ? P.green : P.textLight} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg> */}
 
-          <svg width="30" height="18" viewBox="0 0 34 20" fill="none" style={{ marginTop: 16, flexShrink: 0 }}>
-            <line x1="30" y1="10" x2="8" y2="10" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="3" strokeLinecap="round" />
-            <path d="M12 3L4 10L12 17" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="30" height="18" viewBox="0 0 34 20" fill="none" style={{ marginTop: 70, flexShrink: 0 }}>
+            <line x1="30" y1="10" x2="8" y2="10" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="6" strokeLinecap="round" />
+            <path d="M12 3L4 10L12 17" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
 
           {/* INVERTER */}
@@ -192,7 +419,7 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
 <div
     style={{
         textAlign: "center",
-        width: 110,
+        width: 125,
         minWidth: 0,
     }}
 >
@@ -200,13 +427,30 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
         src={inverterImage}
         alt="Inverter"
         style={{
-            width: 90,
-            height: 90,
+            width: 135,
+            height: 135,
             objectFit: "contain",
             display: "block",
             margin: "0 auto",
         }}
     />
+
+       {/* INVERTER ON / OFF */}
+    <div
+        style={{
+            marginTop: 2,
+            fontSize: 13,
+            fontWeight: 800,
+            color: inverterOn
+                ? P.green
+                : P.red,
+            letterSpacing: 0.4,
+            whiteSpace: "nowrap",
+        }}
+    >
+        {/* {inverterStatusLabel} */}
+        {statusText}
+    </div>
 
     {/* status */}
     <div
@@ -220,22 +464,24 @@ export default function PowerFlowCard({ dcPower = "--", solarPower = "--", st3 =
         }}
     >
         {label}
+        {/* {connectionLabel} */}
     </div>
 </div>
 
           {/* arrow: solar -> inverter (points LEFT, into inverter) */}
-          <svg width="30" height="18" viewBox="0 0 34 20" fill="none" style={{ marginTop: 16, flexShrink: 0 }}>
-            <line x1="30" y1="10" x2="8" y2="10" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="3" strokeLinecap="round" />
-            <path d="M12 3L4 10L12 17" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <svg width="30" height="18" viewBox="0 0 34 20" fill="none" style={{ marginTop: 70, flexShrink: 0 }}>
+            <line x1="30" y1="10" x2="8" y2="10" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="6" strokeLinecap="round" />
+            <path d="M12 3L4 10L12 17" stroke={inverterConnected ? P.green : P.textLight} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
 
           {/* SOLAR */}
-          <div style={{ textAlign: "center", width: 90, minWidth: 0 }}>
-            <SolarIcon size={46} color={P.textAmberBright} />
+          <div style={{ textAlign: "center", width: 90, minWidth: 0, paddingTop: 50 }}>
+            {/* <SolarIcon size={46} color={P.textAmberBright} /> */}
+            <SolarIcon size={46} color="#ffffff" />
             <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
               {solarPower}
             </div>
-            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>kW</div>
+            <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>W</div>
           </div>
         </div>
       </div>
