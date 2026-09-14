@@ -696,33 +696,29 @@ function getMonthRange(
 }
 
 
-async function getUserDevice(
-    userId,
-    deviceId
-) {
+// =====================================================
+// LOOK UP A DEVICE BY IMEI (public — no account/login)
+//
+// Ownership is gone: there's no more user_devices table
+// tying a device to a logged-in user. Anyone with a valid
+// device's IMEI can read its data — the frontend decides
+// what to remember locally (see deviceMeta.js).
+// =====================================================
+
+async function getDeviceByImei(imei) {
 
     const [devices] =
         await pool.execute(
             `
             SELECT
-                d.id,
-                d.imei,
-                d.rated_capacity_kw
-            FROM user_devices ud
-
-            INNER JOIN devices d
-                ON d.id = ud.device_id
-
-            WHERE
-                ud.user_id = ?
-                AND d.id = ?
-
+                id,
+                imei,
+                rated_capacity_kw
+            FROM devices
+            WHERE imei = ?
             LIMIT 1
             `,
-            [
-                userId,
-                deviceId
-            ]
+            [imei]
         );
 
 
@@ -1583,13 +1579,10 @@ exports.getEnergyChart =
 
         try {
 
-            const userId =
-                req.user?.id;
-
-            const deviceId =
-                Number(
-                    req.query.device_id
-                );
+            const imeiParam =
+                String(
+                    req.query.imei || ""
+                ).trim();
 
             const period =
                 String(
@@ -1603,15 +1596,14 @@ exports.getEnergyChart =
 
 
             if (
-                !Number.isInteger(deviceId) ||
-                deviceId <= 0
+                !/^\d{15}$/.test(imeiParam)
             ) {
 
                 return res
                     .status(400)
                     .json({
                         error:
-                            "Invalid device_id"
+                            "Invalid imei"
                     });
             }
 
@@ -1649,19 +1641,18 @@ exports.getEnergyChart =
 
 
             const device =
-                await getUserDevice(
-                    userId,
-                    deviceId
+                await getDeviceByImei(
+                    imeiParam
                 );
 
 
             if (!device) {
 
                 return res
-                    .status(403)
+                    .status(404)
                     .json({
                         error:
-                            "You do not have access to this device"
+                            "Device not found"
                     });
             }
 
@@ -1806,7 +1797,6 @@ return res.json({
                 ...result
             });
 
-
         } catch (err) {
 
             console.error(
@@ -1834,121 +1824,34 @@ exports.getEnergySummary =
 
         try {
 
-            // const imei =
-            //     req.user?.imei;
+            const imeiParam =
+                String(req.query.imei || "").trim();
 
-            const userId = req.user?.id;
+            if (
+                !/^\d{15}$/.test(imeiParam)
+            ) {
+                return res.status(400).json({
+                    error: "Invalid imei"
+                });
+            }
 
-            const deviceId =
-    Number(req.query.device_id);
+            const devices =
+                await getDeviceByImei(imeiParam);
 
-if (
-    !Number.isInteger(deviceId) ||
-    deviceId <= 0
-) {
-    return res.status(400).json({
-        error: "Invalid device_id"
-    });
-}
+            if (!devices) {
 
-//             const [devices] = await pool.execute(
-//   `
-//   SELECT d.imei
-//   FROM user_devices ud
-//   JOIN devices d
-//     ON d.id = ud.device_id
-//   WHERE ud.user_id = ?
-//   LIMIT 1
-//   `,
-//   [userId]
-// );
+                return res.status(404).json({
+                    error:
+                        "Device not found"
+                });
+            }
 
+            const imei = devices.imei;
 
-
-
-// const [devices] =
-//     await pool.execute(
-//         `
-//         SELECT
-//             d.id,
-//             d.imei
-//         FROM user_devices ud
-
-//         INNER JOIN devices d
-//             ON d.id = ud.device_id
-
-//         WHERE
-//             ud.user_id = ?
-//             AND d.id = ?
-
-//         LIMIT 1
-//         `,
-//         [
-//             userId,
-//             deviceId
-//         ]
-//     );
-
-
-
-const [devices] =
-    await pool.execute(
-        `
-        SELECT
-            d.id,
-            d.imei,
-            d.rated_capacity_kw
-
-        FROM user_devices ud
-
-        INNER JOIN devices d
-            ON d.id = ud.device_id
-
-        WHERE
-            ud.user_id = ?
-            AND d.id = ?
-
-        LIMIT 1
-        `,
-        [
-            userId,
-            deviceId
-        ]
-    );
-
-// if (devices.length === 0) {
-//   return res.status(404).json({
-//     error: "No device assigned to this user"
-//   });
-// }
-
-if (devices.length === 0) {
-
-    return res.status(403).json({
-        error:
-            "You do not have access to this device"
-    });
-}
-
-const imei = devices[0].imei;
-
-const capacityKw =
-    Number(
-        devices[0].rated_capacity_kw
-    );
-
-// no longer in use 
-
-
-            // if (!imei) {
-
-            //     return res.status(401).json({
-
-            //         error:
-            //             "Unauthorized: IMEI not found in token"
-            //     });
-            // }
-
+            const capacityKw =
+                Number(
+                    devices.rated_capacity_kw
+                );
 
             const now =
                 new Date();

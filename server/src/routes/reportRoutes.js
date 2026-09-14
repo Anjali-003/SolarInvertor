@@ -32,20 +32,15 @@ const express =
 const router =
     express.Router();
 
-const auth =
-    require(
-        "../middleware/authMiddleware"
-    );
-
 const reportController =
     require(
         "../controllers/reportController"
     );
 
+// PUBLIC — no login, ?imei= identifies the device.
 
 router.get(
     "/download",
-    auth,
     reportController.downloadReport
 );
 

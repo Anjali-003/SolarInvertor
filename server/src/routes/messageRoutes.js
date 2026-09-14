@@ -1,16 +1,9 @@
-
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/messageController");
-const auth = require("../middleware/authMiddleware");
-const pool = require("../config/database");
 
-const vendorAuth =
-  require("../middleware/vendorAuth");
-const { decrypt } = require("../utils/encryption");
+// PUBLIC — no login. Device is identified by ?imei= directly.
 
-
-router.get("/latest-message", auth, controller.getLatestMessage);
-
+router.get("/latest-message", controller.getLatestMessage);
 
 module.exports = router;

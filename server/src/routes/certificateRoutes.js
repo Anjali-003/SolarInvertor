@@ -1,66 +1,10 @@
-const express =
-  require("express");
+const express = require("express");
+const router = express.Router();
 
-const router =
-  express.Router();
+const controller = require("../controllers/certificateController");
 
-const controller =
-  require("../controllers/certificateController");
-
-const vendorAuth =
-  require("../middleware/vendorAuth");
-
-// Generate cert
-router.post(
-  "/generate",
-  vendorAuth,
-  controller.generateCertificate
-);
-
-// Download files
-// router.get(
-//   "/:certificateId/:type",
-//   auth,
-//   controller.downloadCertificate
-// );
-
-
-// for ftp 
-
+// Device-facing config endpoint (used over FTP by the
+// device itself, not tied to any vendor/user account).
 router.post("/device/config", controller.getDeviceConfig);
-
-
-
-
-// Working 
-// router.get(
-//   "/credentials/:certificateId",
-//   auth,
-//   controller.getCredentials
-// );
-
-
-
-
-
-
-// router.get(
-//   "/:certificateId/credentials",
-//   auth,
-//   controller.getCredentials
-// );
-
-
-
-
-
-// Working 
-// Download files
-// router.get(
-//   "/:certificateId/:type",
-//   auth,
-//   controller.downloadCertificate
-// );
-
 
 module.exports = router;
