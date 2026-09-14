@@ -4996,7 +4996,7 @@ export default function Power() {
     return (
         <PageBackground>
             <div style={{ minHeight: "100vh", paddingBottom: "90px", fontFamily: "'Inter', sans-serif" }}>
-                <PageHeader title="POWER" backPath="/" />
+                <PageHeader title="POWER" backPath="/home" />
 
                 <div style={{ width: "100%", maxWidth: 520, margin: "0 auto", boxSizing: "border-box" }}>
                     <DeviceInfo data={data} lastUpdated={lastUpdated} devices={devices} selectedDeviceId={selectedDeviceId} />

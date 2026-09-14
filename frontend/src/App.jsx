@@ -43,10 +43,21 @@ import VendorVerifyEmail from "./pages/VendorVerifyEmail";
 // ================= ADMIN PAGES =================
 
 import AdminLogin from "./pages/AdminLogin";
-import PendingVendors from "./pages/PendingVendors";
 import AdminProfile from "./pages/AdminProfile";
 import AdminHome from "./pages/AdminHome";
 import DeviceRegistered from "./pages/DeviceRegistered";
+
+// ================= ADMIN DEVICE PAGES =================
+// (copied from the vendor device pages so admins get the
+// same device dashboard functionality vendors already have)
+
+import AdminDevices from "./pages/AdminDevices";
+import AdminDeviceHome from "./pages/AdminDeviceHome";
+import AdminDevicePower from "./pages/AdminDevicePower";
+import AdminDeviceFault from "./pages/AdminDeviceFault";
+import AdminDeviceDetails from "./pages/AdminDeviceDetails";
+import AdminRegisterDevice from "./pages/AdminRegisterDevice";
+import AdminDeviceRegistered from "./pages/AdminDeviceRegistered";
 
 // ================= PROTECTED ROUTES =================
 
@@ -59,6 +70,7 @@ import AdminLayout from "./components/AdminLayout";
 
 import { InverterProvider } from "./context/Context";
 import { VendorDeviceProvider } from "./context/VendorDeviceContext";
+import { AdminDeviceProvider } from "./context/AdminDeviceContext";
 
 
 
@@ -79,16 +91,22 @@ function App() {
 
 
                 {/* =====================================================
-                    SELECT OPTION (PREVIEW)
+                    SELECT OPTION
 
-                    TEMP standalone route for review only.
-                    Will later replace the post-login landing
-                    destination instead of living at its own path.
+                    This is now the landing page shown right after
+                    opening the website / logging in (root "/").
+                    The dashboard (Home) has moved to "/home" and is
+                    reached only after picking an option / via the
+                    footer nav — it no longer shows immediately.
                 ===================================================== */}
 
                 <Route
-                    path="/select-option"
-                    element={<SelectOption />}
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <SelectOption />
+                        </ProtectedRoute>
+                    }
                 />
 
 
@@ -166,10 +184,14 @@ function App() {
                 {/* =====================================================
                     USER PAGES
                     InverterProvider belongs to the USER side.
+
+                    NOTE: Dashboard (Home) used to live at "/".
+                    It now lives at "/home" — "/" shows the
+                    SELECT OPTION page instead (see above).
                 ===================================================== */}
 
                 <Route
-                    path="/"
+                    path="/home"
                     element={
                         <ProtectedRoute>
                             <InverterProvider>
@@ -343,6 +365,87 @@ function App() {
 
 
                 {/* =====================================================
+                    ADMIN DEVICE MANAGEMENT
+
+                    Copied from the VENDOR DEVICE MANAGEMENT /
+                    VENDOR PAGES sections above. Admin sees the
+                    same device dashboard, power, fault, and
+                    details pages the vendor sees — just across
+                    every vendor's devices instead of just one.
+                ===================================================== */}
+
+                <Route
+                    path="/admin/devices"
+                    element={
+                        <AdminProtectedRoute>
+                            <AdminDevices />
+                        </AdminProtectedRoute>
+                    }
+                />
+
+                {/* Admin Register Device — mirrors vendor's
+                    /register-device, but admin picks the
+                    vendor to register the device under. */}
+                <Route
+                    path="/admin/register-device"
+                    element={
+                        <AdminProtectedRoute>
+                            <AdminRegisterDevice />
+                        </AdminProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/device-registered"
+                    element={
+                        <AdminProtectedRoute>
+                            <AdminDeviceRegistered />
+                        </AdminProtectedRoute>
+                    }
+                />
+
+                <Route
+                    element={
+                        <AdminProtectedRoute>
+                            <AdminDeviceProvider>
+                                <Outlet />
+                            </AdminDeviceProvider>
+                        </AdminProtectedRoute>
+                    }
+                >
+
+                    {/* Admin Device Home / Dashboard */}
+
+                    <Route
+                        path="/admin/devices/dashboard"
+                        element={<AdminDeviceHome />}
+                    />
+
+                    {/* Admin Device Power */}
+
+                    <Route
+                        path="/admin/device/:id/power"
+                        element={<AdminDevicePower />}
+                    />
+
+                    {/* Admin Device Fault */}
+
+                    <Route
+                        path="/admin/device/:id/fault"
+                        element={<AdminDeviceFault />}
+                    />
+
+                    {/* Admin Device Details */}
+
+                    <Route
+                        path="/admin/device/:id/details"
+                        element={<AdminDeviceDetails />}
+                    />
+
+                </Route>
+
+
+                {/* =====================================================
                     ADMIN PAGES
                 ===================================================== */}
 
@@ -360,24 +463,11 @@ function App() {
                     />
 
                     <Route
-                        path="/admin/pending"
-                        element={<PendingVendors />}
-                    />
-
-                    <Route
                         path="/admin/upload-imei"
                         element={<UploadIMEI />}
                     />
 
-                    <Route
-                        path="/admin/users"
-                        element={
-                            <h2>
-                                Users (Coming Soon)
-                            </h2>
-                        }
-                    />
-
+                   
                     <Route
                         path="/admin/profile"
                         element={<AdminProfile />}

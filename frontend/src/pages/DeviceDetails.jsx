@@ -884,7 +884,7 @@ export default function DeviceDetails() {
 
                 <PageHeader
                     title="DEVICE DETAILS"
-                    backPath="/"
+                    backPath="/home"
                 />
 
                 <Message>

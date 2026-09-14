@@ -235,10 +235,41 @@ void main() {
                             </span>
                         </button>
 
-                        {/* PENDING VENDORS BUTTON */}
+                        {/* DEVICES BUTTON */}
                         <button
                             className="admin-action-btn"
-                            onClick={() => navigate("/admin/pending")}
+                            onClick={() => navigate("/admin/devices")}
+                            style={actionBtn}
+                        >
+
+                            <div style={btnIconWrap}>
+                                <svg
+                                    width="22"
+                                    height="22"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke={P.textWhite}
+                                    strokeWidth="2.3"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                    <rect x="8" y="5" width="8" height="7" rx="1" />
+                                    <circle cx="9" cy="16" r="1" />
+                                    <circle cx="12" cy="16" r="1" />
+                                    <circle cx="15" cy="16" r="1" />
+                                </svg>
+                            </div>
+
+                            <span style={btnLabel}>
+                                Devices
+                            </span>
+                        </button>
+
+                        {/* REGISTER DEVICE BUTTON */}
+                        <button
+                            className="admin-action-btn"
+                            onClick={() => navigate("/admin/register-device")}
                             style={actionBtn}
                         >
 
@@ -253,15 +284,14 @@ void main() {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 >
-                                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="16" />
+                                    <line x1="8" y1="12" x2="16" y2="12" />
                                 </svg>
                             </div>
 
                             <span style={btnLabel}>
-                                Pending Vendors
+                                Register Device
                             </span>
                         </button>
 
@@ -294,35 +324,7 @@ void main() {
                             </span>
                         </button>
 
-                        {/* USERS BUTTON */}
-                        <button
-                            className="admin-action-btn"
-                            onClick={() => navigate("/admin/users")}
-                            style={actionBtn}
-                        >
-
-                            <div style={btnIconWrap}>
-                                <svg
-                                    width="22"
-                                    height="22"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke={P.textWhite}
-                                    strokeWidth="2.3"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9.5" cy="7" r="3.5" />
-                                    <path d="M20 21v-2a3.5 3.5 0 0 0-2.5-3.35" />
-                                    <path d="M15.5 3.2a3.5 3.5 0 0 1 0 6.6" />
-                                </svg>
-                            </div>
-
-                            <span style={btnLabel}>
-                                Users
-                            </span>
-                        </button>
+                        
                     </div>
                 </div>
 

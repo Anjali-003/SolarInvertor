@@ -132,6 +132,103 @@ return res.json(parsed);
   };
 
 
+// =====================================================
+// ADMIN LATEST MESSAGE
+//
+// Mirrors getVendorLatestMessage above, but for the
+// admin role — devices are looked up by id only,
+// with no vendor_id scoping, since admin can see
+// every device.
+// =====================================================
+exports.getAdminLatestMessage =
+  async (req, res) => {
+
+    try {
+
+      const deviceId =
+        req.params.id;
+
+      const [devices] =
+        await pool.execute(
+          `
+          SELECT *
+          FROM devices
+          WHERE id = ?
+          `,
+          [
+            deviceId
+          ]
+        );
+
+      if (
+        devices.length === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "Device not found"
+          });
+      }
+
+      const imei =
+        devices[0].imei;
+
+      const [rows] = await pool.execute(
+`
+SELECT
+    payload,
+    iv,
+    auth_tag,
+    created_at
+FROM messages
+WHERE imei = ?
+ORDER BY created_at DESC
+LIMIT 1
+`,
+[imei]
+);
+
+      if (
+        rows.length === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            error:
+              "No data found"
+          });
+      }
+
+      const decrypted = decrypt(
+    rows[0].payload,
+    rows[0].iv,
+    rows[0].auth_tag
+);
+
+const parsed = JSON.parse(decrypted);
+
+parsed.created_at = rows[0].created_at;
+
+return res.json(parsed);
+
+    }
+    catch (err) {
+
+    console.error("==========================");
+    console.error(err);
+    console.error(err.stack);
+    console.error("==========================");
+
+    return res.status(500).json({
+        error: err.message,
+        stack: err.stack
+    });
+
+}
+  };
+
+
 exports.getLatestMessage = async (req, res) => {
 
     try {

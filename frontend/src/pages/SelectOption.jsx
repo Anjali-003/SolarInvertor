@@ -99,7 +99,6 @@ export default function SelectOption() {
                     >
                         <OptionButton
                             label="Setup Device"
-                            onClick={() => navigate("/add-device")}
                         />
 
                         <OptionButton

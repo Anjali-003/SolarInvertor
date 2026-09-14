@@ -15,6 +15,7 @@ const messageRoutes = require("./src/routes/messageRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const certificateRoutes = require("./src/routes/certificateRoutes");
 const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
+const adminDeviceRoutes = require("./src/routes/adminDeviceRoutes");
 const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
 const energyRoutes = require("./src/routes/energyRoutes");
 const userDeviceRoutes = require("./src/routes/userDeviceRoutes");
@@ -56,6 +57,7 @@ app.use("/api/certs",certificateRoutes);
 
 app.use("/api/vendor",vendorRoutes);
 app.use("/api/admin",adminAuthRoutes);
+app.use("/api/admin",adminDeviceRoutes);
 
 app.use(
     "/api/reports",
