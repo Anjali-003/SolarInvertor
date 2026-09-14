@@ -5,33 +5,22 @@ const router = express.Router();
 const controller =
     require("../controllers/userDeviceController");
 
-const auth =
-    require("../middleware/authMiddleware");
-
+// =====================================================
+// PUBLIC — no login required.
+// The "user" is just the phone owner now; there's no
+// account, so there's nothing to authenticate here.
+// The frontend decides what to remember (localStorage).
+// =====================================================
 
 router.get(
-    "/devices",
-    auth,
-    controller.getUserDevices
+    "/devices/:imei",
+    controller.lookupDeviceByImei
 );
 
-
-router.post(
-    "/devices",
-    auth,
-    controller.addUserDevice
-);
-
+// Kept for any existing callers using a query param.
 router.get(
     "/device-details",
-    auth,
-    controller.getDeviceDetails
-);
-
-router.delete(
-    "/devices/:id",
-    auth,
-    controller.deleteUserDevice
+    controller.lookupDeviceByImei
 );
 
 module.exports = router;

@@ -71,7 +71,6 @@
 
 //     }, []);
 
-
 //     // =====================================================
 //     // SELECTED DEVICE / SERIAL NUMBER (IMEI)
 //     // =====================================================
@@ -90,14 +89,12 @@
 //     const serialNumber =
 //         selectedDevice?.imei ?? "--";
 
-
 //     // =====================================================
 //     // RATING (VA -> KW)
 //     // =====================================================
 
 //     const ratingKW =
 //         formatRatingKW(data?.RAT);
-
 
 //     // =====================================================
 //     // LAST UPDATED, RELATIVE ("Updated 3 hours ago")
@@ -110,14 +107,12 @@
 //     const updatedAgo =
 //         formatUpdatedAgo(lastUpdated);
 
-
 //     // =====================================================
 //     // STICKY POSITIONING
 //     // =====================================================
 
 //     const isSticky =
 //         typeof stickyTop === "number";
-
 
 //     // =====================================================
 //     // UI
@@ -214,7 +209,6 @@
 
 //                 </div>
 
-
 //                 {/* =========================================
 //                     DEVICE SUMMARY (right, stacked)
 //                 ========================================= */}
@@ -294,605 +288,384 @@
 //     );
 // }
 
-
-
-
-
-import React, { useEffect, useState } from "react";
-import P from "../theme/colors";
+import { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
+import P from "../theme/colors";
 import { formatUpdatedAgo } from "../utils/timeFormat";
-import { useNavigate } from "react-router-dom";
-
 
 // =====================================================
 // SIGNAL STRENGTH
 // =====================================================
 
 function SignalStrength({ csq }) {
+  const value = Number(csq);
 
-    const value =
-        Number(csq);
+  let activeBars = 0;
 
-    let activeBars = 0;
-
-
-    if (Number.isFinite(value)) {
-
-        if (value >= 26) {
-
-            activeBars = 5;
-
-        } else if (value >= 21) {
-
-            activeBars = 4;
-
-        } else if (value >= 16) {
-
-            activeBars = 3;
-
-        } else if (value >= 11) {
-
-            activeBars = 2;
-
-        } else if (value >= 0) {
-
-            activeBars = 1;
-        }
+  if (Number.isFinite(value)) {
+    if (value >= 26) {
+      activeBars = 5;
+    } else if (value >= 21) {
+      activeBars = 4;
+    } else if (value >= 16) {
+      activeBars = 3;
+    } else if (value >= 11) {
+      activeBars = 2;
+    } else if (value >= 0) {
+      activeBars = 1;
     }
+  }
 
+  const activeColor = P.green;
 
-    const activeColor =
-        P.green;
+  const inactiveColor = "rgba(255,255,255,0.20)";
 
-    const inactiveColor =
-        "rgba(255,255,255,0.20)";
+  return (
+    <div
+      title={
+        Number.isFinite(value)
+          ? `Signal strength: ${value}`
+          : "Signal strength unavailable"
+      }
+      style={{
+        display: "flex",
 
+        alignItems: "flex-end",
 
-    return (
+        gap: 3,
 
+        height: 22,
+
+        flexShrink: 0,
+      }}
+    >
+      {[1, 2, 3, 4, 5].map((bar) => (
         <div
-            title={
-                Number.isFinite(value)
-                    ? `Signal strength: ${value}`
-                    : "Signal strength unavailable"
-            }
+          key={bar}
+          style={{
+            width: 4,
 
-            style={{
-                display:
-                    "flex",
+            height: 4 + bar * 3,
 
-                alignItems:
-                    "flex-end",
+            borderRadius: 2,
 
-                gap:
-                    3,
+            background: bar <= activeBars ? activeColor : inactiveColor,
 
-                height:
-                    22,
-
-                flexShrink:
-                    0
-            }}
-        >
-
-            {[1, 2, 3, 4, 5].map(
-                (bar) => (
-
-                    <div
-                        key={bar}
-
-                        style={{
-                            width:
-                                4,
-
-                            height:
-                                4 + bar * 3,
-
-                            borderRadius:
-                                2,
-
-                            background:
-                                bar <= activeBars
-                                    ? activeColor
-                                    : inactiveColor,
-
-                            transition:
-                                "background 0.2s ease"
-                        }}
-                    />
-
-                )
-            )}
-
-        </div>
-    );
+            transition: "background 0.2s ease",
+          }}
+        />
+      ))}
+    </div>
+  );
 }
-
 
 // =====================================================
 // RATING
 // =====================================================
 
 function formatRatingKW(rat) {
+  const va = Number(rat);
 
-    const va =
-        Number(rat);
+  if (!Number.isFinite(va) || va <= 0) {
+    return "--";
+  }
 
+  const kw = va / 1000;
 
-    if (
-        !Number.isFinite(va) ||
-        va <= 0
-    ) {
-
-        return "--";
-    }
-
-
-    const kw =
-        va / 1000;
-
-
-    return String(
-        parseFloat(
-            kw.toFixed(2)
-        )
-    );
+  return String(parseFloat(kw.toFixed(2)));
 }
-
 
 // =====================================================
 // DEVICE INFO
 // =====================================================
 
 export default function DeviceInfo({
-
-    data,
-    lastUpdated,
-    devices,
-    selectedDeviceId,
-    stickyTop
-
+  data,
+  lastUpdated,
+  devices,
+  selectedDeviceId,
+  stickyTop,
 }) {
+  // =====================================================
+  // TICK EVERY SECOND
+  // =====================================================
 
-    // =====================================================
-    // TICK EVERY SECOND
-    // =====================================================
+  const [, setNow] = useState(Date.now());
 
-    const [, setNow] =
-        useState(
-            Date.now()
-        );
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
 
+    return () => clearInterval(timer);
+  }, []);
 
-    useEffect(() => {
+  // =====================================================
+  // SELECTED DEVICE
+  // =====================================================
 
-        const timer =
-            setInterval(
-                () => {
+  const selectedDevice = devices?.find(
+    (device) => Number(device.id) === Number(selectedDeviceId),
+  );
 
-                    setNow(
-                        Date.now()
-                    );
+  // =====================================================
+  // SERIAL / IMEI
+  // =====================================================
 
-                },
-                1000
-            );
+  const serialNumber = selectedDevice?.imei ?? "--";
 
+  // =====================================================
+  // DEVICE TITLE
+  // =====================================================
+  //
+  // Change this field later if your device object
+  // has a proper device/site name.
+  //
 
-        return () =>
-            clearInterval(
-                timer
-            );
+  const deviceTitle =
+    selectedDevice?.nickname ||
+    // selectedDevice?.site ||
+    // selectedDevice?.location ||
+    "--";
 
-    }, []);
+  // =====================================================
+  // RATING
+  // =====================================================
 
-const navigate = useNavigate();
-    // =====================================================
-    // SELECTED DEVICE
-    // =====================================================
+  const ratingKW = formatRatingKW(data?.RAT);
 
-    const selectedDevice =
-        devices?.find(
-            device =>
-                Number(device.id) ===
-                Number(selectedDeviceId)
-        );
+  // =====================================================
+  // SIGNAL
+  // =====================================================
 
+  const csq = data?.csq;
 
-    // =====================================================
-    // SERIAL / IMEI
-    // =====================================================
+  // =====================================================
+  // LAST UPDATED
+  // =====================================================
 
-    const serialNumber =
-        selectedDevice?.imei ??
-        "--";
+  const updatedAgo = formatUpdatedAgo(lastUpdated);
 
+  // =====================================================
+  // STICKY
+  // =====================================================
 
-    // =====================================================
-    // DEVICE TITLE
-    // =====================================================
-    //
-    // Change this field later if your device object
-    // has a proper device/site name.
-    //
+  const isSticky = typeof stickyTop === "number";
 
-    const deviceTitle =
-        selectedDevice?.name ||
-        // selectedDevice?.site ||
-        // selectedDevice?.location ||
-        "--";
+  // =====================================================
+  // UI
+  // =====================================================
 
+  return (
+    <div
+      style={{
+        width: "100%",
 
-    // =====================================================
-    // RATING
-    // =====================================================
+        maxWidth: 700,
 
-    const ratingKW =
-        formatRatingKW(
-            data?.RAT
-        );
+        margin: "20px auto 16px",
 
+        padding: "0 20px",
 
-    // =====================================================
-    // SIGNAL
-    // =====================================================
+        boxSizing: "border-box",
 
-    const csq =
-        data?.csq;
+        ...(isSticky
+          ? {
+              position: "sticky",
 
+              top: stickyTop,
 
-    // =====================================================
-    // LAST UPDATED
-    // =====================================================
+              zIndex: 50,
+            }
+          : {}),
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
 
-    const updatedAgo =
-        formatUpdatedAgo(
-            lastUpdated
-        );
+          boxSizing: "border-box",
 
+          background: "rgba(22, 38, 45, 0.88)",
 
-    // =====================================================
-    // STICKY
-    // =====================================================
+          borderRadius: 16,
 
-    const isSticky =
-        typeof stickyTop ===
-        "number";
+          padding: "16px 18px 16px 1px",
 
+          border: "1px solid rgba(255,255,255,0.08)",
 
-    // =====================================================
-    // UI
-    // =====================================================
+          boxShadow: P.shadowCard,
 
-    return (
+          backdropFilter: "blur(10px)",
 
-        <div
-            style={{
-                width:
-                    "100%",
+          WebkitBackdropFilter: "blur(10px)",
 
-                maxWidth:
-                    700,
+          display: "flex",
 
-                 margin: "20px auto 16px",
+          alignItems: "center",
 
-            padding: "0 20px",
+          justifyContent: "space-between",
 
-                boxSizing:
-                    "border-box",
+          gap: 6,
 
-                ...(isSticky
-                    ? {
-                        position:
-                            "sticky",
-
-                        top:
-                            stickyTop,
-
-                        zIndex:
-                            50
-                    }
-                    : {})
-            }}
-        >
-            <button
-    type="button"
-    onClick={() => navigate("/saved-devices")}
-    style={{
-        border: "none",
-        background: "transparent",
-        paddingBottom: 10,
-        margin: 0,
-        color: "#ffffff",
-        fontSize: 16,
-        fontWeight: 800,
-        fontFamily: "'DM Sans', sans-serif",
-        cursor: "pointer",
-        textAlign: "right",
-        WebkitTapHighlightColor: "transparent",
-    }}
->
-    {selectedDevice?.nickname || "My Devices"}
-</button>
-
-            <div
-                style={{
-                    width:
-                        "100%",
-
-                    boxSizing:
-                        "border-box",
-
-                    background:
-                        "rgba(22, 38, 45, 0.88)",
-
-                    borderRadius:
-                        16,
-
-                    padding:
-                        "16px 18px 16px 1px",
-
-                    border:
-                        "1px solid rgba(255,255,255,0.08)",
-
-                    boxShadow:
-                        P.shadowCard,
-
-                    backdropFilter:
-                        "blur(10px)",
-
-                    WebkitBackdropFilter:
-                        "blur(10px)",
-
-                    display:
-                        "flex",
-
-                    alignItems:
-                        "center",
-
-                    justifyContent:
-                        "space-between",
-
-                    gap:
-                        6,
-
-                    overflow:
-                        "hidden"
-                }}
-            >
-
-                
-
-
-                {/* =================================================
+          overflow: "hidden",
+        }}
+      >
+        {/* =================================================
                     LEFT — LOGO
                 ================================================= */}
 
-                <div
-                    style={{
-                        display:
-                            "flex",
+        <div
+          style={{
+            display: "flex",
 
-                        alignItems:
-                            "center",
+            alignItems: "center",
 
-                        minWidth:
-                            0,
+            minWidth: 0,
 
-                        maxWidth:
-                            "48%",
+            maxWidth: "48%",
 
-                        flexShrink:
-                            0
-                    }}
-                >
+            flexShrink: 0,
+          }}
+        >
+          <img
+            src={logo}
+            alt="Statcon Energiaa"
+            style={{
+              // increased from 46
+              height: 90,
 
-                    <img
-                        src={logo}
+              width: "auto",
 
-                        alt="Statcon Energiaa"
+              maxWidth: "100%",
 
-                        style={{
-                            // increased from 46
-                            height:
-                                90,
+              objectFit: "contain",
 
-                            width:
-                                "auto",
+              display: "block",
 
-                            maxWidth:
-                                "100%",
+              flexShrink: 0,
 
-                            objectFit:
-                                "contain",
+              filter: "brightness(0) invert(1)",
 
-                            display:
-                                "block",
+              opacity: 0.97,
+            }}
+          />
+        </div>
 
-                            flexShrink:
-                                0,
-
-                            filter:
-                                "brightness(0) invert(1)",
-
-                            opacity:
-                                0.97
-                        }}
-                    />
-
-                </div>
-
-
-                {/* =================================================
+        {/* =================================================
                     RIGHT — DEVICE DETAILS
                 ================================================= */}
 
-                <div
-                    style={{
-                        minWidth:
-                            0,
+        <div
+          style={{
+            minWidth: 0,
 
-                        flex:
-                            1,
+            flex: 1,
 
-                        display:
-                            "flex",
+            display: "flex",
 
-                        flexDirection:
-                            "column",
+            flexDirection: "column",
 
-                        alignItems:
-                            "flex-end",
+            alignItems: "flex-end",
 
-                        textAlign:
-                            "right",
+            textAlign: "right",
 
-                        gap:
-                            4
-                    }}
-                >
+            gap: 4,
+          }}
+        >
+          {/* DEVICE TITLE */}
 
+          <div
+            style={{
+              fontSize: 17,
 
-                    {/* DEVICE TITLE */}
+              fontWeight: 800,
 
-                    <div
-                        style={{
-                            fontSize:
-                                17,
+              color: "#ffffff",
 
-                            fontWeight:
-                                800,
+              fontFamily: "'DM Sans', sans-serif",
 
-                            color:
-                                "#ffffff",
+              maxWidth: "100%",
 
-                            fontFamily:
-                                "'DM Sans', sans-serif",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {deviceTitle}
+          </div>
 
-                            maxWidth:
-                                "100%",
+          {/* IMEI */}
 
-                            overflowWrap:
-                                "anywhere"
-                        }}
-                    >
+          <div
+            style={{
+              fontSize: 13,
 
-                        {deviceTitle}
+              fontWeight: 600,
 
-                    </div>
+              color: "rgba(255,255,255,0.72)",
 
+              fontFamily: "'Inter', sans-serif",
 
-                    {/* IMEI */}
+              maxWidth: "100%",
 
-                    <div
-                        style={{
-                            fontSize:
-                                13,
+              overflowWrap: "anywhere",
+            }}
+          >
+            {serialNumber}
+          </div>
 
-                            fontWeight:
-                                600,
+          {/* RATING */}
 
-                            color:
-                                "rgba(255,255,255,0.72)",
+          <div
+            style={{
+              fontSize: 14,
 
-                            fontFamily:
-                                "'Inter', sans-serif",
+              fontWeight: 600,
 
-                            maxWidth:
-                                "100%",
+              color: "rgba(255,255,255,0.9)",
 
-                            overflowWrap:
-                                "anywhere"
-                        }}
-                    >
+              fontFamily: "'Inter', sans-serif",
 
-                        {serialNumber}
+              whiteSpace: "nowrap",
+            }}
+          >
+            Rating: {ratingKW}KW
+          </div>
 
-                    </div>
+          {/* UPDATED + SIGNAL */}
 
+          <div
+            style={{
+              display: "flex",
 
-                    {/* RATING */}
+              alignItems: "center",
 
-                    <div
-                        style={{
-                            fontSize:
-                                14,
+              justifyContent: "flex-end",
 
-                            fontWeight:
-                                600,
+              gap: 10,
 
-                            color:
-                                "rgba(255,255,255,0.9)",
+              maxWidth: "100%",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 13,
 
-                            fontFamily:
-                                "'Inter', sans-serif",
+                fontWeight: 500,
 
-                            whiteSpace:
-                                "nowrap"
-                        }}
-                    >
+                color: "rgba(255,255,255,0.65)",
 
-                        Rating: {ratingKW}KW
+                fontFamily: "'Inter', sans-serif",
 
-                    </div>
-
-
-                    {/* UPDATED + SIGNAL */}
-
-                    <div
-                        style={{
-                            display:
-                                "flex",
-
-                            alignItems:
-                                "center",
-
-                            justifyContent:
-                                "flex-end",
-
-                            gap:
-                                10,
-
-                            maxWidth:
-                                "100%"
-                        }}
-                    >
-
-                        <div
-                            style={{
-                                fontSize:
-                                    13,
-
-                                fontWeight:
-                                    500,
-
-                                color:
-                                    "rgba(255,255,255,0.65)",
-
-                                fontFamily:
-                                    "'Inter', sans-serif",
-
-                                whiteSpace:
-                                    "nowrap"
-                            }}
-                        >
-
-                            Updated {updatedAgo}
-
-                        </div>
-
-
-                        <SignalStrength
-                            csq={csq}
-                        />
-
-                    </div>
-
-                </div>
-
+                whiteSpace: "nowrap",
+              }}
+            >
+              Updated {updatedAgo}
             </div>
 
+            <SignalStrength csq={csq} />
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

@@ -51,7 +51,6 @@
 //             ),
 //         },
 
-
 //         // =================================================
 //         // 2. PARAMETERS (gauge / speedometer)
 //         // =================================================
@@ -79,7 +78,6 @@
 //             ),
 //         },
 
-
 //         // =================================================
 //         // 3. REPORTS / DETAILS
 //         // =================================================
@@ -106,7 +104,6 @@
 //             ),
 //         },
 //     ];
-
 
 //     return (
 //         <div
@@ -190,7 +187,6 @@
 //                             {item.icon}
 //                         </div>
 
-
 //                         {/* LABEL */}
 
 //                         <div
@@ -216,273 +212,161 @@
 //     );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-import React from "react";
-import {
-    useNavigate
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import P from "../theme/colors";
 
-
 export default function Footer() {
+  const navigate = useNavigate();
 
-    const navigate =
-        useNavigate();
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
 
+  const navItems = [
+    // =================================================
+    // PLANT / HOME
+    // =================================================
 
-    // =====================================================
-    // NAVIGATION
-    // =====================================================
+    {
+      name: "Plant",
+      path: "/",
+      label: "Plant",
+      path: "/home",
 
-    const navItems = [
+      icon: (
+        <svg
+          width="34"
+          height="34"
+          viewBox="0 0 36 36"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* SUN */}
 
-        // =================================================
-        // PLANT / HOME
-        // =================================================
+          <circle cx="18" cy="6" r="2.3" />
 
-        {
-            name: "Plant",
-            path: "/",
-            label: "Plant",
-            path: "/home",
+          <line x1="18" y1="1.5" x2="18" y2="3" />
 
-            icon: (
-                <svg
-                    width="34"
-                    height="34"
-                    viewBox="0 0 36 36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
+          <line x1="13.8" y1="2.8" x2="14.9" y2="4" />
 
-                    {/* SUN */}
+          <line x1="22.2" y1="2.8" x2="21.1" y2="4" />
 
-                    <circle
-                        cx="18"
-                        cy="6"
-                        r="2.3"
-                    />
+          {/* SOLAR PANEL */}
 
-                    <line
-                        x1="18"
-                        y1="1.5"
-                        x2="18"
-                        y2="3"
-                    />
-
-                    <line
-                        x1="13.8"
-                        y1="2.8"
-                        x2="14.9"
-                        y2="4"
-                    />
-
-                    <line
-                        x1="22.2"
-                        y1="2.8"
-                        x2="21.1"
-                        y2="4"
-                    />
-
-
-                    {/* SOLAR PANEL */}
-
-                    <path
-                        d="
+          <path
+            d="
                             M9 12
                             H27
                             L29 23
                             H7
                             Z
                         "
-                    />
+          />
 
-                    <line
-                        x1="13"
-                        y1="12"
-                        x2="12"
-                        y2="23"
-                    />
+          <line x1="13" y1="12" x2="12" y2="23" />
 
-                    <line
-                        x1="18"
-                        y1="12"
-                        x2="18"
-                        y2="23"
-                    />
+          <line x1="18" y1="12" x2="18" y2="23" />
 
-                    <line
-                        x1="23"
-                        y1="12"
-                        x2="24"
-                        y2="23"
-                    />
+          <line x1="23" y1="12" x2="24" y2="23" />
 
-                    <line
-                        x1="8"
-                        y1="17.5"
-                        x2="28"
-                        y2="17.5"
-                    />
+          <line x1="8" y1="17.5" x2="28" y2="17.5" />
 
+          {/* STAND */}
 
-                    {/* STAND */}
+          <line x1="18" y1="23" x2="18" y2="29" />
 
-                    <line
-                        x1="18"
-                        y1="23"
-                        x2="18"
-                        y2="29"
-                    />
+          <line x1="12" y1="29" x2="24" y2="29" />
+        </svg>
+      ),
+    },
 
-                    <line
-                        x1="12"
-                        y1="29"
-                        x2="24"
-                        y2="29"
-                    />
+    // =================================================
+    // PARAMETERS
+    // =================================================
 
-                </svg>
-            )
-        },
+    {
+      name: "Parameters",
+      path: "/fault",
 
+      icon: (
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 36 36"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.9"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* OUTER GAUGE */}
 
-        // =================================================
-        // PARAMETERS
-        // =================================================
-
-        {
-            name: "Parameters",
-            path: "/fault",
-
-            icon: (
-                <svg
-                    width="36"
-                    height="36"
-                    viewBox="0 0 36 36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-
-                    {/* OUTER GAUGE */}
-
-                    <path
-                        d="
+          <path
+            d="
                             M7 23
                             A11 11
                             0 0 1
                             29 23
                         "
-                    />
+          />
 
+          {/* INNER GAUGE */}
 
-                    {/* INNER GAUGE */}
-
-                    <path
-                        d="
+          <path
+            d="
                             M10 23
                             A8 8
                             0 0 1
                             26 23
                         "
-                    />
+          />
 
+          {/* MARKERS */}
 
-                    {/* MARKERS */}
+          <line x1="10" y1="17" x2="12" y2="18" />
 
-                    <line
-                        x1="10"
-                        y1="17"
-                        x2="12"
-                        y2="18"
-                    />
+          <line x1="14" y1="13.5" x2="15" y2="16" />
 
-                    <line
-                        x1="14"
-                        y1="13.5"
-                        x2="15"
-                        y2="16"
-                    />
+          <line x1="22" y1="13.5" x2="21" y2="16" />
 
-                    <line
-                        x1="22"
-                        y1="13.5"
-                        x2="21"
-                        y2="16"
-                    />
+          <line x1="26" y1="17" x2="24" y2="18" />
 
-                    <line
-                        x1="26"
-                        y1="17"
-                        x2="24"
-                        y2="18"
-                    />
+          {/* NEEDLE */}
 
+          <line x1="18" y1="23" x2="24" y2="16" />
 
-                    {/* NEEDLE */}
+          <circle cx="18" cy="23" r="1.8" fill="currentColor" stroke="none" />
+        </svg>
+      ),
+    },
 
-                    <line
-                        x1="18"
-                        y1="23"
-                        x2="24"
-                        y2="16"
-                    />
+    // =================================================
+    // REPORTS
+    // =================================================
 
-                    <circle
-                        cx="18"
-                        cy="23"
-                        r="1.8"
-                        fill="currentColor"
-                        stroke="none"
-                    />
+    {
+      name: "Reports",
+      path: "/device-details",
 
-                </svg>
-            )
-        },
+      icon: (
+        <svg
+          width="34"
+          height="34"
+          viewBox="0 0 36 36"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* DOCUMENT */}
 
-
-        // =================================================
-        // REPORTS
-        // =================================================
-
-        {
-            name: "Reports",
-            path: "/device-details",
-
-            icon: (
-                <svg
-                    width="34"
-                    height="34"
-                    viewBox="0 0 36 36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-
-                    {/* DOCUMENT */}
-
-                    <path
-                        d="
+          <path
+            d="
                             M10 4
                             H23
                             L28 9
@@ -490,299 +374,153 @@ export default function Footer() {
                             H10
                             Z
                         "
-                    />
+          />
 
+          {/* CORNER */}
 
-                    {/* CORNER */}
-
-                    <path
-                        d="
+          <path
+            d="
                             M23 4
                             V9
                             H28
                         "
-                    />
+          />
 
+          {/* TEXT */}
 
-                    {/* TEXT */}
+          <line x1="14" y1="12" x2="23" y2="12" />
 
-                    <line
-                        x1="14"
-                        y1="12"
-                        x2="23"
-                        y2="12"
-                    />
+          <line x1="14" y1="15" x2="20" y2="15" />
 
-                    <line
-                        x1="14"
-                        y1="15"
-                        x2="20"
-                        y2="15"
-                    />
+          {/* CHART */}
 
+          <line x1="14" y1="26" x2="24" y2="26" />
 
-                    {/* CHART */}
+          <rect x="14" y="21" width="2.2" height="5" />
 
-                    <line
-                        x1="14"
-                        y1="26"
-                        x2="24"
-                        y2="26"
-                    />
+          <rect x="18" y="18" width="2.2" height="8" />
 
-                    <rect
-                        x="14"
-                        y="21"
-                        width="2.2"
-                        height="5"
-                    />
+          <rect x="22" y="22" width="2.2" height="4" />
+        </svg>
+      ),
+    },
+  ];
 
-                    <rect
-                        x="18"
-                        y="18"
-                        width="2.2"
-                        height="8"
-                    />
+  // =====================================================
+  // UI
+  // =====================================================
 
-                    <rect
-                        x="22"
-                        y="22"
-                        width="2.2"
-                        height="4"
-                    />
-
-                </svg>
-            )
-        },
-
-
+  return (
+    <div
+      style={{
         // =================================================
-        // USER
-        // TEMPORARY
+        // FIXED POSITION
         // =================================================
 
-        {
-            name: "User",
-            path: "/user",
+        position: "fixed",
 
-            icon: (
-                <svg
-                    width="34"
-                    height="34"
-                    viewBox="0 0 36 36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
+        left: "50%",
 
-                    <circle
-                        cx="18"
-                        cy="11"
-                        r="5"
-                    />
+        transform: "translateX(-50%)",
 
-                    <path
-                        d="
-                            M8 31
-                            C9 23.5
-                            13 20
-                            18 20
-                            C23 20
-                            27 23.5
-                            28 31
-                        "
-                    />
+        bottom: "calc(16px + env(safe-area-inset-bottom))",
 
-                </svg>
-            )
-        }
-    ];
+        // =================================================
+        // SAME WIDTH / PADDING AS PAGE CARDS
+        // =================================================
 
+        width: "calc(100% - 40px)",
 
-    // =====================================================
-    // UI
-    // =====================================================
+        maxWidth: 480,
 
-    return (
+        height: 72,
 
-        <div
-            style={{
+        boxSizing: "border-box",
 
-                // =================================================
-                // FIXED POSITION
-                // =================================================
+        // =================================================
+        // SAME DARK CARD DESIGN
+        // =================================================
 
-                position:
-                    "fixed",
+        background: "rgba(22, 38, 45, 0.88)",
 
-                left:
-                    "50%",
+        border: "1px solid rgba(255,255,255,0.08)",
 
-                transform:
-                    "translateX(-50%)",
+        borderRadius: 14,
 
-                bottom:
-                    "calc(16px + env(safe-area-inset-bottom))",
+        boxShadow: P.shadowCardRaised,
 
+        backdropFilter: "blur(6px)",
 
-                // =================================================
-                // SAME WIDTH / PADDING AS PAGE CARDS
-                // =================================================
+        WebkitBackdropFilter: "blur(6px)",
 
-                width:
-                    "calc(100% - 40px)",
+        // =================================================
+        // LAYOUT
+        // =================================================
 
-                maxWidth:
-                    480,
+        display: "grid",
 
-                height:
-                    72,
+        gridTemplateColumns: "repeat(3, 1fr)",
 
-                boxSizing:
-                    "border-box",
+        alignItems: "center",
 
+        padding: "8px 12px",
 
-                // =================================================
-                // SAME DARK CARD DESIGN
-                // =================================================
+        zIndex: 1000,
+      }}
+    >
+      {navItems.map((item) => (
+        <button
+          key={item.path}
+          type="button"
+          aria-label={item.name}
+          onClick={() => navigate(item.path, { replace: true })}
+          style={{
+            // ---------------------------------
+            // BUTTON RESET
+            // ---------------------------------
 
-                background:
-                    "rgba(22, 38, 45, 0.88)",
+            border: "none",
 
-                border:
-                    "1px solid rgba(255,255,255,0.08)",
+            outline: "none",
 
-                borderRadius:
-                    14,
+            background: "transparent",
 
-                boxShadow:
-                    P.shadowCardRaised,
+            padding: 0,
 
-                backdropFilter:
-                    "blur(6px)",
+            margin: 0,
 
-                WebkitBackdropFilter:
-                    "blur(6px)",
+            // ---------------------------------
+            // FULL NAV ITEM AREA
+            // ---------------------------------
 
+            width: "100%",
 
-                // =================================================
-                // LAYOUT
-                // =================================================
+            height: "100%",
 
-                display:
-                    "grid",
+            display: "flex",
 
-                gridTemplateColumns:
-                    "repeat(4, 1fr)",
+            alignItems: "center",
 
-                alignItems:
-                    "center",
+            justifyContent: "center",
 
-                padding:
-                    "8px 12px",
+            // ---------------------------------
+            // ALL ICONS ALWAYS WHITE
+            // ---------------------------------
 
-                zIndex:
-                    1000
-            }}
+            color: "#ffffff",
+
+            // ---------------------------------
+            // INTERACTION
+            // ---------------------------------
+
+            cursor: "pointer",
+
+            WebkitTapHighlightColor: "transparent",
+          }}
         >
-
-            {
-                navItems.map(
-                    (
-                        item
-                    ) => (
-
-                        <button
-                            key={
-                                item.path
-                            }
-
-                            type="button"
-
-                            aria-label={
-                                item.name
-                            }
-
-                            onClick={() =>
-                                navigate(
-                                    item.path
-                                )
-                            }
-
-                            style={{
-
-                                // ---------------------------------
-                                // BUTTON RESET
-                                // ---------------------------------
-
-                                border:
-                                    "none",
-
-                                outline:
-                                    "none",
-
-                                background:
-                                    "transparent",
-
-                                padding:
-                                    0,
-
-                                margin:
-                                    0,
-
-
-                                // ---------------------------------
-                                // FULL NAV ITEM AREA
-                                // ---------------------------------
-
-                                width:
-                                    "100%",
-
-                                height:
-                                    "100%",
-
-                                display:
-                                    "flex",
-
-                                alignItems:
-                                    "center",
-
-                                justifyContent:
-                                    "center",
-
-
-                                // ---------------------------------
-                                // ALL ICONS ALWAYS WHITE
-                                // ---------------------------------
-
-                                color:
-                                    "#ffffff",
-
-
-                                // ---------------------------------
-                                // INTERACTION
-                                // ---------------------------------
-
-                                cursor:
-                                    "pointer",
-
-                                WebkitTapHighlightColor:
-                                    "transparent"
-                            }}
-                        >
-
-                            {
-                                item.icon
-                            }
-
-                        </button>
-
-                    )
-                )
-            }
-
-        </div>
-    );
+          {item.icon}
+        </button>
+      ))}
+    </div>
+  );
 }

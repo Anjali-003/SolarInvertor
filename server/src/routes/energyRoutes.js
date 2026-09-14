@@ -2,22 +2,22 @@ const express = require("express");
 
 const router = express.Router();
 
-const auth = require("../middleware/authMiddleware");
-
 const energyController =
     require("../controllers/energyController");
 
+// =====================================================
+// PUBLIC — no login. Callers pass ?imei= instead of a
+// device_id, since there's no more account/device linking.
+// =====================================================
 
 router.get(
     "/summary",
-    auth,
     energyController.getEnergySummary
 );
 
 
 router.get(
     "/chart",
-    auth,
     energyController.getEnergyChart
 );
 

@@ -943,23 +943,8 @@ const handleDownload = async () => {
 
 
     // =====================================================
-    // AUTH
+    // No login anymore — the report is fetched by IMEI.
     // =====================================================
-
-    const token =
-        localStorage.getItem(
-            "token"
-        );
-
-
-    if (!token) {
-
-        setError(
-            "Your login session has expired. Please login again."
-        );
-
-        return;
-    }
 
 
     try {
@@ -973,7 +958,7 @@ const handleDownload = async () => {
 
         const query =
             new URLSearchParams({
-                device_id:
+                imei:
                     String(
                         selectedDeviceId
                     ),
@@ -1006,17 +991,10 @@ const handleDownload = async () => {
 
         const response =
             await fetch(
-                // `${API_BASE}/api/reports/download?${query.toString()}`,
-                // VPSCHANGE
-                                `/api/reports/download?${query.toString()}`,
+                `/api/reports/download?${query.toString()}`,
 
                 {
                     method: "GET",
-
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`
-                    }
                 }
             );
 

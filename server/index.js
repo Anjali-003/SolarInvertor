@@ -9,12 +9,8 @@ const cors = require("cors");
 // const jwt = require("jsonwebtoken");
 
 const pool = require("./src/config/database");
-const vendorRoutes = require("./src/routes/vendorRoutes");
-const authRoutes = require("./src/routes/authRoutes");
 const messageRoutes = require("./src/routes/messageRoutes");
-const userRoutes = require("./src/routes/userRoutes");
 const certificateRoutes = require("./src/routes/certificateRoutes");
-const vendorDeviceRoutes = require("./src/routes/vendorDeviceRoutes");
 const adminDeviceRoutes = require("./src/routes/adminDeviceRoutes");
 const adminAuthRoutes = require("./src/routes/adminAuthRoutes");
 const energyRoutes = require("./src/routes/energyRoutes");
@@ -47,15 +43,10 @@ app.use(express.json());
 // ─────────────────────────────────────
 // ROUTES
 // ─────────────────────────────────────
-app.use("/api/auth", authRoutes);
-
 app.use("/api", messageRoutes);
-
-app.use("/api", userRoutes);
 
 app.use("/api/certs",certificateRoutes);
 
-app.use("/api/vendor",vendorRoutes);
 app.use("/api/admin",adminAuthRoutes);
 app.use("/api/admin",adminDeviceRoutes);
 
@@ -63,22 +54,6 @@ app.use(
     "/api/reports",
     reportRoutes
 );
-
-// app.use(
-//   "/api/devices",
-//   require("./routes/vendorDeviceRoutes")
-// );
-
-// app.use(
-//   "/api/devices",
-//   vendorDeviceRoutes
-// );
-
-app.use(
-  "/api/vendor",
-  vendorDeviceRoutes
-);
-
 
 app.use(
     "/api/energy",

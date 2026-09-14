@@ -1711,32 +1711,18 @@ async (req, res) => {
     try {
 
         // =================================================
-        // AUTHENTICATED USER
+        // PUBLIC — no login. Device identified by IMEI.
         // =================================================
 
-        const userId =
-            req.user?.id;
-
-
-        if (!userId) {
-
-            return res
-                .status(401)
-                .json({
-                    error:
-                        "Unauthorized"
-                });
-        }
+        const imeiParam =
+            String(
+                req.query.imei || ""
+            ).trim();
 
 
         // =================================================
         // REQUEST VALUES
         // =================================================
-
-        const deviceId =
-            Number(
-                req.query.device_id
-            );
 
         const reportType =
             req.query.report_type;
@@ -1792,15 +1778,14 @@ const isGenerationReport =
         // =================================================
 
         if (
-            !Number.isInteger(deviceId) ||
-            deviceId <= 0
+            !/^\d{15}$/.test(imeiParam)
         ) {
 
             return res
                 .status(400)
                 .json({
                     error:
-                        "Invalid device_id"
+                        "Invalid imei"
                 });
         }
 
@@ -1915,33 +1900,26 @@ if (!isGenerationReport) {
 }
 
         // =================================================
-        // VERIFY USER OWNS DEVICE
+        // FETCH DEVICE
         // =================================================
 
         const [deviceRows] =
             await pool.execute(
                 `
                 SELECT
-                    d.id,
-                    d.imei,
-                    d.solution,
-                    d.device_version,
-                    ud.location
+                    id,
+                    imei,
+                    solution,
+                    device_version
 
-                FROM user_devices ud
+                FROM devices
 
-                INNER JOIN devices d
-                    ON d.id = ud.device_id
-
-                WHERE
-                    ud.user_id = ?
-                    AND d.id = ?
+                WHERE imei = ?
 
                 LIMIT 1
                 `,
                 [
-                    userId,
-                    deviceId
+                    imeiParam
                 ]
             );
 
@@ -1951,10 +1929,10 @@ if (!isGenerationReport) {
         ) {
 
             return res
-                .status(403)
+                .status(404)
                 .json({
                     error:
-                        "You do not have access to this device"
+                        "Device not found"
                 });
         }
 

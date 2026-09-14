@@ -1,482 +1,29 @@
-// const pool = require("../config/database");
-// const { decrypt } = require("../utils/encryption");
-
-
-// exports.getUserDevices = async (req, res) => {
-
-//     try {
-
-//         const userId = req.user?.id;
-
-//         if (!userId) {
-//             return res.status(401).json({
-//                 error: "Unauthorized"
-//             });
-//         }
-
-
-//         const [devices] = await pool.execute(
-//             `
-//             SELECT
-//                 d.id,
-//                 d.imei,
-//                 d.device_version,
-//                 d.solution
-
-//             FROM user_devices ud
-
-//             JOIN devices d
-//                 ON d.id = ud.device_id
-
-//             WHERE ud.user_id = ?
-
-//             ORDER BY d.id
-//             `,
-//             [userId]
-//         );
-
-
-//         return res.json({
-//             success: true,
-//             devices
-//         });
-
-
-//     } catch (err) {
-
-//         console.error(
-//             "GET USER DEVICES ERROR:",
-//             err
-//         );
-
-//         return res.status(500).json({
-//             error: err.message
-//         });
-
-//     }
-
-// };
-
-
-// exports.addUserDevice = async (req, res) => {
-
-//     try {
-
-//         const userId = req.user?.id;
-
-//         if (!userId) {
-//             return res.status(401).json({
-//                 error: "Unauthorized"
-//             });
-//         }
-
-
-//         // const { imei } = req.body;
-//         const { imei, location } = req.body;
-
-
-//         // =====================================================
-//         // VALIDATE IMEI
-//         // =====================================================
-
-//         const imeiRegex = /^\d{15}$/;
-
-//         if (!imeiRegex.test(imei)) {
-//             return res.status(400).json({
-//                 error: "Invalid IMEI"
-//             });
-//         }
-
-//         if (!imei || !location) {
-//     return res.status(400).json({
-//         error: "IMEI and location are required"
-//     });
-// }
-
-
-//         // =====================================================
-//         // CHECK DEVICE EXISTS
-//         // =====================================================
-
-//         const [devices] = await pool.execute(
-//             `
-//             SELECT
-//                 id,
-//                 imei,
-//                 device_version,
-//                 solution
-
-//             FROM devices
-
-//             WHERE imei = ?
-//             `,
-//             [imei]
-//         );
-
-
-//         if (devices.length === 0) {
-
-//             return res.status(404).json({
-//                 error: "Device not registered by vendor"
-//             });
-
-//         }
-
-
-//         const device = devices[0];
-
-
-//         // =====================================================
-//         // CHECK WHETHER DEVICE IS ALREADY REGISTERED
-//         // =====================================================
-
-//         const [existingDevice] =
-//             await pool.execute(
-//                 `
-//                 SELECT
-//                     id,
-//                     user_id
-
-//                 FROM user_devices
-
-//                 WHERE device_id = ?
-//                 `,
-//                 [device.id]
-//             );
-
-
-//         if (existingDevice.length > 0) {
-
-//             return res.status(400).json({
-//                 error: "Device already registered"
-//             });
-
-//         }
-
-
-//         // =====================================================
-//         // ATTACH DEVICE TO CURRENT USER
-//         // =====================================================
-
-//         await pool.execute(
-//             `
-//             INSERT INTO user_devices
-//             (
-//                 user_id,
-//                 device_id,
-//                 location
-//             )
-//             VALUES (?, ?, ?)
-//             `,
-//             [
-//                 userId,
-//                 device.id,
-//                 location
-//             ]
-//         );
-
-
-//         // =====================================================
-//         // RESPONSE
-//         // =====================================================
-
-//         return res.status(201).json({
-
-//             success: true,
-
-//             message: "Device added successfully",
-
-//             device: {
-//                 id: device.id,
-//                 imei: device.imei,
-//                 device_version:
-//                     device.device_version,
-//                 solution:
-//                     device.solution
-//             }
-
-//         });
-
-
-//     } catch (err) {
-
-//         console.error(
-//             "ADD USER DEVICE ERROR:",
-//             err
-//         );
-
-//         if (err.code === "ER_DUP_ENTRY") {
-
-//             return res.status(409).json({
-//                 error:
-//                     "Device is already assigned to a user"
-//             });
-
-//         }
-//         return res.status(500).json({
-//             error: err.message
-//         });
-
-//     }
-
-// };
-
-
-// exports.getDeviceDetails = async (req, res) => {
-//     try {
-//         const userId = req.user?.id;
-
-//         if (!userId) {
-//             return res.status(401).json({
-//                 error: "Unauthorized"
-//             });
-//         }
-
-//         const deviceId = Number(req.query.device_id);
-
-//         if (!Number.isInteger(deviceId) || deviceId <= 0) {
-//             return res.status(400).json({
-//                 error: "Invalid device_id"
-//             });
-//         }
-
-//         // =====================================================
-//         // GET DEVICE + VERIFY USER ACCESS
-//         // =====================================================
-
-//         const [devices] = await pool.execute(
-//             `
-//             SELECT
-//                 d.id,
-//                 d.imei,
-//                 d.solution,
-//                 ud.location
-//             FROM user_devices ud
-
-//             INNER JOIN devices d
-//                 ON d.id = ud.device_id
-
-//             WHERE
-//                 ud.user_id = ?
-//                 AND d.id = ?
-
-//             LIMIT 1
-//             `,
-//             [
-//                 userId,
-//                 deviceId
-//             ]
-//         );
-
-//         if (devices.length === 0) {
-//             return res.status(403).json({
-//                 error: "You do not have access to this device"
-//             });
-//         }
-
-//         const device = devices[0];
-
-//         // =====================================================
-//         // GET LATEST MESSAGE
-//         // =====================================================
-
-//         const [rows] = await pool.execute(
-//             `
-//             SELECT
-//                 payload,
-//                 iv,
-//                 auth_tag,
-//                 created_at
-//             FROM messages
-//             WHERE imei = ?
-//             ORDER BY created_at DESC
-//             LIMIT 1
-//             `,
-//             [
-//                 device.imei
-//             ]
-//         );
-
-//         let payload = null;
-//         let lastUpdated = null;
-
-//         if (rows.length > 0) {
-
-//             lastUpdated = rows[0].created_at;
-
-//             if (
-//                 rows[0].iv &&
-//                 rows[0].auth_tag
-//             ) {
-
-//                 const decrypted = decrypt(
-//                     rows[0].payload,
-//                     rows[0].iv,
-//                     rows[0].auth_tag
-//                 );
-
-//                 payload = JSON.parse(decrypted);
-
-//             } else {
-
-//                 payload = JSON.parse(
-//                     rows[0].payload
-//                 );
-//             }
-//         }
-
-//         // =====================================================
-//         // RESPONSE
-//         // =====================================================
-
-//         return res.json({
-
-//             device: {
-//                 id: device.id,
-//                 imei: device.imei,
-//                 solution: device.solution,
-//                 location: device.location
-//             },
-
-//             latest: {
-//                 payload,
-//                 created_at: lastUpdated
-//             }
-
-//         });
-
-//     } catch (err) {
-
-//         console.error(
-//             "GET DEVICE DETAILS ERROR:",
-//             err
-//         );
-
-//         return res.status(500).json({
-//             error: "Failed to fetch device details"
-//         });
-//     }
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const pool = require("../config/database");
 const { decrypt } = require("../utils/encryption");
 
+// =====================================================
+// PUBLIC IMEI LOOKUP (no login / no account)
+//
+// Anyone with a valid IMEI can look up that device's
+// basic info + latest reading. There is no more
+// "user_devices" ownership table — "my devices" now
+// lives entirely on the phone (frontend localStorage,
+// see frontend/src/utils/deviceMeta.js). This endpoint
+// is just a read of whatever the vendor/admin already
+// registered in `devices`, keyed by imei.
+//
+// NOTE (security): since there's no account check
+// anymore, knowing the IMEI is enough to view that
+// device's data. That's an intentional product
+// decision for this flow — flagging it here for anyone
+// touching this file later.
+// =====================================================
 
-exports.getUserDevices = async (req, res) => {
-
-    try {
-
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                error: "Unauthorized"
-            });
-        }
-
-
-        const [devices] = await pool.execute(
-            `
-            SELECT
-                d.id,
-                d.imei,
-                d.device_version,
-                d.solution,
-                d.rated_capacity_kw,
-                ud.location,
-
-                (
-                    SELECT eh.lkwh
-                    FROM energy_history eh
-                    WHERE eh.imei = d.imei
-                    ORDER BY
-                        eh.recorded_at DESC,
-                        eh.id DESC
-                    LIMIT 1
-                ) AS total_generation_kwh
-
-            FROM user_devices ud
-
-            JOIN devices d
-                ON d.id = ud.device_id
-
-            WHERE ud.user_id = ?
-
-            ORDER BY d.id
-            `,
-            [userId]
-        );
-
-        // =====================================================
-        // NOTE: nickname / device-type (product type + model
-        // picked in the Add Device wizard) are intentionally
-        // NOT stored in the database — they live in the
-        // browser's localStorage (see frontend/src/utils/deviceMeta.js)
-        // and get merged onto this list client-side. This
-        // endpoint only ever returns values that live in the DB:
-        // imei, rated capacity ("Rating"), and the latest
-        // cumulative generation reading ("Total Generation").
-        // =====================================================
-
-        res.set("Cache-Control", "no-store");
-
-        return res.json({
-            success: true,
-            devices
-        });
-
-
-    } catch (err) {
-
-        console.error(
-            "GET USER DEVICES ERROR:",
-            err
-        );
-
-        return res.status(500).json({
-            error: err.message
-        });
-
-    }
-
-};
-
-
-exports.addUserDevice = async (req, res) => {
+exports.lookupDeviceByImei = async (req, res) => {
 
     try {
 
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                error: "Unauthorized"
-            });
-        }
-
-
-        // const { imei } = req.body;
-        const { imei, location } = req.body;
-
-
-        // =====================================================
-        // VALIDATE IMEI
-        // =====================================================
+        const imei = String(req.params.imei || req.query.imei || "").trim();
 
         const imeiRegex = /^\d{15}$/;
 
@@ -486,15 +33,8 @@ exports.addUserDevice = async (req, res) => {
             });
         }
 
-        if (!imei || !location) {
-    return res.status(400).json({
-        error: "IMEI and location are required"
-    });
-}
-
-
         // =====================================================
-        // CHECK DEVICE EXISTS
+        // FETCH DEVICE
         // =====================================================
 
         const [devices] = await pool.execute(
@@ -503,7 +43,8 @@ exports.addUserDevice = async (req, res) => {
                 id,
                 imei,
                 device_version,
-                solution
+                solution,
+                rated_capacity_kw
 
             FROM devices
 
@@ -512,171 +53,34 @@ exports.addUserDevice = async (req, res) => {
             [imei]
         );
 
-
         if (devices.length === 0) {
-
             return res.status(404).json({
-                error: "Device not registered by vendor"
+                error: "Device not found"
             });
-
         }
-
 
         const device = devices[0];
 
-
         // =====================================================
-        // CHECK WHETHER DEVICE IS ALREADY REGISTERED
-        // =====================================================
-
-        const [existingDevice] =
-            await pool.execute(
-                `
-                SELECT
-                    id,
-                    user_id
-
-                FROM user_devices
-
-                WHERE device_id = ?
-                `,
-                [device.id]
-            );
-
-
-        if (existingDevice.length > 0) {
-
-            return res.status(400).json({
-                error: "Device already registered"
-            });
-
-        }
-
-
-        // =====================================================
-        // ATTACH DEVICE TO CURRENT USER
+        // LATEST TOTAL GENERATION (energy_history)
         // =====================================================
 
-        await pool.execute(
+        const [energyRows] = await pool.execute(
             `
-            INSERT INTO user_devices
-            (
-                user_id,
-                device_id,
-                location
-            )
-            VALUES (?, ?, ?)
-            `,
-            [
-                userId,
-                device.id,
-                location
-            ]
-        );
-
-
-        // =====================================================
-        // RESPONSE
-        // =====================================================
-
-        return res.status(201).json({
-
-            success: true,
-
-            message: "Device added successfully",
-
-            device: {
-                id: device.id,
-                imei: device.imei,
-                device_version:
-                    device.device_version,
-                solution:
-                    device.solution
-            }
-
-        });
-
-
-    } catch (err) {
-
-        console.error(
-            "ADD USER DEVICE ERROR:",
-            err
-        );
-
-        if (err.code === "ER_DUP_ENTRY") {
-
-            return res.status(409).json({
-                error:
-                    "Device is already assigned to a user"
-            });
-
-        }
-        return res.status(500).json({
-            error: err.message
-        });
-
-    }
-
-};
-
-
-exports.getDeviceDetails = async (req, res) => {
-    try {
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                error: "Unauthorized"
-            });
-        }
-
-        const deviceId = Number(req.query.device_id);
-
-        if (!Number.isInteger(deviceId) || deviceId <= 0) {
-            return res.status(400).json({
-                error: "Invalid device_id"
-            });
-        }
-
-        // =====================================================
-        // GET DEVICE + VERIFY USER ACCESS
-        // =====================================================
-
-        const [devices] = await pool.execute(
-            `
-            SELECT
-                d.id,
-                d.imei,
-                d.solution,
-                ud.location
-            FROM user_devices ud
-
-            INNER JOIN devices d
-                ON d.id = ud.device_id
-
-            WHERE
-                ud.user_id = ?
-                AND d.id = ?
-
+            SELECT lkwh
+            FROM energy_history
+            WHERE imei = ?
+            ORDER BY recorded_at DESC, id DESC
             LIMIT 1
             `,
-            [
-                userId,
-                deviceId
-            ]
+            [imei]
         );
 
-        if (devices.length === 0) {
-            return res.status(403).json({
-                error: "You do not have access to this device"
-            });
-        }
-
-        const device = devices[0];
+        const totalGenerationKwh =
+            energyRows.length > 0 ? energyRows[0].lkwh : null;
 
         // =====================================================
-        // GET LATEST MESSAGE
+        // LATEST LIVE MESSAGE
         // =====================================================
 
         const [rows] = await pool.execute(
@@ -691,9 +95,7 @@ exports.getDeviceDetails = async (req, res) => {
             ORDER BY created_at DESC
             LIMIT 1
             `,
-            [
-                device.imei
-            ]
+            [imei]
         );
 
         let payload = null;
@@ -703,38 +105,29 @@ exports.getDeviceDetails = async (req, res) => {
 
             lastUpdated = rows[0].created_at;
 
-            if (
-                rows[0].iv &&
-                rows[0].auth_tag
-            ) {
-
+            if (rows[0].iv && rows[0].auth_tag) {
                 const decrypted = decrypt(
                     rows[0].payload,
                     rows[0].iv,
                     rows[0].auth_tag
                 );
-
                 payload = JSON.parse(decrypted);
-
             } else {
-
-                payload = JSON.parse(
-                    rows[0].payload
-                );
+                payload = JSON.parse(rows[0].payload);
             }
         }
 
-        // =====================================================
-        // RESPONSE
-        // =====================================================
+        res.set("Cache-Control", "no-store");
 
         return res.json({
 
             device: {
                 id: device.id,
                 imei: device.imei,
+                device_version: device.device_version,
                 solution: device.solution,
-                location: device.location
+                rated_capacity_kw: device.rated_capacity_kw,
+                total_generation_kwh: totalGenerationKwh
             },
 
             latest: {
@@ -746,79 +139,10 @@ exports.getDeviceDetails = async (req, res) => {
 
     } catch (err) {
 
-        console.error(
-            "GET DEVICE DETAILS ERROR:",
-            err
-        );
+        console.error("LOOKUP DEVICE ERROR:", err);
 
         return res.status(500).json({
             error: "Failed to fetch device details"
-        });
-    }
-};
-
-
-// =====================================================
-// DELETE (REMOVE) A SAVED DEVICE FROM THE CURRENT USER
-//
-// This only removes the user_devices link row — i.e. it
-// unassigns the device from this user's account. The
-// underlying "devices" row (registered by the vendor)
-// is left untouched.
-// =====================================================
-
-exports.deleteUserDevice = async (req, res) => {
-
-    try {
-
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({
-                error: "Unauthorized"
-            });
-        }
-
-        const deviceId = Number(req.params.id);
-
-        if (!Number.isInteger(deviceId) || deviceId <= 0) {
-            return res.status(400).json({
-                error: "Invalid device id"
-            });
-        }
-
-        const [result] = await pool.execute(
-            `
-            DELETE FROM user_devices
-            WHERE user_id = ?
-              AND device_id = ?
-            `,
-            [
-                userId,
-                deviceId
-            ]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                error: "Device not found in your account"
-            });
-        }
-
-        return res.json({
-            success: true,
-            message: "Device deleted successfully"
-        });
-
-    } catch (err) {
-
-        console.error(
-            "DELETE USER DEVICE ERROR:",
-            err
-        );
-
-        return res.status(500).json({
-            error: "Failed to delete device"
         });
     }
 };
