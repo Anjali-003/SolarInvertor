@@ -701,7 +701,7 @@
 import { useState } from "react";
 import P from "../theme/colors";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
 // VPSCHANGE
 
 export default function DownloadReportCard({
@@ -1006,9 +1006,9 @@ const handleDownload = async () => {
 
         const response =
             await fetch(
-                `${API_BASE}/api/reports/download?${query.toString()}`,
+                // `${API_BASE}/api/reports/download?${query.toString()}`,
                 // VPSCHANGE
-                                // `/api/reports/download?${query.toString()}`,
+                                `/api/reports/download?${query.toString()}`,
 
                 {
                     method: "GET",
@@ -1120,6 +1120,8 @@ const handleDownload = async () => {
         // =================================================
 
         let filename;
+        const safeImei =
+    imei || String(selectedDeviceId);
 
 
         if (needsCustomDateRange) {
@@ -1134,8 +1136,7 @@ const handleDownload = async () => {
                     end
                 );
 
-const safeImei =
-    imei || String(selectedDeviceId);
+
 
             filename =
                 `${safeImei}_${reportType}_${fromDate}_to_${toDate}.csv`;
@@ -1155,7 +1156,7 @@ const safeImei =
 
 
             filename =
-                `${imei}_${reportType}_${fromDate}_to_${toDate}.csv`;
+                `${safeImei}_${reportType}_${fromDate}_to_${toDate}.csv`;
         }
 
 
@@ -1581,52 +1582,86 @@ const safeImei =
     // =====================================================
     // STYLES
     // =====================================================
+const fieldStyle = {
+    display: "block",
 
-    const fieldStyle = {
+    width: "100%",
+    maxWidth: "100%",
+    minWidth: 0,
 
-        display: "block",
+    height: 52,
 
-        width: "100%",
+    padding: "0 14px",
 
-        maxWidth: "100%",
+    boxSizing: "border-box",
 
-        minWidth: 0,
+    border:
+        "1px solid rgba(255,255,255,0.75)",
 
-        height: 48,
+    borderRadius: 6,
 
-        padding:
-            "0 13px",
+    background:
+        "rgba(0,0,0,0.16)",
 
-        boxSizing:
-            "border-box",
+    color: "#ffffff",
 
-        border:
-            "1px solid rgba(255,255,255,0.12)",
+    fontSize: 14,
 
-        borderRadius:
-            10,
+    fontWeight: 500,
 
-        background:
-            "#ffffff",
+    fontFamily:
+        "'Inter', sans-serif",
 
-        color:
-            "#rgba(255,255,255,0.06)",
+    outline: "none",
 
-        fontSize:
-            13,
+    WebkitAppearance: "none",
+    appearance: "none"
+};
+    // const fieldStyle = {
 
-        fontFamily:
-            "'Inter', sans-serif",
+    //     display: "block",
 
-        outline:
-            "none",
+    //     width: "100%",
 
-        WebkitAppearance:
-            "none",
+    //     maxWidth: "100%",
 
-        appearance:
-            "none"
-    };
+    //     minWidth: 0,
+
+    //     height: 48,
+
+    //     padding:
+    //         "0 13px",
+
+    //     boxSizing:
+    //         "border-box",
+
+    //     border:
+    //         "1px solid rgba(255,255,255,0.12)",
+
+    //     borderRadius:
+    //         10,
+
+    //     background:
+    //         "#ffffff",
+
+    //     color:
+    //         "#rgba(255,255,255,0.06)",
+
+    //     fontSize:
+    //         13,
+
+    //     fontFamily:
+    //         "'Inter', sans-serif",
+
+    //     outline:
+    //         "none",
+
+    //     WebkitAppearance:
+    //         "none",
+
+    //     appearance:
+    //         "none"
+    // };
 
 
     const dateFieldStyle = {
@@ -1646,31 +1681,47 @@ const safeImei =
         appearance:
             "auto"
     };
+const labelStyle = {
+    display: "block",
 
+    marginBottom: 7,
 
-    const labelStyle = {
+    fontSize: 11,
 
-        display:
-            "block",
+    fontWeight: 600,
 
-        marginBottom:
-            6,
+    letterSpacing: 0.3,
 
-        fontSize:
-            10,
+    color:
+        "rgba(255,255,255,0.82)",
 
-        fontWeight:
-            700,
+    fontFamily:
+        "'Inter', sans-serif"
+};
 
-        letterSpacing:
-            0.6,
+    // const labelStyle = {
 
-        color:
-            "rgba(255,255,255,0.6)",
+    //     display:
+    //         "block",
 
-        fontFamily:
-            "'Inter', sans-serif"
-    };
+    //     marginBottom:
+    //         6,
+
+    //     fontSize:
+    //         10,
+
+    //     fontWeight:
+    //         700,
+
+    //     letterSpacing:
+    //         0.6,
+
+    //     color:
+    //         "rgba(255,255,255,0.6)",
+
+    //     fontFamily:
+    //         "'Inter', sans-serif"
+    // };
 
 
     // =====================================================
@@ -1702,8 +1753,8 @@ const safeImei =
                 borderRadius:
                     14,
 
-                padding:
-                    "16px",
+                         padding: "18px 16px 20px",
+                // padding: "16px",
 
                 boxShadow:
                     P.shadowCardRaised,
@@ -1716,28 +1767,22 @@ const safeImei =
             {/* =================================================
                 TITLE
             ================================================= */}
+<div
+    style={{
+        fontSize: 20,
 
-            <div
-                style={{
-                    fontSize:
-                        18,
+        fontWeight: 500,
 
-                    fontWeight:
-                        800,
+        color: "#ffffff",
 
-                    color:
-                        "#ffffff",
+        fontFamily:
+            "'DM Sans', sans-serif",
 
-                    fontFamily:
-                        "'DM Sans', sans-serif",
-
-                    marginBottom:
-                        4
-                }}
-            >
-                Download Reports
-            </div>
-
+        marginBottom: 18
+    }}
+>
+    Download Reports
+</div>
 
             
 
@@ -1866,10 +1911,11 @@ const safeImei =
         setEndDate("");
     }
 }}
-                        style={{
-                            ...fieldStyle,
-                            paddingRight: 38
-                        }}
+                    style={{
+        ...fieldStyle,
+        paddingRight: 42,
+        color: "#ffffff"
+    }}
                     >
                         <option
                             value=""
@@ -1883,50 +1929,44 @@ const safeImei =
                         </option>
 
                         <option value="event-fault-log">
-                            Event / Fault Log
+                            Event Fault Log
                         </option>
 
                         <option value="generation-7-days">
-                            Generation History (7 Days)
+                            Daily Generation  (Last 7 Days)
                         </option>
 
                         <option value="generation-1-month">
-                            Generation History (1 Month)
+                            Daily Generation  (Last 1 Month)
                         </option>
 
                         <option value="generation-3-months">
-                            Generation History (3 Months)
+                            Daily Generation (Last 3 Months)
                         </option>
                     </select>
 
                     {/* Dropdown arrow */}
+<div
+    style={{
+        position: "absolute",
 
-                    <div
-                        style={{
-                            position:
-                                "absolute",
+        right: 14,
+        top: "50%",
 
-                            right:
-                                14,
+        transform:
+            "translateY(-50%)",
 
-                            top:
-                                "50%",
+        pointerEvents:
+            "none",
 
-                            transform:
-                                "translateY(-50%)",
+        color:
+            "rgba(255,255,255,0.9)",
 
-                            pointerEvents:
-                                "none",
-
-                            color:
-                                "rgba(255,255,255,0.6)",
-
-                            fontSize:
-                                12
-                        }}
-                    >
-                        ▼
-                    </div>
+        fontSize: 12
+    }}
+>
+    ▼
+</div>
 
                 </div>
 
@@ -2278,65 +2318,119 @@ const safeImei =
                 }
 
                 style={{
-                    width:
-                        "100%",
+    width: "auto",
 
-                    height:
-                        46,
+    minWidth: 180,
 
-                    border:
-                        "none",
+    height: 46,
 
-                    borderRadius:
-                        10,
+    padding: "0 18px",
 
-                    boxSizing:
-                        "border-box",
+    border: "none",
 
-                    background:
-                        canDownload
-                            ? P.btnPrimary
-                            : "rgba(255,255,255,0.08)",
+    borderRadius: 4,
 
-                    color:
-                        canDownload
-                            ? P.textWhite
-                            : "rgba(255,255,255,0.4)",
+    boxSizing: "border-box",
 
-                    fontSize:
-                        14,
+    background:
+        canDownload
+            ? "#1976d2"
+            : "rgba(25,118,210,0.42)",
 
-                    fontWeight:
-                        700,
+    color:
+        canDownload
+            ? "#ffffff"
+            : "rgba(255,255,255,0.55)",
 
-                    fontFamily:
-                        "'DM Sans', sans-serif",
+    fontSize: 14,
 
-                    cursor:
-                        canDownload
-                            ? "pointer"
-                            : "not-allowed",
+    fontWeight: 600,
 
-                    opacity:
-                        loading
-                            ? 0.7
-                            : 1,
+    fontFamily:
+        "'DM Sans', sans-serif",
 
-                    display:
-                        "flex",
+    cursor:
+        canDownload
+            ? "pointer"
+            : "not-allowed",
 
-                    alignItems:
-                        "center",
+    opacity:
+        loading
+            ? 0.7
+            : 1,
 
-                    justifyContent:
-                        "center",
+    display: "flex",
 
-                    gap:
-                        8,
+    alignItems: "center",
 
-                    WebkitTapHighlightColor:
-                        "transparent"
-                }}
+    justifyContent: "center",
+
+    gap: 8,
+
+    WebkitTapHighlightColor:
+        "transparent"
+}}
+
+                // style={{
+                //     width:
+                //         "100%",
+
+                //     height:
+                //         46,
+
+                //     border:
+                //         "none",
+
+                //     borderRadius:
+                //         10,
+
+                //     boxSizing:
+                //         "border-box",
+
+                //     background:
+                //         canDownload
+                //             ? P.btnPrimary
+                //             : "rgba(255,255,255,0.08)",
+
+                //     color:
+                //         canDownload
+                //             ? P.textWhite
+                //             : "rgba(255,255,255,0.4)",
+
+                //     fontSize:
+                //         14,
+
+                //     fontWeight:
+                //         700,
+
+                //     fontFamily:
+                //         "'DM Sans', sans-serif",
+
+                //     cursor:
+                //         canDownload
+                //             ? "pointer"
+                //             : "not-allowed",
+
+                //     opacity:
+                //         loading
+                //             ? 0.7
+                //             : 1,
+
+                //     display:
+                //         "flex",
+
+                //     alignItems:
+                //         "center",
+
+                //     justifyContent:
+                //         "center",
+
+                //     gap:
+                //         8,
+
+                //     WebkitTapHighlightColor:
+                //         "transparent"
+                // }}
             >
 
                 {/* DOWNLOAD ICON */}

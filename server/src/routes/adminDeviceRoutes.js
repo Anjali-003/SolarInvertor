@@ -62,4 +62,11 @@ router.get(
 );
 
 
+router.get(
+    "/devices/:id/energy/chart",
+    adminAuth,
+    adminEnergyController.getAdminEnergyChart
+);
+
+
 module.exports = router;

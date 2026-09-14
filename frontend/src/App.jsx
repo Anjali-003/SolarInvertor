@@ -3,7 +3,7 @@ import {
     Routes,
     Route,
     Outlet,
-} from "react-router-dom";what
+} from "react-router-dom";
 
 // ================= USER PAGES =================
 

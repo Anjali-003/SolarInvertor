@@ -28,7 +28,8 @@ const LONG_PRESS_MS = 500;
 //                            device was added
 // =====================================================
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+// VPSCHANGE
 
 export default function MyDevices() {
     const navigate = useNavigate();
@@ -67,7 +68,12 @@ export default function MyDevices() {
             }
 
             try {
-                const res = await fetch(`${API_BASE}/api/user/devices`, {
+                const res = await fetch(
+                    
+                    // `${API_BASE}/api/user/devices`
+                    // VPSCHANGE
+                    `/api/user/devices`
+                    , {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

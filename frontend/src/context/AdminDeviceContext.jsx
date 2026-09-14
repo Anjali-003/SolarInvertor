@@ -60,10 +60,27 @@ export function AdminDeviceProvider({ children }) {
         yearly: [],
     };
 
+    const EMPTY_CUF = {
+        today: null,
+        monthly: null,
+        yearly: null,
+    };
+
     const [energy, setEnergy] = useState(EMPTY_ENERGY);
 
     const [energyCharts, setEnergyCharts] =
         useState(EMPTY_CHARTS);
+
+    const [cuf, setCuf] = useState(EMPTY_CUF);
+
+    const [chartData, setChartData] = useState([]);
+
+    const [chartMeta, setChartMeta] = useState({
+        total: null,
+        unit: null,
+        label: null,
+        range: null,
+    });
 
     /*
      * ============================================================
@@ -109,9 +126,22 @@ export function AdminDeviceProvider({ children }) {
             /*
              * ----------------------------------------------------
              * STORE DEVICE DATA
+             *
+             * LKWH / LKWL come from the device as two 16-bit
+             * halves of a 32-bit total generation counter —
+             * combine them the same way the user dashboard does.
              * ----------------------------------------------------
              */
-            setData(json);
+            const lkwh = Number(json.LKWH) || 0;
+            const lkwl = Number(json.LKWL) || 0;
+
+            const combinedLKWH =
+                (((lkwh & 0xFFFF) << 16) | (lkwl & 0xFFFF)) >>> 0;
+
+            setData({
+                ...json,
+                LKWH: combinedLKWH,
+            });
 
             const createdAt = json.created_at;
 
@@ -219,6 +249,12 @@ export function AdminDeviceProvider({ children }) {
                 }
             );
 
+            setCuf(
+                json.cuf || {
+                    ...EMPTY_CUF
+                }
+            );
+
         } catch (err) {
 
             console.error(
@@ -233,9 +269,101 @@ export function AdminDeviceProvider({ children }) {
             setEnergyCharts({
                 ...EMPTY_CHARTS
             });
+
+            setCuf({
+                ...EMPTY_CUF
+            });
         }
 
     }, [selectedDevice]);
+
+
+    /*
+     * ============================================================
+     * FETCH ENERGY CHART (today / week / month / year, with
+     * offset navigation) — mirrors fetchEnergyChart in the
+     * user-facing Context.jsx.
+     * ============================================================
+     */
+    const fetchEnergyChart = useCallback(
+        async (period, offset = 0) => {
+
+            if (!selectedDevice?.id) {
+                setChartData([]);
+
+                setChartMeta({
+                    total: null,
+                    unit: null,
+                    label: null,
+                    range: null,
+                });
+
+                return null;
+            }
+
+            const token = localStorage.getItem("adminToken");
+
+            if (!token) {
+                setChartData([]);
+                return null;
+            }
+
+            try {
+                const params = new URLSearchParams({
+                    period: String(period),
+                    offset: String(offset),
+                });
+
+                const res = await fetch(
+                    `http://localhost:3000/api/admin/devices/${selectedDevice.id}/energy/chart?${params.toString()}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const result = await res.json();
+
+                if (!res.ok) {
+                    console.error(
+                        "Admin chart API error:",
+                        result
+                    );
+
+                    setChartData([]);
+
+                    return null;
+                }
+
+                const nextChart = Array.isArray(result.chart)
+                    ? result.chart
+                    : [];
+
+                setChartData(nextChart);
+
+                setChartMeta({
+                    total: result.total ?? null,
+                    unit: result.unit ?? null,
+                    label: result.label ?? null,
+                    range: result.range ?? null,
+                });
+
+                return result;
+
+            } catch (err) {
+                console.error(
+                    "Admin chart fetch failed:",
+                    err
+                );
+
+                setChartData([]);
+
+                return null;
+            }
+        },
+        [selectedDevice]
+    );
 
 
     const refreshAll = useCallback(async () => {
@@ -264,6 +392,16 @@ export function AdminDeviceProvider({ children }) {
             });
             setEnergyCharts({
                 ...EMPTY_CHARTS
+            });
+            setCuf({
+                ...EMPTY_CUF
+            });
+            setChartData([]);
+            setChartMeta({
+                total: null,
+                unit: null,
+                label: null,
+                range: null,
             });
             setError(null);
             setLoading(false);
@@ -329,6 +467,19 @@ export function AdminDeviceProvider({ children }) {
             ...EMPTY_CHARTS
         });
 
+        setCuf({
+            ...EMPTY_CUF
+        });
+
+        setChartData([]);
+
+        setChartMeta({
+            total: null,
+            unit: null,
+            label: null,
+            range: null,
+        });
+
         setError(null);
     }, []);
 
@@ -349,8 +500,15 @@ export function AdminDeviceProvider({ children }) {
         energy,
         setEnergy,
 
+        cuf,
+        setCuf,
+
         energyCharts,
         setEnergyCharts,
+
+        chartData,
+        chartMeta,
+        fetchEnergyChart,
 
         lastUpdated,
         setLastUpdated,
@@ -359,6 +517,9 @@ export function AdminDeviceProvider({ children }) {
         error,
 
         refresh: fetchLatest,
+
+        refreshLatest:
+            fetchLatest,
 
         refreshEnergy:
             fetchEnergy,

@@ -511,7 +511,7 @@ import PowerFlowCard from "../components/PowerFlowCard";
 import GenerationSummary from "../components/GenerationSummary";
 import CUFSummary from "../components/CUFSummary";
 import GenerationChartCard from "../components/GenerationChartCard";
-
+import GenerationEcoCard from "../components/GenerationEcoCard";
 import PageBackground from "../components/PageBackground";
 import { sanitizeReading, isValidReading } from "../utils/sanitizeReading";
 
@@ -721,9 +721,8 @@ export default function Home() {
 
         return (
             voltage *
-            current /
-            1000
-        ).toFixed(3);
+            current
+        ).toFixed(2);
     };
 
 
@@ -751,9 +750,8 @@ export default function Home() {
 
 
         return (
-            power /
-            1000
-        ).toFixed(3);
+            power
+        )
     };
 
 
@@ -868,6 +866,14 @@ export default function Home() {
 
                         st3={
                             data?.ST3
+                        }
+
+                        stInterval={
+                            data?.STINTERVAL
+                        }
+
+                        lastUpdated={
+                            lastUpdated
                         }
 
                     />
@@ -1002,6 +1008,11 @@ export default function Home() {
                     ================================================= */}
 
                     
+<GenerationEcoCard
+    totalGenerationKWh={
+        totalGeneration
+    }
+/>
 
 
                 </div>
