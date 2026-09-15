@@ -29,7 +29,9 @@ export default function AdminDevices() {
             }
 
             const res = await fetch(
-                "http://localhost:3000/api/admin/devices",
+                // "http://localhost:3000/api/admin/devices",
+                //VPSCHANGE
+                "/api/admin/devices",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

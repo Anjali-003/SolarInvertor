@@ -7,7 +7,8 @@ import DeviceInfo from "../components/DeviceInfo";
 import PageBackground from "../components/PageBackground";
 import P from "../theme/colors";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
+// VPSCHANGE
 // const API_BASE = "http://213.210.21.49:3001";
 
 //VPSCHANGE
@@ -120,8 +121,8 @@ export default function AdminDeviceDetails() {
 
         const res = await fetch(
             //VPSCHANGE
-            `${API_BASE}/api/admin/devices/${id}/details`,
-                        // `/api/vendor/devices/${id}/details`,
+            // `${API_BASE}/api/admin/devices/${id}/details`,
+                        `/api/vendor/devices/${id}/details`,
 
             {
                 method: "GET",
