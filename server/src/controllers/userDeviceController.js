@@ -9,7 +9,7 @@ const { decrypt } = require("../utils/encryption");
 // "user_devices" ownership table — "my devices" now
 // lives entirely on the phone (frontend localStorage,
 // see frontend/src/utils/deviceMeta.js). This endpoint
-// is just a read of whatever the vendor/admin already
+// is just a read of whatever the admin already
 // registered in `devices`, keyed by imei.
 //
 // NOTE (security): since there's no account check
@@ -20,25 +20,23 @@ const { decrypt } = require("../utils/encryption");
 // =====================================================
 
 exports.lookupDeviceByImei = async (req, res) => {
+  try {
+    const imei = String(req.params.imei || req.query.imei || "").trim();
 
-    try {
+    const imeiRegex = /^\d{15}$/;
 
-        const imei = String(req.params.imei || req.query.imei || "").trim();
+    if (!imeiRegex.test(imei)) {
+      return res.status(400).json({
+        error: "Invalid IMEI",
+      });
+    }
 
-        const imeiRegex = /^\d{15}$/;
+    // =====================================================
+    // FETCH DEVICE
+    // =====================================================
 
-        if (!imeiRegex.test(imei)) {
-            return res.status(400).json({
-                error: "Invalid IMEI"
-            });
-        }
-
-        // =====================================================
-        // FETCH DEVICE
-        // =====================================================
-
-        const [devices] = await pool.execute(
-            `
+    const [devices] = await pool.execute(
+      `
             SELECT
                 id,
                 imei,
@@ -50,41 +48,41 @@ exports.lookupDeviceByImei = async (req, res) => {
 
             WHERE imei = ?
             `,
-            [imei]
-        );
+      [imei],
+    );
 
-        if (devices.length === 0) {
-            return res.status(404).json({
-                error: "Device not found"
-            });
-        }
+    if (devices.length === 0) {
+      return res.status(404).json({
+        error: "Device not found",
+      });
+    }
 
-        const device = devices[0];
+    const device = devices[0];
 
-        // =====================================================
-        // LATEST TOTAL GENERATION (energy_history)
-        // =====================================================
+    // =====================================================
+    // LATEST TOTAL GENERATION (energy_history)
+    // =====================================================
 
-        const [energyRows] = await pool.execute(
-            `
+    const [energyRows] = await pool.execute(
+      `
             SELECT lkwh
             FROM energy_history
             WHERE imei = ?
             ORDER BY recorded_at DESC, id DESC
             LIMIT 1
             `,
-            [imei]
-        );
+      [imei],
+    );
 
-        const totalGenerationKwh =
-            energyRows.length > 0 ? energyRows[0].lkwh : null;
+    const totalGenerationKwh =
+      energyRows.length > 0 ? energyRows[0].lkwh : null;
 
-        // =====================================================
-        // LATEST LIVE MESSAGE
-        // =====================================================
+    // =====================================================
+    // LATEST LIVE MESSAGE
+    // =====================================================
 
-        const [rows] = await pool.execute(
-            `
+    const [rows] = await pool.execute(
+      `
             SELECT
                 payload,
                 iv,
@@ -95,54 +93,49 @@ exports.lookupDeviceByImei = async (req, res) => {
             ORDER BY created_at DESC
             LIMIT 1
             `,
-            [imei]
+      [imei],
+    );
+
+    let payload = null;
+    let lastUpdated = null;
+
+    if (rows.length > 0) {
+      lastUpdated = rows[0].created_at;
+
+      if (rows[0].iv && rows[0].auth_tag) {
+        const decrypted = decrypt(
+          rows[0].payload,
+          rows[0].iv,
+          rows[0].auth_tag,
         );
-
-        let payload = null;
-        let lastUpdated = null;
-
-        if (rows.length > 0) {
-
-            lastUpdated = rows[0].created_at;
-
-            if (rows[0].iv && rows[0].auth_tag) {
-                const decrypted = decrypt(
-                    rows[0].payload,
-                    rows[0].iv,
-                    rows[0].auth_tag
-                );
-                payload = JSON.parse(decrypted);
-            } else {
-                payload = JSON.parse(rows[0].payload);
-            }
-        }
-
-        res.set("Cache-Control", "no-store");
-
-        return res.json({
-
-            device: {
-                id: device.id,
-                imei: device.imei,
-                device_version: device.device_version,
-                solution: device.solution,
-                rated_capacity_kw: device.rated_capacity_kw,
-                total_generation_kwh: totalGenerationKwh
-            },
-
-            latest: {
-                payload,
-                created_at: lastUpdated
-            }
-
-        });
-
-    } catch (err) {
-
-        console.error("LOOKUP DEVICE ERROR:", err);
-
-        return res.status(500).json({
-            error: "Failed to fetch device details"
-        });
+        payload = JSON.parse(decrypted);
+      } else {
+        payload = JSON.parse(rows[0].payload);
+      }
     }
+
+    res.set("Cache-Control", "no-store");
+
+    return res.json({
+      device: {
+        id: device.id,
+        imei: device.imei,
+        device_version: device.device_version,
+        solution: device.solution,
+        rated_capacity_kw: device.rated_capacity_kw,
+        total_generation_kwh: totalGenerationKwh,
+      },
+
+      latest: {
+        payload,
+        created_at: lastUpdated,
+      },
+    });
+  } catch (err) {
+    console.error("LOOKUP DEVICE ERROR:", err);
+
+    return res.status(500).json({
+      error: "Failed to fetch device details",
+    });
+  }
 };

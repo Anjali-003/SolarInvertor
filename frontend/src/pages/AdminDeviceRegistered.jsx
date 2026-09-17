@@ -1,9 +1,7 @@
 // =====================================================
 // ADMIN DEVICE REGISTERED (SUCCESS SCREEN)
 //
-// Copy of DeviceRegistered.jsx (vendor side), kept
-// separate so this can live under admin-protected routes
-// without touching the vendor page or its route guard.
+// Confirmation screen for an admin-registered device.
 // =====================================================
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -295,17 +293,14 @@ export default function AdminDeviceRegistered() {
 
           left: 30,
 
-          bottom:
-            "calc(36px + env(safe-area-inset-bottom))",
+          bottom: "calc(36px + env(safe-area-inset-bottom))",
 
           zIndex: 1000,
         }}
       >
         <button
           type="button"
-          onClick={() =>
-            navigate("/admin/devices")
-          }
+          onClick={() => navigate("/admin/devices")}
           aria-label="Back to dashboard"
           style={{
             width: 44,
@@ -313,11 +308,9 @@ export default function AdminDeviceRegistered() {
 
             borderRadius: "50%",
 
-            border:
-              `1px solid ${P.border}`,
+            border: `1px solid ${P.border}`,
 
-            background:
-              P.surface,
+            background: P.surface,
 
             display: "flex",
             alignItems: "center",
@@ -327,22 +320,18 @@ export default function AdminDeviceRegistered() {
 
             cursor: "pointer",
 
-            color:
-              P.textSecond,
+            color: P.textSecond,
 
             fontSize: 22,
             fontWeight: 500,
 
             lineHeight: 1,
 
-            fontFamily:
-              "'Inter', sans-serif",
+            fontFamily: "'Inter', sans-serif",
 
-            boxShadow:
-              "0 4px 14px rgba(0, 0, 0, 0.16)",
+            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.16)",
 
-            WebkitTapHighlightColor:
-              "transparent",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           ←

@@ -1,15 +1,7 @@
 // =====================================================
 // ADMIN REGISTER DEVICE
 //
-// This is a copy of RegisterDevice.jsx (vendor side),
-// adapted for the admin role. The vendor version is left
-// completely untouched — this is a separate page.
-//
-// NOTE: this used to include a "Vendor" dropdown so the
-// admin could pick which vendor a device belonged to.
-// That's been removed — vendors are being phased out, so
-// admin device registration no longer depends on picking
-// one. vendorId is simply not sent anymore.
+// Admin registers devices directly without an account owner.
 // =====================================================
 
 import { useState } from "react";
@@ -33,9 +25,7 @@ export default function AdminRegisterDevice() {
 
     // Validate IMEI
     if (!/^\d{15,16}$/.test(imei)) {
-      setError(
-        "IMEI must be 15 or 16 digits with no letters or symbols"
-      );
+      setError("IMEI must be 15 digits with no letters or symbols");
       return;
     }
 
@@ -60,7 +50,7 @@ export default function AdminRegisterDevice() {
             solution,
             deviceVersion,
           }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -70,11 +60,7 @@ export default function AdminRegisterDevice() {
       if (!res.ok) {
         console.error("Backend error:", data);
 
-        setError(
-          data.details ||
-            data.error ||
-            "Device registration failed"
-        );
+        setError(data.details || data.error || "Device registration failed");
 
         return;
       }
@@ -322,9 +308,7 @@ export default function AdminRegisterDevice() {
               type="text"
               placeholder="Device Version"
               value={deviceVersion}
-              onChange={(e) =>
-                setDeviceVersion(e.target.value)
-              }
+              onChange={(e) => setDeviceVersion(e.target.value)}
               style={{
                 width: "100%",
 

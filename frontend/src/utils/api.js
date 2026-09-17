@@ -5,13 +5,11 @@
 
 // const ROLE_STORAGE_KEYS = {
 //     user: "token",
-//     vendor: "vendorToken",
 //     admin: "adminToken",
 // };
 
 // const ROLE_REDIRECTS = {
 //     user: "/login",
-//     vendor: "/vendor-login",
 //     admin: "/admin-login",
 // };
 
@@ -72,7 +70,6 @@
 // }
 
 // export const userApi = buildApiClient("user");
-// export const vendorApi = buildApiClient("vendor");
 // export const adminApi = buildApiClient("admin");
 
 // const api = adminApi;
@@ -126,45 +123,29 @@
 // export const userApiFetch = (url, options = {}) =>
 //     apiFetch(url, options, "user");
 
-// export const vendorApiFetch = (url, options = {}) =>
-//     apiFetch(url, options, "vendor");
-
 // export const adminApiFetch = (url, options = {}) =>
 //     apiFetch(url, options, "admin");
-
-
 
 import axios from "axios";
 
 const api = axios.create({
-
-    // baseURL: "http://localhost:3000/api"
-    //VPSCHANGE
-        baseURL: "/api"
-
-
+  // baseURL: "http://localhost:3000/api"
+  //VPSCHANGE
+  baseURL: "/api",
 });
 
 api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("adminToken");
 
-    (config) => {
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
-        const token =
-            localStorage.getItem("adminToken");
+    return config;
+  },
 
-        if (token) {
-
-            config.headers.Authorization =
-                `Bearer ${token}`;
-
-        }
-
-        return config;
-
-    },
-
-    (error) => Promise.reject(error)
-
+  (error) => Promise.reject(error),
 );
 
 export default api;
