@@ -46,9 +46,9 @@ export default function AdminRegisterDevice() {
       const token = localStorage.getItem("adminToken");
 
       const res = await fetch(
-        // "http://localhost:3000/api/admin/devices/register",
+        "http://localhost:3000/api/admin/devices/register",
         //VPSCHANGE
-        "/api/admin/devices/register",
+        // "/api/admin/devices/register",
         {
           method: "POST",
 

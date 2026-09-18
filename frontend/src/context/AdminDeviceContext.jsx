@@ -106,9 +106,9 @@ export function AdminDeviceProvider({ children }) {
             setError(null);
 
             const res = await fetch(
-                // `http://localhost:3000/api/admin/devices/${selectedDevice.id}/latest`,
+                `http://localhost:3000/api/admin/devices/${selectedDevice.id}/latest`,
                 // VPSCHANGE
-                                `/api/admin/devices/${selectedDevice.id}/latest`,
+                                // `/api/admin/devices/${selectedDevice.id}/latest`,
 
                 {
                     headers: {
@@ -218,9 +218,9 @@ export function AdminDeviceProvider({ children }) {
         try {
 
             const res = await fetch(
-                // `http://localhost:3000/api/admin/devices/${selectedDevice.id}/energy/summary`,
+                `http://localhost:3000/api/admin/devices/${selectedDevice.id}/energy/summary`,
                 // VPSCHANGE
-                                `/api/admin/devices/${selectedDevice.id}/energy/summary`,
+                                // `/api/admin/devices/${selectedDevice.id}/energy/summary`,
 
                 {
                     method: "GET",
@@ -321,9 +321,9 @@ export function AdminDeviceProvider({ children }) {
                 });
 
                 const res = await fetch(
-                    // `http://localhost:3000/api/admin/devices/${selectedDevice.id}/energy/chart?${params.toString()}`,
+                    `http://localhost:3000/api/admin/devices/${selectedDevice.id}/energy/chart?${params.toString()}`,
                     // VPSCHANGE
-                                        `/api/admin/devices/${selectedDevice.id}/energy/chart?${params.toString()}`,
+                                        // `/api/admin/devices/${selectedDevice.id}/energy/chart?${params.toString()}`,
 
                     {
                         headers: {

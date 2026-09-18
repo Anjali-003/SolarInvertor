@@ -29,7 +29,7 @@ const LONG_PRESS_MS = 500;
 //                            device was added
 // =====================================================
 
-// const API_BASE = "http://localhost:3000";
+const API_BASE = "http://localhost:3000";
 // VPSCHANGE
 
 export default function MyDevices() {
