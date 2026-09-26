@@ -404,9 +404,16 @@ export default function DeviceInfo({
   // SELECTED DEVICE
   // =====================================================
 
-  const selectedDevice = devices?.find(
-    (device) => Number(device.id) === Number(selectedDeviceId),
-  );
+  // const selectedDevice = devices?.find(
+  //   (device) => Number(device.id) === Number(selectedDeviceId),
+  // );
+
+  const selectedDevice =
+    devices?.find(
+        (device) =>
+            String(device.id) ===
+            String(selectedDeviceId)
+    );
 
   // =====================================================
   // SERIAL / IMEI
@@ -432,7 +439,43 @@ export default function DeviceInfo({
   // RATING
   // =====================================================
 
-  const ratingKW = formatRatingKW(data?.RAT);
+  // const ratingKW = formatRatingKW(data?.RAT);
+
+  const ratingKW = (() => {
+
+    const capacity =
+        Number(
+            selectedDevice?.rated_capacity_kw
+        );
+
+
+    if (
+        Number.isFinite(capacity) &&
+        capacity > 0
+    ) {
+        return String(
+            parseFloat(
+                capacity.toFixed(2)
+            )
+        );
+    }
+
+
+    // ---------------------------------------------
+    // VD5 fallback
+    // ---------------------------------------------
+
+    if (
+        Number(data?.VD) === 5
+    ) {
+        return formatRatingKW(
+            data?.RAT
+        );
+    }
+
+
+    return "--";
+})();
 
   // =====================================================
   // SIGNAL
@@ -628,7 +671,8 @@ export default function DeviceInfo({
               whiteSpace: "nowrap",
             }}
           >
-            Rating: {ratingKW}KW
+            {/* Rating: {ratingKW}KW */}
+            Rating: {ratingKW} kW
           </div>
 
           {/* UPDATED + SIGNAL */}

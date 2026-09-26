@@ -34,11 +34,11 @@ router.post(
 );
 
 
-router.get(
-    "/devices/:id",
-    adminAuth,
-    deviceController.getDeviceDetails
-);
+// router.get(
+//     "/devices/:id",
+//     adminAuth,
+//     deviceController.getDeviceDetails
+// );
 
 
 router.get(

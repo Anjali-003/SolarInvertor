@@ -39,6 +39,30 @@ const EMPTY_CUF = {
   yearly: null,
 };
 
+// =====================================================
+// COMBINE TWO 16-BIT REGISTERS
+// =====================================================
+
+function combineUint16(high, low) {
+  const highValue = Number(high);
+  const lowValue = Number(low);
+
+  if (
+    !Number.isFinite(highValue) ||
+    !Number.isFinite(lowValue) ||
+    highValue < 0 ||
+    lowValue < 0
+  ) {
+    return null;
+  }
+
+  return (
+    (((highValue & 0xffff) << 16) |
+      (lowValue & 0xffff)) >>>
+    0
+  );
+}
+
 export function InverterProvider({ children }) {
   // =====================================================
   // CURRENT DEVICE DATA
@@ -250,17 +274,95 @@ export function InverterProvider({ children }) {
         return;
       }
 
+      // const payload = result.payload || {};
+
+      // const lkwh = Number(payload.LKWH) || 0;
+      // const lkwl = Number(payload.LKWL) || 0;
+
+      // const combinedLKWH = (((lkwh & 0xffff) << 16) | (lkwl & 0xffff)) >>> 0;
+
+      // setData({
+      //   ...payload,
+      //   LKWH: combinedLKWH,
+      // });
+
       const payload = result.payload || {};
 
-      const lkwh = Number(payload.LKWH) || 0;
-      const lkwl = Number(payload.LKWL) || 0;
+//       console.log("LATEST RESULT:", result);
+// console.log("LATEST PAYLOAD:", result.payload);
+// console.log("PAYLOAD TYPE:", typeof result.payload);
+// console.log("VD:", result.payload?.VD);
+// console.log("LKWH_H:", result.payload?.LKWH_H);
+// console.log("LKWH_L:", result.payload?.LKWH_L);
+// console.log("API DEVICE TYPE:", result.device_type);
 
-      const combinedLKWH = (((lkwh & 0xffff) << 16) | (lkwl & 0xffff)) >>> 0;
+const deviceType = Number(
+  result.device_type ??
+  payload.VD
+);
 
-      setData({
-        ...payload,
-        LKWH: combinedLKWH,
-      });
+let cumulativeEnergy = null;
+
+
+// =====================================================
+// VD = 5
+// =====================================================
+
+if (deviceType === 5) {
+  const lkwhHigh = Number(payload.LKWH);
+  const lkwhLow = Number(payload.LKWL);
+
+  // if (
+  //   lkwhHigh !== -1 &&
+  //   lkwhLow !== -1
+  // ) {
+  //   cumulativeEnergy =
+  //     combineUint16(
+  //       lkwhHigh,
+  //       lkwhLow
+  //     );
+  // }
+
+
+  if (
+  Number.isFinite(lkwhHigh) &&
+  Number.isFinite(lkwhLow) &&
+  lkwhHigh !== -1 &&
+  lkwhLow !== -1
+) {
+  cumulativeEnergy =
+    combineUint16(
+      lkwhHigh,
+      lkwhLow
+    );
+}
+}
+
+
+// =====================================================
+// VD = 7
+// =====================================================
+
+else if (deviceType === 7) {
+  cumulativeEnergy =
+    combineUint16(
+      payload.LKWH_H,
+      payload.LKWH_L
+    );
+}
+
+
+// =====================================================
+// STORE DATA
+// =====================================================
+
+setData({
+  ...payload,
+
+  // Common frontend fields
+  deviceType,
+  cumulativeEnergy,
+});
 
       // setData(
       //     result.payload || {}
@@ -503,6 +605,14 @@ export function InverterProvider({ children }) {
   // CONTEXT
   // =====================================================
 
+
+  const selectedDevice =
+  devices.find(
+    (device) =>
+      String(device.imei) ===
+      String(selectedDeviceId)
+  ) || null;
+
   return (
     <InverterContext.Provider
       value={{
@@ -529,6 +639,8 @@ export function InverterProvider({ children }) {
         setDevices,
 
         selectedDeviceId,
+          selectedDevice,
+
 
         // IMPORTANT:
         // Components should use selectDevice,

@@ -290,33 +290,148 @@ function SolarIcon({ size = 46, color }) {
 // } = parseGridStatus(st3);
 
 export default function PowerFlowCard({
-    dcPower = "--",
     solarPower = "--",
     st3 = null,
     stInterval = null,
-    lastUpdated = null
+    lastUpdated = null,
+        deviceType = null,
+    ist = null,
+    powerFlowValue = "--"
 }) {
 
-    const {
-        inverterConnected,
-        gridConnected,
-        label
-    } =
+    // const {
+    //     inverterConnected,
+    //     gridConnected,
+    //     label
+    // } =
+    //     parseGridStatus(
+    //         st3
+    //     );
+
+
+    // const {
+    //     inverterOn,
+    //     statusText,
+    //     statusColor
+    // } =
+    //     getInverterStatus({
+    //         st3,
+    //         stInterval,
+    //         lastUpdated
+    //     });
+
+
+    // =====================================================
+// DEVICE TYPE
+// =====================================================
+
+const vd =
+    Number(deviceType);
+
+
+// =====================================================
+// GRID STATUS
+//
+// VD5:
+// Existing ST3 logic.
+//
+// VD7:
+// Grid status is not available.
+// =====================================================
+
+let inverterConnected = false;
+let gridConnected = false;
+let label = "--";
+
+
+if (vd === 5) {
+
+    const gridStatus =
         parseGridStatus(
             st3
         );
 
+    inverterConnected =
+        gridStatus.inverterConnected;
 
-    const {
-        inverterOn,
-        statusText,
-        statusColor
-    } =
+    gridConnected =
+        gridStatus.gridConnected;
+
+    label =
+        gridStatus.label;
+}
+
+
+// =====================================================
+// INVERTER STATUS
+// =====================================================
+
+let inverterOn = false;
+
+let statusText =
+    "INVERTER OFF";
+
+let statusColor =
+    P.red;
+
+
+// -----------------------------------------------------
+// VD = 5
+//
+// Keep existing logic:
+// ST3 + STINTERVAL + lastUpdated
+// -----------------------------------------------------
+
+if (vd === 5) {
+
+    const inverterStatus =
         getInverterStatus({
             st3,
             stInterval,
             lastUpdated
         });
+
+
+    inverterOn =
+        inverterStatus.inverterOn;
+
+    statusText =
+        inverterStatus.statusText;
+
+    statusColor =
+        inverterStatus.statusColor;
+}
+
+
+// -----------------------------------------------------
+// VD = 7
+//
+// IST:
+// 0 = inverter OFF
+// 1 = inverter ON
+// -----------------------------------------------------
+
+else if (vd === 7) {
+
+    const istValue =
+        Number(ist);
+
+
+    inverterOn =
+        istValue === 1;
+
+
+    statusText =
+        inverterOn
+            ? "INVERTER ON"
+            : "INVERTER OFF";
+
+
+    statusColor =
+        inverterOn
+            ? P.green
+            : P.red;
+}
 
   return (
     <div
@@ -345,7 +460,9 @@ export default function PowerFlowCard({
             {/* <TowerIcon size={44} color={P.textAmberBright} /> */}
             <TowerIcon size={44} color="#ffffff" />
             <div style={{ marginTop: 4, fontSize: 16, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
-              {dcPower}
+              {/* {dcPower} */}
+              {/* {gridPower} */}
+              {powerFlowValue}
             </div>
             <div style={{ marginTop: 3, fontSize: 11, color: "#ffffff", fontWeight: 500 }}>VA</div>
           </div>
@@ -441,9 +558,10 @@ export default function PowerFlowCard({
             marginTop: 2,
             fontSize: 13,
             fontWeight: 800,
-            color: inverterOn
-                ? P.green
-                : P.red,
+            // color: inverterOn
+            //     ? P.green
+            //     : P.red,
+            color: statusColor,
             letterSpacing: 0.4,
             whiteSpace: "nowrap",
         }}

@@ -780,6 +780,14 @@
 //     );
 // }
 
+
+
+
+
+
+
+
+
 import DeviceInfo from "../components/DeviceInfo";
 import DownloadReportCard from "../components/DownloadReportCard";
 import Footer from "../components/Footer";
@@ -808,6 +816,8 @@ export default function DeviceDetails() {
     devices,
     selectedDeviceId,
     data,
+      selectedDevice,
+
     lastUpdated: rawLastUpdated,
   } = useInverter();
 
@@ -829,8 +839,18 @@ export default function DeviceDetails() {
   // DATA
   // =====================================================
 
-  const device =
-    devices?.find((d) => Number(d.id) === Number(selectedDeviceId)) || {};
+  // const device =
+  //   devices?.find((d) => Number(d.id) === Number(selectedDeviceId)) || {};
+
+  // const device =
+  // devices?.find(
+  //   (d) =>
+  //     String(d.imei) ===
+  //     String(selectedDeviceId)
+  // ) || {};
+
+const device =
+  selectedDevice || {};
 
   const location =
     typeof device.location === "string" && device.location.includes(" - ")
@@ -840,27 +860,140 @@ export default function DeviceDetails() {
   const payload = data || {};
 
   // =====================================================
+  // DEVICE TYPE
+  // =====================================================
+
+  const deviceType =
+    Number(
+      payload?.deviceType ??
+      payload?.VD ??
+      device?.device_type
+    );
+
+
+  //   const deviceTypeText =
+  // deviceType === 7
+  //   ? "3 Phase GTI"
+  //   : deviceType === 5
+  //     ? "Grid-Tie Inverter"
+  //     : "--";
+
+  // =====================================================
   // DEVICE STATUS
   // =====================================================
 
-  const status3 = Number(payload.ST3 ?? 0);
+  // const status3 = Number(payload.ST3 ?? 0);
 
-  const stInterval = Number(payload.STINTERVAL ?? 0);
+  // const stInterval = Number(payload.STINTERVAL ?? 0);
 
-  const lastUpdated = rawLastUpdated ? new Date(rawLastUpdated) : null;
+  // const lastUpdated = rawLastUpdated ? new Date(rawLastUpdated) : null;
 
-  const dataTooOld =
-    !lastUpdated || Date.now() - lastUpdated.getTime() >= 3 * 60 * 1000;
+  // const dataTooOld =
+  //   !lastUpdated || Date.now() - lastUpdated.getTime() >= 3 * 60 * 1000;
 
-  const intervalTooLarge = stInterval / 4 >= 1;
+  // const intervalTooLarge = stInterval / 4 >= 1;
 
-  const statusFromST3 = Boolean(status3 & (1 << 2));
+  // const statusFromST3 = Boolean(status3 & (1 << 2));
 
-  const inverterOn = statusFromST3 && !dataTooOld && !intervalTooLarge;
+  // const inverterOn = statusFromST3 && !dataTooOld && !intervalTooLarge;
 
-  const statusText = inverterOn ? "ON" : "OFF";
+  // const statusText = inverterOn ? "ON" : "OFF";
 
-  const statusColor = inverterOn ? P.green : P.red;
+  // const statusColor = inverterOn ? P.green : P.red;
+
+
+
+  // =====================================================
+  // DEVICE STATUS
+  //
+  // VD5:
+  // ST3 bit 2 + STINTERVAL + last update age
+  //
+  // VD7:
+  // IST
+  // 0 = OFF
+  // 1 = ON
+  // =====================================================
+
+  const lastUpdated =
+    rawLastUpdated
+      ? new Date(rawLastUpdated)
+      : null;
+
+
+  let inverterOn = false;
+
+
+  // -----------------------------------------------------
+  // VD = 7
+  // -----------------------------------------------------
+
+  if (deviceType === 7) {
+
+    const ist =
+      Number(
+        payload?.IST
+      );
+
+    inverterOn =
+      ist === 1;
+  }
+
+
+  // -----------------------------------------------------
+  // VD = 5
+  // -----------------------------------------------------
+
+  else if (deviceType === 5) {
+
+    const status3 =
+      Number(
+        payload?.ST3 ?? 0
+      );
+
+    const stInterval =
+      Number(
+        payload?.STINTERVAL ?? 0
+      );
+
+
+    const dataTooOld =
+      !lastUpdated ||
+      (
+        Date.now() -
+        lastUpdated.getTime()
+      ) >=
+      3 * 60 * 1000;
+
+
+    const intervalTooLarge =
+      stInterval / 4 >= 1;
+
+
+    const statusFromST3 =
+      Boolean(
+        status3 &
+        (1 << 2)
+      );
+
+
+    inverterOn =
+      statusFromST3 &&
+      !dataTooOld &&
+      !intervalTooLarge;
+  }
+
+
+  const statusText =
+    inverterOn
+      ? "ON"
+      : "OFF";
+
+
+  const statusColor =
+    inverterOn
+      ? P.green
+      : P.red;
 
   // =====================================================
   // FORMATTED LAST UPDATED
@@ -868,19 +1001,64 @@ export default function DeviceDetails() {
 
   const formattedDate = lastUpdated
     ? lastUpdated.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
     : "--";
 
   const formattedTime = lastUpdated
     ? lastUpdated.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
     : "--";
+
+
+
+    // =====================================================
+// DEVICE RATING
+// =====================================================
+
+let ratingText =
+  "--";
+
+
+if (deviceType === 5) {
+
+  const rat =
+    Number(
+      payload?.RAT
+    );
+
+  if (
+    Number.isFinite(rat) &&
+    rat > 0
+  ) {
+
+    ratingText =
+      `${rat / 1000} KW`;
+  }
+}
+
+
+else if (deviceType === 7) {
+
+  const ratedCapacityKw =
+    Number(
+      device?.rated_capacity_kw
+    );
+
+  if (
+    Number.isFinite(ratedCapacityKw) &&
+    ratedCapacityKw > 0
+  ) {
+
+    ratingText =
+      `${ratedCapacityKw} KVA`;
+  }
+}
 
   // =====================================================
   // RENDER
@@ -975,10 +1153,26 @@ export default function DeviceDetails() {
 
             <DetailRow label="DEVICE TYPE" value={device.deviceType || "--"} />
 
+            {/* <DetailRow
+  label="DEVICE TYPE"
+  value={
+    deviceTypeText
+  }
+/> */}
+
+
+{/* 
             <DetailRow
               label="RATING"
               value={payload.RAT != null ? `${payload.RAT} VA` : "--"}
-            />
+            /> */}
+
+            <DetailRow
+  label="RATING"
+  value={
+    ratingText
+  }
+/>
 
             <DetailRow label="LOCATION" value={location || "--"} />
 
@@ -1129,7 +1323,7 @@ export default function DeviceDetails() {
           <div style={{ marginTop: 28 }}>
             <DownloadReportCard
               selectedDeviceId={selectedDeviceId}
-              imei={device.imei}
+              // imei={device.imei}
             />
           </div>
         </div>

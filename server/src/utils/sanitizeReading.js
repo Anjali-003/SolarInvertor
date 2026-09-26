@@ -67,7 +67,7 @@ const RANGE_BY_KIND = {
     temperature: [-40, 150], // Celsius
     powerW: [-100000, 100000],   // Watts
     powerKW: [-1000, 1000],      // kW
-    energyKWh: [0, 1000000],     // kWh (lifetime/total)
+    energyKWh: [0, 0xFFFFFFFF],     // kWh (lifetime/total)
 };
 
 /**

@@ -230,7 +230,7 @@ export default function Footer() {
 
     {
       name: "Plant",
-      path: "/",
+      // path: "/",
       label: "Plant",
       path: "/home",
 

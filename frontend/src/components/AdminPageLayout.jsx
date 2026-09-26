@@ -6,4 +6,4 @@ export default function AdminPageLayout({ children }) {
             {children}
         </div>
     );
-}
+} 

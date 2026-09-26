@@ -5280,11 +5280,40 @@ const PRODUCT_TYPES = [
 // =====================================================
 
 const GRID_TIE_MODELS = [
+    "Energiaa X2 - 2KW",
   "Energiaa X3 - 3KW",
   "Energiaa X3T - 3KW",
   "Energiaa X5T - 5KW",
   "Energiaa X5.5T - 5.5KW",
+  "3 Phase - Grid-Tie Inverter",
 ];
+
+
+const THREE_PHASE_MODEL =
+  "3 Phase - Grid-Tie Inverter";
+
+
+const THREE_PHASE_RATINGS = [
+  "5KW 3P",
+  "8KW 3P",
+  "10KW 3P",
+  "12KW 3P",
+  "15KW 3P",
+  "20KW 3P",
+  "25KW 3P",
+  "30KW 3P",
+  "35KW 3P",
+  "40KW 3P",
+  "50KW 3P",
+  "60KW 3P",
+  "70KW 3P",
+  "75KW 3P",
+  "80KW 3P",
+  "90KW 3P",
+  "100KW 3P",
+  "110KW 3P",
+];
+
 
 
 // =====================================================
@@ -5318,6 +5347,9 @@ export default function AddDevice() {
     useState("");
 
   const [model, setModel] =
+    useState("");
+
+  const [rating, setRating] =
     useState("");
 
   const [nickname, setNickname] =
@@ -5417,7 +5449,7 @@ export default function AddDevice() {
           .then(() =>
             inst.clear()
           )
-          .catch(() => {});
+          .catch(() => { });
       }
 
     }, []);
@@ -5617,7 +5649,7 @@ export default function AddDevice() {
           },
 
           // Ignore frame-by-frame scan errors
-          () => {}
+          () => { }
 
         )
         .then(() => {
@@ -5632,7 +5664,7 @@ export default function AddDevice() {
               .then(() =>
                 html5QrCode.clear()
               )
-              .catch(() => {});
+              .catch(() => { });
 
             return;
           }
@@ -5811,6 +5843,7 @@ export default function AddDevice() {
         // Clear selection
         setProductType("");
         setModel("");
+        setRating("");
 
 
         // Close popup and return to
@@ -5846,6 +5879,20 @@ export default function AddDevice() {
   // SELECT MODEL
   // =====================================================
 
+  // const handleSelectModel =
+  //   (selectedModel) => {
+
+  //     setModel(
+  //       selectedModel
+  //     );
+
+  //     setPopup(
+  //       "confirmAdd"
+  //     );
+  //   };
+
+
+
   const handleSelectModel =
     (selectedModel) => {
 
@@ -5853,11 +5900,61 @@ export default function AddDevice() {
         selectedModel
       );
 
+      setRating("");
+
+
+      // =================================================
+      // VD7 / THREE-PHASE
+      //
+      // Three-phase inverter needs one additional step:
+      // user must select its rating.
+      // =================================================
+
+      if (
+        selectedModel ===
+        THREE_PHASE_MODEL
+      ) {
+
+        setPopup(
+          "rating"
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // VD5
+      //
+      // Existing Energiaa models do not need a separate
+      // rating selection.
+      // =================================================
+
       setPopup(
         "confirmAdd"
       );
     };
 
+
+  // =====================================================
+  // SELECT 3-PHASE RATING
+  // =====================================================
+
+  const handleSelectRating =
+    (selectedRating) => {
+
+      setRating(
+        selectedRating
+      );
+
+
+      // Rating selected.
+      // Continue with the normal add-device flow.
+
+      setPopup(
+        "confirmAdd"
+      );
+    };
 
   // =====================================================
   // CONFIRM ADD - NO
@@ -5913,15 +6010,38 @@ export default function AddDevice() {
 
           setProductType("");
           setModel("");
+          setRating("");
 
           return;
         }
 
 
-        openTemporaryDevice(
-          result.device
-        );
+        // openTemporaryDevice(
+        //   result.device
+        // );
 
+
+
+        openTemporaryDevice({
+  ...result.device,
+
+  deviceType:
+    productType,
+
+  model,
+
+  deviceVersion,
+
+  rating:
+    deviceVersion === 7
+      ? rating
+      : null,
+
+  ratedCapacityKw:
+    deviceVersion === 7
+      ? ratedCapacityKw
+      : null,
+});
 
         navigate(
           "/home",
@@ -5947,6 +6067,7 @@ export default function AddDevice() {
 
         setProductType("");
         setModel("");
+        setRating("");
 
       } finally {
 
@@ -5972,20 +6093,35 @@ export default function AddDevice() {
   // DETAILS CANCEL
   // =====================================================
 
+  // const handleDetailsCancel =
+  //   () => {
+
+  //     setPopup(null);
+
+  //     setProductType("");
+  //     setModel("");
+
+  //     setNickname("");
+  //     setAddress("");
+
+  //     setError("");
+  //   };
+
+
   const handleDetailsCancel =
-    () => {
+  () => {
 
-      setPopup(null);
+    setPopup(null);
 
-      setProductType("");
-      setModel("");
+    setProductType("");
+    setModel("");
+    setRating("");
 
-      setNickname("");
-      setAddress("");
+    setNickname("");
+    setAddress("");
 
-      setError("");
-    };
-
+    setError("");
+  };
 
   // =====================================================
   // DETAILS SAVE
@@ -6128,31 +6264,88 @@ export default function AddDevice() {
           return;
         }
 
+        const deviceVersion =
+  model === THREE_PHASE_MODEL
+    ? 7
+    : 5;
+
+    const ratedCapacityKw =
+  deviceVersion === 7
+    ? Number(
+        rating.match(
+          /[\d.]+/
+        )?.[0]
+      )
+    : null;
 
         // =================================================
         // SAVE DEVICE INFORMATION LOCALLY
         // =================================================
 
+        // saveDeviceMeta(
+        //   cleanImei,
+        //   {
+
+        //     nickname:
+        //       nickname.trim(),
+
+        //     deviceType:
+        //       productType,
+
+        //     model,
+
+        //     location:
+        //       address.trim(),
+
+        //     addedAt:
+        //       new Date()
+        //         .toISOString(),
+        //   }
+        // );
+
+
+
         saveDeviceMeta(
-          cleanImei,
-          {
+  cleanImei,
+  {
 
-            nickname:
-              nickname.trim(),
+    nickname:
+      nickname.trim(),
 
-            deviceType:
-              productType,
+    deviceType:
+      productType,
 
-            model,
+    model,
 
-            location:
-              address.trim(),
+    // ---------------------------------------------
+    // 5 = existing inverter
+    // 7 = 3-phase GTI
+    // ---------------------------------------------
 
-            addedAt:
-              new Date()
-                .toISOString(),
-          }
-        );
+    deviceVersion,
+
+    // ---------------------------------------------
+    // Only VD7 has this user-selected rating
+    // ---------------------------------------------
+
+    rating:
+      deviceVersion === 7
+        ? rating
+        : null,
+
+    ratedCapacityKw:
+      deviceVersion === 7
+        ? ratedCapacityKw
+        : null,
+
+    location:
+      address.trim(),
+
+    addedAt:
+      new Date()
+        .toISOString(),
+  }
+);
 
 
         // =================================================
@@ -6450,36 +6643,36 @@ export default function AddDevice() {
             {cameraOn &&
               !cameraReady && (
 
-              <div
-                style={{
-                  position:
-                    "absolute",
+                <div
+                  style={{
+                    position:
+                      "absolute",
 
-                  inset:
-                    0,
+                    inset:
+                      0,
 
-                  display:
-                    "flex",
+                    display:
+                      "flex",
 
-                  alignItems:
-                    "center",
+                    alignItems:
+                      "center",
 
-                  justifyContent:
-                    "center",
+                    justifyContent:
+                      "center",
 
-                  color:
-                    "#cfcfcf",
+                    color:
+                      "#cfcfcf",
 
-                  fontSize:
-                    13,
-                }}
-              >
+                    fontSize:
+                      13,
+                  }}
+                >
 
-                Starting camera…
+                  Starting camera…
 
-              </div>
+                </div>
 
-            )}
+              )}
 
 
             {/* CLOSE CAMERA */}
@@ -6758,36 +6951,36 @@ export default function AddDevice() {
             {error &&
               popup === null && (
 
-              <div
-                style={{
-                  marginTop:
-                    10,
+                <div
+                  style={{
+                    marginTop:
+                      10,
 
-                  padding:
-                    "9px 14px",
+                    padding:
+                      "9px 14px",
 
-                  borderRadius:
-                    8,
+                    borderRadius:
+                      8,
 
-                  background:
-                    "#3a1414",
+                    background:
+                      "#3a1414",
 
-                  border:
-                    "1px solid #5a2020",
+                    border:
+                      "1px solid #5a2020",
 
-                  color:
-                    "#ff9a9a",
+                    color:
+                      "#ff9a9a",
 
-                  fontSize:
-                    12,
-                }}
-              >
+                    fontSize:
+                      12,
+                  }}
+                >
 
-                {error}
+                  {error}
 
-              </div>
+                </div>
 
-            )}
+              )}
 
           </div>
 
@@ -6801,39 +6994,39 @@ export default function AddDevice() {
         {popup ===
           "productType" && (
 
-          <PopupOverlay>
+            <PopupOverlay>
 
-            <PopupCard
-              title="Select Product Type"
-            >
+              <PopupCard
+                title="Select Product Type"
+              >
 
-              {PRODUCT_TYPES.map(
-                (type) => (
+                {PRODUCT_TYPES.map(
+                  (type) => (
 
-                  <PopupListItem
-                    key={
-                      type
-                    }
-
-                    onClick={() =>
-                      handleSelectProductType(
+                    <PopupListItem
+                      key={
                         type
-                      )
-                    }
-                  >
+                      }
 
-                    {type}
+                      onClick={() =>
+                        handleSelectProductType(
+                          type
+                        )
+                      }
+                    >
 
-                  </PopupListItem>
+                      {type}
 
-                )
-              )}
+                    </PopupListItem>
 
-            </PopupCard>
+                  )
+                )}
 
-          </PopupOverlay>
+              </PopupCard>
 
-        )}
+            </PopupOverlay>
+
+          )}
 
 
         {/* =================================================
@@ -6843,40 +7036,152 @@ export default function AddDevice() {
         {popup ===
           "model" && (
 
-          <PopupOverlay>
+            <PopupOverlay>
 
-            <PopupCard
-              title="Select Model"
+              <PopupCard
+                title="Select Model"
+              >
+
+                {GRID_TIE_MODELS.map(
+                  (m) => (
+
+                    <PopupListItem
+                      key={
+                        m
+                      }
+
+                      onClick={() =>
+                        handleSelectModel(
+                          m
+                        )
+                      }
+                    >
+
+                      {m}
+
+                    </PopupListItem>
+
+                  )
+                )}
+
+              </PopupCard>
+
+            </PopupOverlay>
+
+          )}
+
+
+        {/* =================================================
+    SELECT THREE-PHASE RATING
+================================================= */}
+
+        {/* {popup ===
+          "rating" && (
+
+            <PopupOverlay>
+
+              <PopupCard
+                title="Select Rating"
+                scrollable
+              >
+
+                {THREE_PHASE_RATINGS.map(
+                  (item) => (
+
+                    <RatingListItem
+                      key={
+                        item
+                      }
+
+                      onClick={() =>
+                        handleSelectRating(
+                          item
+                        )
+                      }
+                    >
+
+                      {item}
+
+                    </RatingListItem>
+
+                  )
+                )}
+
+
+                <RatingListItem
+                  onClick={() => {
+
+                    setRating("");
+                    setModel("");
+
+                    setPopup(
+                      "model"
+                    );
+                  }}
+                >
+                  Cancel
+                </RatingListItem>
+
+              </PopupCard>
+
+            </PopupOverlay>
+
+          )} */}
+
+
+
+          {popup ===
+  "rating" && (
+
+    <PopupOverlay>
+
+      <PopupCard
+        title="Select Rating"
+        scrollable
+      >
+
+        {THREE_PHASE_RATINGS.map(
+          (item) => (
+
+            <PopupListItem
+              key={item}
+
+              onClick={() =>
+                handleSelectRating(
+                  item
+                )
+              }
             >
 
-              {GRID_TIE_MODELS.map(
-                (m) => (
+              {item}
 
-                  <PopupListItem
-                    key={
-                      m
-                    }
+            </PopupListItem>
 
-                    onClick={() =>
-                      handleSelectModel(
-                        m
-                      )
-                    }
-                  >
-
-                    {m}
-
-                  </PopupListItem>
-
-                )
-              )}
-
-            </PopupCard>
-
-          </PopupOverlay>
-
+          )
         )}
 
+
+        <PopupListItem
+          onClick={() => {
+
+            setRating("");
+            setModel("");
+
+            setPopup(
+              "model"
+            );
+          }}
+        >
+
+          Cancel
+
+        </PopupListItem>
+
+      </PopupCard>
+
+    </PopupOverlay>
+
+  )}
 
         {/* =================================================
             CONFIRM ADD
@@ -6885,59 +7190,59 @@ export default function AddDevice() {
         {popup ===
           "confirmAdd" && (
 
-          <PopupOverlay>
+            <PopupOverlay>
 
-            <PopupCard
-              title="Add Device"
-              subtitle="Do you want to add this device to your list?"
-            >
-
-              <div
-                style={{
-                  display:
-                    "flex",
-
-                  justifyContent:
-                    "flex-end",
-
-                  gap:
-                    22,
-
-                  marginTop:
-                    18,
-                }}
+              <PopupCard
+                title="Add Device"
+                subtitle="Do you want to add this device to your list?"
               >
 
-                <PopupTextButton
-                  onClick={
-                    handleConfirmAddNo
-                  }
+                <div
+                  style={{
+                    display:
+                      "flex",
+
+                    justifyContent:
+                      "flex-end",
+
+                    gap:
+                      22,
+
+                    marginTop:
+                      18,
+                  }}
                 >
 
-                  NO
+                  <PopupTextButton
+                    onClick={
+                      handleConfirmAddNo
+                    }
+                  >
 
-                </PopupTextButton>
+                    NO
+
+                  </PopupTextButton>
 
 
-                <PopupTextButton
-                  onClick={
-                    handleConfirmAddYes
-                  }
+                  <PopupTextButton
+                    onClick={
+                      handleConfirmAddYes
+                    }
 
-                  strong
-                >
+                    strong
+                  >
 
-                  YES
+                    YES
 
-                </PopupTextButton>
+                  </PopupTextButton>
 
-              </div>
+                </div>
 
-            </PopupCard>
+              </PopupCard>
 
-          </PopupOverlay>
+            </PopupOverlay>
 
-        )}
+          )}
 
 
         {/* =================================================
@@ -6947,134 +7252,134 @@ export default function AddDevice() {
         {popup ===
           "details" && (
 
-          <PopupOverlay>
+            <PopupOverlay>
 
-            <PopupCard
-              title="Enter Device Details"
-              subtitle="Nickname and Address"
-            >
+              <PopupCard
+                title="Enter Device Details"
+                subtitle="Nickname and Address"
+              >
 
-              <input
-                type="text"
+                <input
+                  type="text"
 
-                placeholder="e.g. Main Roof Inverter"
+                  placeholder="e.g. Main Roof Inverter"
 
-                value={
-                  nickname
-                }
+                  value={
+                    nickname
+                  }
 
-                onChange={(e) =>
-                  setNickname(
-                    e.target.value
-                  )
-                }
+                  onChange={(e) =>
+                    setNickname(
+                      e.target.value
+                    )
+                  }
 
-                style={
-                  popupInputStyle
-                }
-              />
-
-
-              <input
-                type="text"
-
-                placeholder="e.g. 123 Solar Street"
-
-                value={
-                  address
-                }
-
-                onChange={(e) =>
-                  setAddress(
-                    e.target.value
-                  )
-                }
-
-                style={{
-                  ...popupInputStyle,
-                  marginBottom: 4,
-                }}
-              />
+                  style={
+                    popupInputStyle
+                  }
+                />
 
 
-              {error && (
+                <input
+                  type="text"
+
+                  placeholder="e.g. 123 Solar Street"
+
+                  value={
+                    address
+                  }
+
+                  onChange={(e) =>
+                    setAddress(
+                      e.target.value
+                    )
+                  }
+
+                  style={{
+                    ...popupInputStyle,
+                    marginBottom: 4,
+                  }}
+                />
+
+
+                {error && (
+
+                  <div
+                    style={{
+                      marginTop:
+                        8,
+
+                      fontSize:
+                        12,
+
+                      color:
+                        P.textErrorMsg,
+                    }}
+                  >
+
+                    {error}
+
+                  </div>
+
+                )}
+
 
                 <div
                   style={{
+                    display:
+                      "flex",
+
+                    justifyContent:
+                      "flex-end",
+
+                    gap:
+                      22,
+
                     marginTop:
-                      8,
-
-                    fontSize:
-                      12,
-
-                    color:
-                      P.textErrorMsg,
+                      18,
                   }}
                 >
 
-                  {error}
+                  <PopupTextButton
+                    onClick={
+                      handleDetailsCancel
+                    }
+
+                    disabled={
+                      loading
+                    }
+                  >
+
+                    CANCEL
+
+                  </PopupTextButton>
+
+
+                  <PopupTextButton
+                    onClick={
+                      handleDetailsSave
+                    }
+
+                    strong
+
+                    disabled={
+                      loading
+                    }
+                  >
+
+                    {loading
+                      ? "ADDING..."
+                      : "SAVE"}
+
+                  </PopupTextButton>
 
                 </div>
 
-              )}
+              </PopupCard>
 
+            </PopupOverlay>
 
-              <div
-                style={{
-                  display:
-                    "flex",
-
-                  justifyContent:
-                    "flex-end",
-
-                  gap:
-                    22,
-
-                  marginTop:
-                    18,
-                }}
-              >
-
-                <PopupTextButton
-                  onClick={
-                    handleDetailsCancel
-                  }
-
-                  disabled={
-                    loading
-                  }
-                >
-
-                  CANCEL
-
-                </PopupTextButton>
-
-
-                <PopupTextButton
-                  onClick={
-                    handleDetailsSave
-                  }
-
-                  strong
-
-                  disabled={
-                    loading
-                  }
-                >
-
-                  {loading
-                    ? "ADDING..."
-                    : "SAVE"}
-
-                </PopupTextButton>
-
-              </div>
-
-            </PopupCard>
-
-          </PopupOverlay>
-
-        )}
+          )}
 
 
         {/* =================================================
@@ -7299,13 +7604,46 @@ function PopupOverlay({
 // POPUP CARD
 // =====================================================
 
+// function PopupCard({
+//   title,
+//   subtitle,
+//   children,
+// }) {
+
 function PopupCard({
   title,
   subtitle,
   children,
+  scrollable = false,
 }) {
 
   return (
+
+    // <div
+    //   style={{
+    //     width:
+    //       "100%",
+
+    //     maxWidth:
+    //       360,
+
+    //     background:
+    //       "#FBEFDD",
+
+    //     borderRadius:
+    //       4,
+
+    //     padding:
+    //       "20px 22px",
+
+    //     boxShadow:
+    //       "0 12px 32px rgba(0, 0, 0, 0.35)",
+
+    //     boxSizing:
+    //       "border-box",
+    //   }}
+    // >
+
 
     <div
       style={{
@@ -7315,14 +7653,41 @@ function PopupCard({
         maxWidth:
           360,
 
+        maxHeight:
+          scrollable
+            ? "82vh"
+            : "none",
+
+        overflowY:
+          scrollable
+            ? "auto"
+            : "visible",
+
+        WebkitOverflowScrolling:
+          "touch",
+
+        // background:
+        //   "#F5F5F2",
+
+        // borderRadius:
+        //   scrollable
+        //     ? 34
+        //     : 4,
+
+        // padding:
+        //   scrollable
+        //     ? "10px 16px 16px"
+        //     : "20px 22px",
+
+
         background:
-          "#FBEFDD",
+  "#F5F5F2",
 
-        borderRadius:
-          4,
+borderRadius:
+  4,
 
-        padding:
-          "20px 22px",
+padding:
+  "20px 22px",
 
         boxShadow:
           "0 12px 32px rgba(0, 0, 0, 0.35)",
@@ -7331,7 +7696,7 @@ function PopupCard({
           "border-box",
       }}
     >
-
+{/* 
       <div
         style={{
           fontSize:
@@ -7355,7 +7720,40 @@ function PopupCard({
 
         {title}
 
-      </div>
+      </div> */}
+
+
+      <div
+  style={{
+    fontSize:
+      scrollable
+        ? 20
+        : 17,
+
+    fontWeight:
+      scrollable
+        ? 500
+        : 700,
+
+    color:
+      P.textPrimary,
+
+    fontFamily:
+      "'DM Sans', sans-serif",
+
+    textAlign:
+      scrollable
+        ? "center"
+        : "left",
+
+    marginBottom:
+      subtitle
+        ? 4
+        : 14,
+  }}
+>
+  {title}
+</div>
 
 
       {subtitle && (
@@ -7522,3 +7920,79 @@ function PopupTextButton({
     </button>
   );
 }
+
+
+// // =====================================================
+// // RATING LIST ITEM
+// // =====================================================
+
+// function RatingListItem({
+//   children,
+//   onClick,
+// }) {
+
+//   return (
+
+//     <button
+//       type="button"
+
+//       onClick={
+//         onClick
+//       }
+
+//       style={{
+//         display:
+//           "block",
+
+//         width:
+//           "100%",
+
+//         minHeight:
+//           58,
+
+//         marginBottom:
+//           10,
+
+//         padding:
+//           "10px 16px",
+
+//         border:
+//           "none",
+
+//         borderRadius:
+//           32,
+
+//         background:
+//           "rgba(190, 194, 194, 0.72)",
+
+//         color:
+//           "#111111",
+
+//         fontSize:
+//           19,
+
+//         fontWeight:
+//           500,
+
+//         fontFamily:
+//           "'Inter', sans-serif",
+
+//         textAlign:
+//           "center",
+
+//         cursor:
+//           "pointer",
+
+//         boxSizing:
+//           "border-box",
+
+//         WebkitTapHighlightColor:
+//           "transparent",
+//       }}
+//     >
+
+//       {children}
+
+//     </button>
+//   );
+// }

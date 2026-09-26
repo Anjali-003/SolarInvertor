@@ -405,7 +405,7 @@
 //                         { key: "DCI1",    label: "AC Current",     desc: "I",    unit: "A"    },
 //                         { key: "POW",  label: "Export Power",   desc: "POW",  unit: "kW"   },
 //                         { key: "PF",   label: "Power Factor",   desc: "PF",   unit: ""     },
-                  
+
 //                     ].map((item) => (
 //                         <div key={item.key} style={{ ...metricCard, background: P.surface, border: `1px solid ${P.border}`, boxShadow: P.shadowCard}}>
 //                             <div style={{ fontSize: 12, color: P.textAmberBright, fontWeight: 600, marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>
@@ -421,7 +421,7 @@
 //                                         >
 //                                             <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
 //                                         </svg>
-                                    
+
 // {" "}
 // {item.label}
 //                             </div>
@@ -436,7 +436,7 @@
 //             </div>
 //             {/* </div> */}
 
-            
+
 //             <Footer />
 
 //         </div>
@@ -593,16 +593,16 @@ export default function Home() {
         chartMode === "today"
             ? todayOffset
 
-        : chartMode === "week"
-            ? weekOffset
+            : chartMode === "week"
+                ? weekOffset
 
-        : chartMode === "month"
-            ? monthOffset
+                : chartMode === "month"
+                    ? monthOffset
 
-        : chartMode === "year"
-            ? yearOffset
+                    : chartMode === "year"
+                        ? yearOffset
 
-        : 0;
+                        : 0;
 
 
     // =====================================================
@@ -676,64 +676,307 @@ export default function Home() {
         };
 
 
+    // // =====================================================
+    // // PARAMETER HELPER
+    // // =====================================================
+
+    // const getParameterValue =
+    //     (parameter) => {
+
+    //         return (
+    //             data?.[parameter] ??
+    //             "--"
+    //         );
+    //     };
+
+
+    // // =====================================================
+    // // DC POWER
+    // //
+    // // DCV1 × DCI1 = Watts
+    // // Convert Watts -> kW
+    // // =====================================================
+
+    // const getDCPower = () => {
+
+    //     const voltage =
+    //         Number(
+    //             data?.DCV1
+    //         );
+
+    //     const current =
+    //         Number(
+    //             data?.DCI1
+    //         );
+
+
+    //     if (
+    //         !isValidReading(voltage, "voltage") ||
+    //         !isValidReading(current, "current")
+    //     ) {
+
+    //         return "--";
+    //     }
+
+
+    //     return (
+    //         voltage *
+    //         current
+    //     ).toFixed(2);
+    // };
+
+
+    // // =====================================================
+    // // SOLAR POWER
+    // //
+    // // PPOW = Watts
+    // // Convert to kW
+    // // =====================================================
+
+    // const getSolarPower = () => {
+
+    //     const power =
+    //         Number(
+    //             data?.PPOW
+    //         );
+
+
+    //     if (
+    //         !isValidReading(power, "powerW")
+    //     ) {
+
+    //         return "--";
+    //     }
+
+
+    //     return (
+    //         power
+    //     )
+    // };
+
+
+    // // =====================================================
+    // // TOTAL GENERATION
+    // // =====================================================
+
+    // const totalGeneration =
+    //     sanitizeReading(
+    //         getParameterValue("LKWH"),
+    //         "energyKWh"
+    //     );
+
+
+
+
+
+
+
     // =====================================================
-    // PARAMETER HELPER
+    // DEVICE TYPE
     // =====================================================
 
-    const getParameterValue =
-        (parameter) => {
-
-            return (
-                data?.[parameter] ??
-                "--"
-            );
-        };
+    const deviceType =
+        Number(
+            data?.deviceType ??
+            data?.VD
+        );
 
 
-    // =====================================================
-    // DC POWER
-    //
-    // DCV1 × DCI1 = Watts
-    // Convert Watts -> kW
-    // =====================================================
+    // // =====================================================
+    // // GRID / AC POWER DISPLAY
+    // //
+    // // VD5:
+    // // Keep existing calculation for now.
+    // //
+    // // VD7:
+    // // APOW is apparent power from the inverter protocol.
+    // // =====================================================
 
-    const getDCPower = () => {
+    // const getGridPower = () => {
 
-        const voltage =
-            Number(
-                data?.DCV1
-            );
+    //     // -------------------------------------------------
+    // // VD = 7
+    // // -------------------------------------------------
 
-        const current =
-            Number(
-                data?.DCI1
-            );
+    //     if (deviceType === 7) {
+
+    //         const apparentPower =
+    //             Number(
+    //                 data?.APOW
+    //             );
 
 
-        if (
-            !isValidReading(voltage, "voltage") ||
-            !isValidReading(current, "current")
-        ) {
+    //         if (
+    //             !Number.isFinite(
+    //                 apparentPower
+    //             ) ||
+    //             apparentPower < 0
+    //         ) {
+    //             return "--";
+    //         }
 
-            return "--";
+
+    //         return apparentPower.toFixed(2);
+    //     }
+
+
+    //     // -------------------------------------------------
+    // // VD = 5
+    // // Existing behaviour
+    // // -------------------------------------------------
+
+    //     const voltage =
+    //         Number(
+    //             data?.DCV1
+    //         );
+
+    //     const current =
+    //         Number(
+    //             data?.DCI1
+    //         );
+
+
+    //     if (
+    //         !isValidReading(
+    //             voltage,
+    //             "voltage"
+    //         ) ||
+    //         !isValidReading(
+    //             current,
+    //             "current"
+    //         )
+    //     ) {
+    //         return "--";
+    //     }
+
+
+    //     return (
+    //         voltage *
+    //         current
+    //     ).toFixed(2);
+    // };
+
+
+
+
+    const getPowerFlowValue = () => {
+
+        // =================================================
+        // VD = 7
+        //
+        // EXPW = export power
+        // =================================================
+
+        if (deviceType === 7) {
+
+            const apparentPower =
+                Number(
+                    data?.EXPW
+                );
+
+            if (
+                !Number.isFinite(apparentPower) ||
+                apparentPower < 0
+            ) {
+                return "--";
+            }
+
+            return apparentPower.toFixed(2);
         }
 
 
-        return (
-            voltage *
-            current
-        ).toFixed(2);
+        // =================================================
+        // VD = 5
+        //
+        // Preserve existing behaviour:
+        // DCV1 × DCI1
+        // =================================================
+
+        if (deviceType === 5) {
+
+            const voltage =
+                Number(
+                    data?.DCV1
+                );
+
+            const current =
+                Number(
+                    data?.DCI1
+                );
+
+            if (
+                !isValidReading(
+                    voltage,
+                    "voltage"
+                ) ||
+                !isValidReading(
+                    current,
+                    "current"
+                )
+            ) {
+                return "--";
+            }
+
+            return (
+                voltage *
+                current
+            ).toFixed(2);
+        }
+
+
+        return "--";
     };
 
 
     // =====================================================
     // SOLAR POWER
     //
-    // PPOW = Watts
-    // Convert to kW
+    // VD5:
+    // PPOW
+    //
+    // VD7:
+    // DCP1 + DCP2
     // =====================================================
 
     const getSolarPower = () => {
+
+        // -------------------------------------------------
+        // VD = 7
+        // -------------------------------------------------
+
+        if (deviceType === 7) {
+
+            const dcp1 =
+                Number(
+                    data?.DCP1
+                );
+
+            const dcp2 =
+                Number(
+                    data?.DCP2
+                );
+
+
+            if (
+                !Number.isFinite(dcp1) ||
+                !Number.isFinite(dcp2) ||
+                dcp1 < 0 ||
+                dcp2 < 0
+            ) {
+                return "--";
+            }
+
+
+            return (
+                dcp1 +
+                dcp2
+            ).toFixed(2);
+        }
+
+
+        // -------------------------------------------------
+        // VD = 5
+        // -------------------------------------------------
 
         const power =
             Number(
@@ -742,30 +985,46 @@ export default function Home() {
 
 
         if (
-            !isValidReading(power, "powerW")
+            !isValidReading(
+                power,
+                "powerW"
+            )
         ) {
-
             return "--";
         }
 
 
-        return (
-            power
-        )
+        return power;
     };
 
 
     // =====================================================
     // TOTAL GENERATION
+    //
+    // Context normalizes:
+    //
+    // VD5 -> LKWH + LKWL
+    // VD7 -> LKWH_H + LKWH_L
+    //
+    // into:
+    //
+    // data.cumulativeEnergy
     // =====================================================
 
     const totalGeneration =
         sanitizeReading(
-            getParameterValue("LKWH"),
+            data?.cumulativeEnergy,
             "energyKWh"
         );
+console.log(
+    "RAW cumulativeEnergy:",
+    data?.cumulativeEnergy
+);
 
-
+console.log(
+    "SANITIZED totalGeneration:",
+    totalGeneration
+);
     // =====================================================
     // PAGE
     // =====================================================
@@ -856,8 +1115,24 @@ export default function Home() {
 
                     <PowerFlowCard
 
-                        dcPower={
-                            getDCPower()
+                        // dcPower={
+                        //     getDCPower()
+                        // }
+                        // gridPower={
+                        //     getGridPower()
+                        // }
+
+
+                        deviceType={
+                            deviceType
+                        }
+
+                        ist={
+                            data?.IST
+                        }
+
+                        powerFlowValue={
+                            getPowerFlowValue()
                         }
 
                         solarPower={
@@ -1007,12 +1282,12 @@ export default function Home() {
                         CO2 SAVED / TREES PLANTED
                     ================================================= */}
 
-                    
-<GenerationEcoCard
-    totalGenerationKWh={
-        totalGeneration
-    }
-/>
+
+                    <GenerationEcoCard
+                        totalGenerationKWh={
+                            totalGeneration
+                        }
+                    />
 
 
                 </div>

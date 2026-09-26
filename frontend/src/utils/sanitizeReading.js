@@ -75,28 +75,173 @@ const RANGE_BY_KIND = {
  * @param {*} rawValue
  * @param {keyof typeof RANGE_BY_KIND} [kind] optional bounds check
  */
+// export function isValidReading(rawValue, kind) {
+
+//     const value = Number(rawValue);
+
+//     if (!Number.isFinite(value)) {
+//         return false;
+//     }
+
+//     if (UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(value)) {
+//         return false;
+//     }
+
+//     if (isNearUnsignedWrap(value)) {
+//         return false;
+//     }
+
+//     if (kind && RANGE_BY_KIND[kind]) {
+//         const [min, max] = RANGE_BY_KIND[kind];
+//         if (value < min || value > max) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
+
+
+// export function isValidReading(rawValue, kind) {
+
+//     const value = Number(rawValue);
+
+//     if (!Number.isFinite(value)) {
+//         return false;
+//     }
+
+
+//     // Exact invalid/sentinel values.
+//     if (
+//         UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(value)
+//     ) {
+//         return false;
+//     }
+
+
+//     // Do not apply the approximate unsigned-wrap heuristic
+//     // to cumulative energy. Its high/low registers are
+//     // validated before they are combined.
+//     if (
+//         kind !== "energyKWh" &&
+//         isNearUnsignedWrap(value)
+//     ) {
+//         return false;
+//     }
+
+
+//     if (
+//         kind &&
+//         RANGE_BY_KIND[kind]
+//     ) {
+
+//         const [min, max] =
+//             RANGE_BY_KIND[kind];
+
+//         if (
+//             value < min ||
+//             value > max
+//         ) {
+//             return false;
+//         }
+//     }
+
+
+//     return true;
+// }
+
+
+
+
 export function isValidReading(rawValue, kind) {
 
-    const value = Number(rawValue);
+    const value =
+        Number(rawValue);
 
-    if (!Number.isFinite(value)) {
+
+    // =====================================================
+    // MUST BE A NUMBER
+    // =====================================================
+
+    if (
+        !Number.isFinite(value)
+    ) {
         return false;
     }
 
-    if (UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(value)) {
+
+    // =====================================================
+    // ENERGY
+    //
+    // Cumulative energy comes from validated registers.
+    //
+    // Allow the full uint32 range except 0xFFFFFFFF,
+    // which represents the invalid -1 sentinel.
+    // =====================================================
+
+    if (
+        kind === "energyKWh"
+    ) {
+
+        if (
+            value < 0 ||
+            value > 0xFFFFFFFF
+        ) {
+            return false;
+        }
+
+
+        if (
+            value === 0xFFFFFFFF
+        ) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    // =====================================================
+    // OTHER PARAMETERS
+    // =====================================================
+
+    if (
+        UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(
+            value
+        )
+    ) {
         return false;
     }
 
-    if (isNearUnsignedWrap(value)) {
+
+    if (
+        isNearUnsignedWrap(
+            value
+        )
+    ) {
         return false;
     }
 
-    if (kind && RANGE_BY_KIND[kind]) {
-        const [min, max] = RANGE_BY_KIND[kind];
-        if (value < min || value > max) {
+
+    if (
+        kind &&
+        RANGE_BY_KIND[kind]
+    ) {
+
+        const [min, max] =
+            RANGE_BY_KIND[kind];
+
+
+        if (
+            value < min ||
+            value > max
+        ) {
             return false;
         }
     }
+
 
     return true;
 }
