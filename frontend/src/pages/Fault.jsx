@@ -1781,6 +1781,7 @@ export default function Fault() {
         lastUpdated,
         devices,
         selectedDeviceId,
+         selectedDevice,
         energy,
         cuf
     } = useInverter();
@@ -1790,12 +1791,72 @@ export default function Fault() {
     // DEVICE TYPE
     // =====================================================
 
-    const deviceType =
-        Number(
-            data?.deviceType ??
-            data?.VD
-        );
+    // const deviceType =
+    //     Number(
+    //         data?.deviceType ??
+    //         data?.VD
+    //     );
 
+// const deviceType =
+//     Number(
+//         data?.VD ??
+//         data?.deviceVersion ??
+//         data?.device_version ??
+//         selectedDevice?.deviceVersion ??
+//         selectedDevice?.device_version
+//     );
+
+
+// =====================================================
+// DEVICE VERSION
+//
+// Determines which fault UI to display.
+//
+// Live MQTT data:
+//     VD = 5 / 7
+//     deviceType may also contain 5 / 7
+//
+// Saved/temporary device metadata:
+//     deviceVersion = 5 / 7
+//
+// IMPORTANT:
+// selectedDevice.deviceType is NOT used because it
+// contains "Grid-Tie Inverter", not 5 / 7.
+// =====================================================
+
+const liveDeviceType =
+    Number(
+        data?.VD ??
+        data?.deviceType
+    );
+
+
+const savedDeviceType =
+    Number(
+        selectedDevice?.deviceVersion ??
+        selectedDevice?.device_version
+    );
+
+
+const deviceType =
+    (
+        liveDeviceType === 5 ||
+        liveDeviceType === 7
+    )
+        ? liveDeviceType
+        : savedDeviceType;
+    
+
+         console.log(
+        "FAULT DEVICE DEBUG:",
+        {
+            data,
+            selectedDevice,
+            liveDeviceType,
+            savedDeviceType,
+            finalDeviceType: deviceType
+        }
+    );
 
     // =====================================================
     // PAGE
@@ -1913,7 +1974,7 @@ export default function Fault() {
                     {/* =================================================
                         UNKNOWN / DATA NOT LOADED YET
                     ================================================= */}
-
+{/* 
                     {deviceType !== 5 &&
                         deviceType !== 7 && (
 
@@ -1944,7 +2005,7 @@ export default function Fault() {
                             Device data unavailable
                         </div>
 
-                    )}
+                    )} */}
 
                 </div>
 

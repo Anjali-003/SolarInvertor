@@ -2498,7 +2498,7 @@
 import { useState } from "react";
 import P from "../theme/colors";
 
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
 // VPSCHANGE
 
 export default function DownloadReportCard({
@@ -2703,9 +2703,9 @@ export default function DownloadReportCard({
             // =================================================
 
             const downloadUrl =
-                // `/api/reports/download?${query.toString()}`;
+                `/api/reports/download?${query.toString()}`;
                 // VPSCHANGE
-                                    `${API_BASE}/api/reports/download?${query.toString()}`;
+                                    // `${API_BASE}/api/reports/download?${query.toString()}`;
 
 
 

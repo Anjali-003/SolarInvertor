@@ -75,32 +75,124 @@ const RANGE_BY_KIND = {
  * @param {*} rawValue
  * @param {keyof typeof RANGE_BY_KIND} [kind] optional bounds check
  */
+// export function isValidReading(rawValue, kind) {
+
+//     const value = Number(rawValue);
+
+//     if (!Number.isFinite(value)) {
+//         return false;
+//     }
+
+//     if (UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(value)) {
+//         return false;
+//     }
+
+//     if (isNearUnsignedWrap(value)) {
+//         return false;
+//     }
+
+//     if (kind && RANGE_BY_KIND[kind]) {
+//         const [min, max] = RANGE_BY_KIND[kind];
+//         if (value < min || value > max) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
+
+
 export function isValidReading(rawValue, kind) {
 
-    const value = Number(rawValue);
+    // =====================================================
+    // MISSING VALUE
+    //
+    // Important:
+    // Number(null) = 0
+    // Number("")   = 0
+    //
+    // So check these BEFORE converting to Number.
+    // =====================================================
 
-    if (!Number.isFinite(value)) {
+    if (
+        rawValue === null ||
+        rawValue === undefined ||
+        rawValue === ""
+    ) {
         return false;
     }
 
-    if (UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(value)) {
+
+    // =====================================================
+    // CONVERT TO NUMBER
+    // =====================================================
+
+    const value =
+        Number(rawValue);
+
+
+    // =====================================================
+    // INVALID NUMBER
+    // =====================================================
+
+    if (
+        !Number.isFinite(value)
+    ) {
         return false;
     }
 
-    if (isNearUnsignedWrap(value)) {
+
+    // =====================================================
+    // KNOWN -1 / UNSIGNED -1 VALUES
+    // =====================================================
+
+    if (
+        UNSIGNED_NEGATIVE_ONE_PATTERNS.includes(
+            value
+        )
+    ) {
         return false;
     }
 
-    if (kind && RANGE_BY_KIND[kind]) {
-        const [min, max] = RANGE_BY_KIND[kind];
-        if (value < min || value > max) {
+
+    // =====================================================
+    // WRAPPED -1 PATTERNS
+    // =====================================================
+
+    if (
+        isNearUnsignedWrap(
+            value
+        )
+    ) {
+        return false;
+    }
+
+
+    // =====================================================
+    // PHYSICAL RANGE CHECK
+    // =====================================================
+
+    if (
+        kind &&
+        RANGE_BY_KIND[kind]
+    ) {
+
+        const [min, max] =
+            RANGE_BY_KIND[kind];
+
+
+        if (
+            value < min ||
+            value > max
+        ) {
             return false;
         }
     }
 
+
     return true;
 }
-
 /**
  * Returns the numeric value if valid, otherwise "--".
  * Optional decimals argument formats with toFixed.

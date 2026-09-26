@@ -5218,6 +5218,2786 @@
 
 
 
+// import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
+// import {
+//   useCallback,
+//   useEffect,
+//   useRef,
+//   useState,
+// } from "react";
+
+// import { useNavigate } from "react-router-dom";
+// import { useInverter } from "../context/Context";
+
+// import P from "../theme/colors";
+
+// import {
+//   isDeviceSaved,
+//   saveDeviceMeta,
+// } from "../utils/deviceMeta";
+
+
+// // =====================================================
+// // API
+// // =====================================================
+
+// // Local development
+// const API_BASE = "http://localhost:3000";
+
+// // VPSCHANGE
+// // When uploaded to VPS and frontend/backend use same domain,
+// // you can use relative URLs as already done below.
+
+
+// // =====================================================
+// // PRODUCT TYPES
+// // =====================================================
+// //
+// // All product types are shown.
+// //
+// // HOWEVER:
+// //
+// // Only "Grid-Tie Inverter" is currently supported.
+// //
+// // Selecting any other product type:
+// //      -> shows "Device not available"
+// //      -> closes popup
+// //      -> returns to Quick Access screen
+// //
+// // =====================================================
+
+// const PRODUCT_TYPES = [
+//   "MPPT based Off-Grid PCU",
+//   "MPPT based Hybrid-1P PCU",
+//   "Intelligent Power Supply (IPS)",
+//   "Grid-Tie Inverter",
+//   "MPPT based Hybrid-3P PCU",
+// ];
+
+
+// // =====================================================
+// // AVAILABLE GRID-TIE MODELS
+// // =====================================================
+
+// const GRID_TIE_MODELS = [
+//     "Energiaa X2 - 2KW",
+//   "Energiaa X3 - 3KW",
+//   "Energiaa X3T - 3KW",
+//   "Energiaa X5T - 5KW",
+//   "Energiaa X5.5T - 5.5KW",
+//   "3 Phase - Grid-Tie Inverter",
+// ];
+
+
+// const THREE_PHASE_MODEL =
+//   "3 Phase - Grid-Tie Inverter";
+
+
+// const THREE_PHASE_RATINGS = [
+//   "5KW 3P",
+//   "8KW 3P",
+//   "10KW 3P",
+//   "12KW 3P",
+//   "15KW 3P",
+//   "20KW 3P",
+//   "25KW 3P",
+//   "30KW 3P",
+//   "35KW 3P",
+//   "40KW 3P",
+//   "50KW 3P",
+//   "60KW 3P",
+//   "70KW 3P",
+//   "75KW 3P",
+//   "80KW 3P",
+//   "90KW 3P",
+//   "100KW 3P",
+//   "110KW 3P",
+// ];
+
+
+
+// // =====================================================
+// // COMPONENT
+// // =====================================================
+
+// export default function AddDevice() {
+
+//   const navigate =
+//     useNavigate();
+
+
+//   const {
+//     refreshDevices,
+//     setSelectedDeviceId,
+//     openTemporaryDevice,
+//   } = useInverter();
+
+
+//   // =====================================================
+//   // WIZARD STATE
+//   // =====================================================
+
+//   const [popup, setPopup] =
+//     useState(null);
+
+//   const [imei, setImei] =
+//     useState("");
+
+//   const [productType, setProductType] =
+//     useState("");
+
+//   const [model, setModel] =
+//     useState("");
+
+//   const [rating, setRating] =
+//     useState("");
+
+//   const [nickname, setNickname] =
+//     useState("");
+
+//   const [address, setAddress] =
+//     useState("");
+
+//   const [error, setError] =
+//     useState("");
+
+//   const [loading, setLoading] =
+//     useState(false);
+
+
+//   // =====================================================
+//   // TOAST
+//   // =====================================================
+
+//   const [toast, setToast] =
+//     useState("");
+
+
+//   // =====================================================
+//   // TOAST HELPER
+//   // =====================================================
+
+//   const showToast = (
+//     message,
+//     duration = 1600
+//   ) => {
+
+//     setToast(message);
+
+//     window.setTimeout(() => {
+//       setToast("");
+//     }, duration);
+//   };
+
+
+//   // =====================================================
+//   // CAMERA STATE
+//   // =====================================================
+
+//   const [cameraOn, setCameraOn] =
+//     useState(false);
+
+//   const [cameraReady, setCameraReady] =
+//     useState(false);
+
+//   const [cameraError, setCameraError] =
+//     useState("");
+
+
+//   const scannerRef =
+//     useRef(null);
+
+//   const isRunningRef =
+//     useRef(false);
+
+//   const startTokenRef =
+//     useRef(0);
+
+//   const scannerId =
+//     "add-device-qr-scanner";
+
+
+//   // =====================================================
+//   // STOP CAMERA
+//   // =====================================================
+
+//   const stopScanner =
+//     useCallback(() => {
+
+//       startTokenRef.current += 1;
+
+//       const inst =
+//         scannerRef.current;
+
+//       scannerRef.current =
+//         null;
+
+//       setCameraOn(false);
+//       setCameraReady(false);
+
+
+//       if (
+//         inst &&
+//         isRunningRef.current
+//       ) {
+
+//         isRunningRef.current =
+//           false;
+
+//         inst
+//           .stop()
+//           .then(() =>
+//             inst.clear()
+//           )
+//           .catch(() => { });
+//       }
+
+//     }, []);
+
+
+//   // =====================================================
+//   // START CAMERA
+//   //
+//   // IMPORTANT:
+//   //
+//   // The device label uses a horizontal 1D barcode
+//   // (CODE_128), not a QR code.
+//   //
+//   // Restricting formatsToSupport to CODE_128 and using
+//   // a wide, short qrbox (instead of a square) makes
+//   // detection faster and far more reliable for this
+//   // specific label shape.
+//   //
+//   // We also:
+//   //
+//   //  - Opt into the browser's native BarcodeDetector API
+//   //    when supported (much faster / more accurate than
+//   //    the pure-JS ZXing fallback, especially on Chrome
+//   //    for Android).
+//   //
+//   //  - Request continuous autofocus via videoConstraints,
+//   //    since inconsistent scans are very often a focus
+//   //    problem, not a detection problem: the camera
+//   //    settles on a mid-distance focus that's slightly
+//   //    soft for a barcode held a few inches away.
+//   // =====================================================
+
+//   const startScanner =
+//     useCallback(() => {
+
+//       // Prevent duplicate camera starts
+//       if (scannerRef.current) {
+//         return;
+//       }
+
+
+//       setCameraError("");
+//       setCameraOn(true);
+
+
+//       const token =
+//         ++startTokenRef.current;
+
+
+//       const html5QrCode =
+//         new Html5Qrcode(
+//           scannerId,
+//           {
+
+//             // ---------------------------------------------
+//             // ONLY CODE 128
+//             // ---------------------------------------------
+
+//             formatsToSupport: [
+
+//               Html5QrcodeSupportedFormats
+//                 .CODE_128,
+
+//             ],
+
+//             verbose: false,
+
+
+//             // ---------------------------------------------
+//             // NATIVE BARCODE DETECTOR
+//             //
+//             // Falls back to ZXing automatically on
+//             // browsers that don't support it.
+//             // ---------------------------------------------
+
+//             experimentalFeatures: {
+
+//               useBarCodeDetectorIfSupported:
+//                 true,
+//             },
+//           }
+//         );
+
+
+//       scannerRef.current =
+//         html5QrCode;
+
+
+//       html5QrCode
+//         .start(
+
+//           {
+//             facingMode: {
+//               ideal: "environment",
+//             },
+//           },
+
+//           {
+//             // -----------------------------------------------
+//             // FRAME RATE
+//             // -----------------------------------------------
+
+//             fps: 20,
+
+
+//             // -----------------------------------------------
+//             // WIDE SCANNING AREA
+//             //
+//             // Designed specifically for a horizontal
+//             // barcode label instead of a square QR box.
+//             // -----------------------------------------------
+
+//             qrbox: (
+//               viewfinderWidth,
+//               viewfinderHeight
+//             ) => {
+
+//               const width =
+//                 Math.floor(
+//                   viewfinderWidth * 0.92
+//                 );
+
+
+//               const height =
+//                 Math.min(
+//                   150,
+//                   Math.max(
+//                     100,
+//                     Math.floor(
+//                       viewfinderHeight *
+//                       0.22
+//                     )
+//                   )
+//                 );
+
+
+//               return {
+//                 width,
+//                 height,
+//               };
+//             },
+
+
+//             disableFlip:
+//               false,
+
+
+//             // -----------------------------------------------
+//             // VIDEO CONSTRAINTS
+//             //
+//             // Higher resolution feed + continuous
+//             // autofocus where the device supports it.
+//             //
+//             // "advanced" focusMode constraints are ignored
+//             // (not rejected) on browsers/devices that don't
+//             // support them.
+//             // -----------------------------------------------
+
+//             videoConstraints: {
+
+//               facingMode: {
+//                 ideal: "environment",
+//               },
+
+//               width: {
+//                 ideal: 1920,
+//               },
+
+//               height: {
+//                 ideal: 1080,
+//               },
+
+//               advanced: [
+//                 {
+//                   focusMode: "continuous",
+//                 },
+//               ],
+//             },
+//           },
+
+//           // =================================================
+//           // SUCCESSFULLY SCANNED
+//           // =================================================
+
+//           (decodedText) => {
+
+//             const scannedCode =
+//               decodedText.trim();
+
+//             setImei(
+//               scannedCode
+//             );
+
+//             setError("");
+
+//             stopScanner();
+//           },
+
+//           // Ignore frame-by-frame scan errors
+//           () => { }
+
+//         )
+//         .then(() => {
+
+//           if (
+//             startTokenRef.current !==
+//             token
+//           ) {
+
+//             html5QrCode
+//               .stop()
+//               .then(() =>
+//                 html5QrCode.clear()
+//               )
+//               .catch(() => { });
+
+//             return;
+//           }
+
+
+//           isRunningRef.current =
+//             true;
+
+//           setCameraReady(true);
+
+//         })
+//         .catch((err) => {
+
+//           console.error(
+//             "Camera error:",
+//             err
+//           );
+
+
+//           if (
+//             scannerRef.current ===
+//             html5QrCode
+//           ) {
+//             scannerRef.current =
+//               null;
+//           }
+
+
+//           setCameraOn(false);
+//           setCameraReady(false);
+
+
+//           setCameraError(
+//             "Couldn't access the camera. You can still type the code below."
+//           );
+//         });
+
+//     }, [
+//       stopScanner,
+//     ]);
+
+
+//   // =====================================================
+//   // STOP CAMERA WHEN POPUP OPENS
+//   // =====================================================
+
+//   useEffect(() => {
+
+//     if (popup !== null) {
+//       stopScanner();
+//     }
+
+
+//     return () =>
+//       stopScanner();
+
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+//   }, [
+//     popup,
+//   ]);
+
+
+//   // =====================================================
+//   // OPEN QUICK ACCESS
+//   //
+//   // IMPORTANT:
+//   //
+//   // Previous:
+//   // /^\d{15}$/
+//   //
+//   // has been REMOVED.
+//   //
+//   // We now only require a non-empty device code.
+//   // =====================================================
+
+//   const handleOpenQuickAccess =
+//     async () => {
+
+//       setError("");
+
+
+//       const cleanImei =
+//         imei.trim();
+
+
+//       // =================================================
+//       // NO 15-DIGIT CHECK
+//       // =================================================
+
+//       if (!cleanImei) {
+
+//         setError(
+//           "Please scan or enter the device code"
+//         );
+
+//         return;
+//       }
+
+
+//       setLoading(true);
+
+
+//       try {
+
+//         const res =
+//           await fetch(
+//             `/api/user/devices/${encodeURIComponent(
+//               cleanImei
+//             )}`
+//           );
+
+
+//         const result =
+//           await res.json();
+
+
+//         if (!res.ok) {
+
+//           setError(
+//             result?.error ||
+//             "Device not found"
+//           );
+
+//           return;
+//         }
+
+
+//         // Device exists.
+//         // Ask the user to select product type.
+
+//         setPopup(
+//           "productType"
+//         );
+
+//       } catch (err) {
+
+//         console.error(
+//           "Quick access device lookup error:",
+//           err
+//         );
+
+
+//         setError(
+//           "Server error. Please try again."
+//         );
+
+//       } finally {
+
+//         setLoading(false);
+//       }
+//     };
+
+
+//   // =====================================================
+//   // SELECT PRODUCT TYPE
+//   //
+//   // ONLY Grid-Tie Inverter is currently available.
+//   // =====================================================
+
+//   const handleSelectProductType =
+//     (type) => {
+
+//       setError("");
+
+
+//       // =================================================
+//       // NOT GRID-TIE
+//       // =================================================
+
+//       if (
+//         type !==
+//         "Grid-Tie Inverter"
+//       ) {
+
+//         // Clear selection
+//         setProductType("");
+//         setModel("");
+//         setRating("");
+
+
+//         // Close popup and return to
+//         // Quick Access screen
+//         setPopup(null);
+
+
+//         // Inform user
+//         showToast(
+//           "Device not available"
+//         );
+
+
+//         return;
+//       }
+
+
+//       // =================================================
+//       // GRID-TIE
+//       // =================================================
+
+//       setProductType(type);
+
+//       setModel("");
+
+//       setPopup(
+//         "model"
+//       );
+//     };
+
+
+//   // =====================================================
+//   // SELECT MODEL
+//   // =====================================================
+
+//   // const handleSelectModel =
+//   //   (selectedModel) => {
+
+//   //     setModel(
+//   //       selectedModel
+//   //     );
+
+//   //     setPopup(
+//   //       "confirmAdd"
+//   //     );
+//   //   };
+
+
+
+//   const handleSelectModel =
+//     (selectedModel) => {
+
+//       setModel(
+//         selectedModel
+//       );
+
+//       setRating("");
+
+
+//       // =================================================
+//       // VD7 / THREE-PHASE
+//       //
+//       // Three-phase inverter needs one additional step:
+//       // user must select its rating.
+//       // =================================================
+
+//       if (
+//         selectedModel ===
+//         THREE_PHASE_MODEL
+//       ) {
+
+//         setPopup(
+//           "rating"
+//         );
+
+//         return;
+//       }
+
+
+//       // =================================================
+//       // VD5
+//       //
+//       // Existing Energiaa models do not need a separate
+//       // rating selection.
+//       // =================================================
+
+//       setPopup(
+//         "confirmAdd"
+//       );
+//     };
+
+
+//   // =====================================================
+//   // SELECT 3-PHASE RATING
+//   // =====================================================
+
+//   const handleSelectRating =
+//     (selectedRating) => {
+
+//       setRating(
+//         selectedRating
+//       );
+
+
+//       // Rating selected.
+//       // Continue with the normal add-device flow.
+
+//       setPopup(
+//         "confirmAdd"
+//       );
+//     };
+
+//   // =====================================================
+//   // CONFIRM ADD - NO
+//   //
+//   // Opens device temporarily without saving it.
+//   // =====================================================
+
+//   const handleConfirmAddNo =
+//     async () => {
+
+//       setError("");
+//       setLoading(true);
+
+
+//       try {
+
+//         const cleanImei =
+//           imei.trim();
+
+
+//         if (!cleanImei) {
+
+//           setError(
+//             "Please scan or enter the device code"
+//           );
+
+//           setPopup(null);
+
+//           return;
+//         }
+
+
+//         const res =
+//           await fetch(
+//             `/api/user/devices/${encodeURIComponent(
+//               cleanImei
+//             )}`
+//           );
+
+
+//         const result =
+//           await res.json();
+
+
+//         if (!res.ok) {
+
+//           setError(
+//             result?.error ||
+//             "Device not found"
+//           );
+
+//           setPopup(null);
+
+//           setProductType("");
+//           setModel("");
+//           setRating("");
+
+//           return;
+//         }
+
+
+//         // openTemporaryDevice(
+//         //   result.device
+//         // );
+
+
+
+//         openTemporaryDevice({
+//   ...result.device,
+
+//   deviceType:
+//     productType,
+
+//   model,
+
+//   deviceVersion,
+
+//   rating:
+//     deviceVersion === 7
+//       ? rating
+//       : null,
+
+//   ratedCapacityKw:
+//     deviceVersion === 7
+//       ? ratedCapacityKw
+//       : null,
+// });
+
+//         navigate(
+//           "/home",
+//           {
+//             replace: true,
+//           }
+//         );
+
+//       } catch (err) {
+
+//         console.error(
+//           "Temporary device lookup error:",
+//           err
+//         );
+
+
+//         setError(
+//           "Server error. Please try again."
+//         );
+
+
+//         setPopup(null);
+
+//         setProductType("");
+//         setModel("");
+//         setRating("");
+
+//       } finally {
+
+//         setLoading(false);
+//       }
+//     };
+
+
+//   // =====================================================
+//   // CONFIRM ADD - YES
+//   // =====================================================
+
+//   const handleConfirmAddYes =
+//     () => {
+
+//       setPopup(
+//         "details"
+//       );
+//     };
+
+
+//   // =====================================================
+//   // DETAILS CANCEL
+//   // =====================================================
+
+//   // const handleDetailsCancel =
+//   //   () => {
+
+//   //     setPopup(null);
+
+//   //     setProductType("");
+//   //     setModel("");
+
+//   //     setNickname("");
+//   //     setAddress("");
+
+//   //     setError("");
+//   //   };
+
+
+//   const handleDetailsCancel =
+//   () => {
+
+//     setPopup(null);
+
+//     setProductType("");
+//     setModel("");
+//     setRating("");
+
+//     setNickname("");
+//     setAddress("");
+
+//     setError("");
+//   };
+
+//   // =====================================================
+//   // DETAILS SAVE
+//   // =====================================================
+
+//   const handleDetailsSave =
+//     () => {
+
+//       setError("");
+
+
+//       if (
+//         !nickname.trim() ||
+//         !address.trim()
+//       ) {
+
+//         setError(
+//           "Nickname and address are both required"
+//         );
+
+//         return;
+//       }
+
+
+//       addDevice();
+//     };
+
+
+//   // =====================================================
+//   // SAVE DEVICE
+//   //
+//   // Device metadata is stored in localStorage.
+//   //
+//   // NO 15-DIGIT IMEI VALIDATION.
+//   // =====================================================
+
+//   const addDevice =
+//     async () => {
+
+//       setError("");
+
+
+//       const cleanImei =
+//         imei.trim();
+
+
+//       // =================================================
+//       // ONLY REQUIRE NON-EMPTY CODE
+//       // =================================================
+
+//       if (!cleanImei) {
+
+//         setError(
+//           "Please scan or enter the device code"
+//         );
+
+//         setPopup(
+//           "details"
+//         );
+
+//         return;
+//       }
+
+
+//       // =================================================
+//       // ALREADY SAVED
+//       // =================================================
+
+//       if (
+//         isDeviceSaved(
+//           cleanImei
+//         )
+//       ) {
+
+//         setPopup(null);
+
+//         showToast(
+//           "Device already exists",
+//           1200
+//         );
+
+
+//         setSelectedDeviceId(
+//           cleanImei
+//         );
+
+
+//         setTimeout(() => {
+
+//           navigate(
+//             "/saved-devices",
+//             {
+//               replace: true,
+//             }
+//           );
+
+//           navigate(
+//             "/home"
+//           );
+
+//         }, 1200);
+
+
+//         return;
+//       }
+
+
+//       setLoading(true);
+
+
+//       try {
+
+//         // =================================================
+//         // VERIFY DEVICE EXISTS ON SERVER
+//         // =================================================
+
+//         const res =
+//           await fetch(
+//             `/api/user/devices/${encodeURIComponent(
+//               cleanImei
+//             )}`
+//           );
+
+
+//         const result =
+//           await res.json();
+
+
+//         if (!res.ok) {
+
+//           setError(
+//             result?.error ||
+//             "Device not found"
+//           );
+
+//           setPopup(
+//             "details"
+//           );
+
+//           return;
+//         }
+
+//         const deviceVersion =
+//   model === THREE_PHASE_MODEL
+//     ? 7
+//     : 5;
+
+//     const ratedCapacityKw =
+//   deviceVersion === 7
+//     ? Number(
+//         rating.match(
+//           /[\d.]+/
+//         )?.[0]
+//       )
+//     : null;
+
+//         // =================================================
+//         // SAVE DEVICE INFORMATION LOCALLY
+//         // =================================================
+
+//         // saveDeviceMeta(
+//         //   cleanImei,
+//         //   {
+
+//         //     nickname:
+//         //       nickname.trim(),
+
+//         //     deviceType:
+//         //       productType,
+
+//         //     model,
+
+//         //     location:
+//         //       address.trim(),
+
+//         //     addedAt:
+//         //       new Date()
+//         //         .toISOString(),
+//         //   }
+//         // );
+
+
+
+//         saveDeviceMeta(
+//   cleanImei,
+//   {
+
+//     nickname:
+//       nickname.trim(),
+
+//     deviceType:
+//       productType,
+
+//     model,
+
+//     // ---------------------------------------------
+//     // 5 = existing inverter
+//     // 7 = 3-phase GTI
+//     // ---------------------------------------------
+
+//     deviceVersion,
+
+//     // ---------------------------------------------
+//     // Only VD7 has this user-selected rating
+//     // ---------------------------------------------
+
+//     rating:
+//       deviceVersion === 7
+//         ? rating
+//         : null,
+
+//     ratedCapacityKw:
+//       deviceVersion === 7
+//         ? ratedCapacityKw
+//         : null,
+
+//     location:
+//       address.trim(),
+
+//     addedAt:
+//       new Date()
+//         .toISOString(),
+//   }
+// );
+
+
+//         // =================================================
+//         // REFRESH DEVICE LIST
+//         // =================================================
+
+//         await refreshDevices();
+
+
+//         // =================================================
+//         // SELECT NEW DEVICE
+//         // =================================================
+
+//         setSelectedDeviceId(
+//           cleanImei
+//         );
+
+
+//         // =================================================
+//         // NAVIGATE
+//         // =================================================
+
+//         navigate(
+//           "/saved-devices",
+//           {
+//             replace: true,
+//           }
+//         );
+
+
+//         navigate(
+//           "/home"
+//         );
+
+//       } catch (err) {
+
+//         console.error(
+//           "Add device error:",
+//           err
+//         );
+
+
+//         setError(
+//           "Server error. Please try again."
+//         );
+
+
+//         setPopup(
+//           "details"
+//         );
+
+//       } finally {
+
+//         setLoading(false);
+//       }
+//     };
+
+
+//   // =====================================================
+//   // BACK BUTTON
+//   // =====================================================
+
+//   const handleBack =
+//     () => {
+
+//       if (
+//         popup !== null
+//       ) {
+
+//         setPopup(null);
+
+//         return;
+//       }
+
+
+//       navigate(-1);
+//     };
+
+
+//   // =====================================================
+//   // UI
+//   // =====================================================
+
+//   return (
+
+//     <div
+//       style={{
+//         minHeight:
+//           "100vh",
+
+//         width:
+//           "100%",
+
+//         background:
+//           P.pageSide,
+
+//         fontFamily:
+//           "'Inter', sans-serif",
+//       }}
+//     >
+
+//       {/* =================================================
+//           PHONE-SIZED AREA
+//       ================================================= */}
+
+//       <div
+//         style={{
+//           width:
+//             "100%",
+
+//           maxWidth:
+//             520,
+
+//           minHeight:
+//             "100vh",
+
+//           margin:
+//             "0 auto",
+
+//           position:
+//             "relative",
+
+//           overflow:
+//             "clip",
+
+//           background:
+//             "#0B0B0B",
+//         }}
+//       >
+
+
+//         {/* =================================================
+//             CAMERA / QUICK ACCESS
+//         ================================================= */}
+
+//         <div
+//           style={{
+//             position:
+//               "absolute",
+
+//             inset:
+//               0,
+
+//             display:
+//               "flex",
+
+//             flexDirection:
+//               "column",
+//           }}
+//         >
+
+//           {/* CAMERA */}
+
+//           <div
+//             style={{
+//               flex:
+//                 1,
+
+//               width:
+//                 "100%",
+
+//               background:
+//                 "#000",
+
+//               position:
+//                 "relative",
+//             }}
+//           >
+
+//             <div
+//               id={
+//                 scannerId
+//               }
+
+//               style={{
+//                 width:
+//                   "100%",
+
+//                 height:
+//                   "100%",
+
+//                 display:
+//                   cameraOn
+//                     ? "block"
+//                     : "none",
+//               }}
+//             />
+
+
+//             {/* CAMERA OFF */}
+
+//             {!cameraOn && (
+
+//               <button
+//                 type="button"
+
+//                 onClick={
+//                   startScanner
+//                 }
+
+//                 style={{
+//                   position:
+//                     "absolute",
+
+//                   inset:
+//                     0,
+
+//                   width:
+//                     "100%",
+
+//                   height:
+//                     "100%",
+
+//                   border:
+//                     "none",
+
+//                   background:
+//                     "transparent",
+
+//                   display:
+//                     "flex",
+
+//                   flexDirection:
+//                     "column",
+
+//                   alignItems:
+//                     "center",
+
+//                   justifyContent:
+//                     "center",
+
+//                   gap:
+//                     12,
+
+//                   cursor:
+//                     "pointer",
+
+//                   color:
+//                     "#cfcfcf",
+
+//                   WebkitTapHighlightColor:
+//                     "transparent",
+//                 }}
+//               >
+
+//                 <svg
+//                   xmlns="http://www.w3.org/2000/svg"
+//                   width="34"
+//                   height="34"
+//                   viewBox="0 0 24 24"
+//                   fill="none"
+//                   stroke="currentColor"
+//                   strokeWidth="1.8"
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                 >
+
+//                   <path
+//                     d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+//                   />
+
+//                   <circle
+//                     cx="12"
+//                     cy="13"
+//                     r="4"
+//                   />
+
+//                 </svg>
+
+
+//                 <div
+//                   style={{
+//                     fontSize:
+//                       13,
+
+//                     padding:
+//                       "0 24px",
+
+//                     textAlign:
+//                       "center",
+//                   }}
+//                 >
+
+//                   Tap to scan the device barcode
+
+//                 </div>
+
+//               </button>
+
+//             )}
+
+
+//             {/* CAMERA STARTING */}
+
+//             {cameraOn &&
+//               !cameraReady && (
+
+//                 <div
+//                   style={{
+//                     position:
+//                       "absolute",
+
+//                     inset:
+//                       0,
+
+//                     display:
+//                       "flex",
+
+//                     alignItems:
+//                       "center",
+
+//                     justifyContent:
+//                       "center",
+
+//                     color:
+//                       "#cfcfcf",
+
+//                     fontSize:
+//                       13,
+//                   }}
+//                 >
+
+//                   Starting camera…
+
+//                 </div>
+
+//               )}
+
+
+//             {/* CLOSE CAMERA */}
+
+//             {cameraOn && (
+
+//               <button
+//                 type="button"
+
+//                 onClick={
+//                   stopScanner
+//                 }
+
+//                 aria-label="Close camera"
+
+//                 style={{
+//                   position:
+//                     "absolute",
+
+//                   top:
+//                     14,
+
+//                   right:
+//                     14,
+
+//                   width:
+//                     34,
+
+//                   height:
+//                     34,
+
+//                   borderRadius:
+//                     "50%",
+
+//                   border:
+//                     "none",
+
+//                   background:
+//                     "rgba(0,0,0,0.5)",
+
+//                   color:
+//                     "#fff",
+
+//                   display:
+//                     "flex",
+
+//                   alignItems:
+//                     "center",
+
+//                   justifyContent:
+//                     "center",
+
+//                   cursor:
+//                     "pointer",
+
+//                   fontSize:
+//                     18,
+//                 }}
+//               >
+
+//                 ×
+
+//               </button>
+
+//             )}
+
+
+//             {/* CAMERA ERROR */}
+
+//             {cameraError && (
+
+//               <div
+//                 style={{
+//                   position:
+//                     "absolute",
+
+//                   bottom:
+//                     10,
+
+//                   left:
+//                     16,
+
+//                   right:
+//                     16,
+
+//                   textAlign:
+//                     "center",
+
+//                   color:
+//                     "#ff9a9a",
+
+//                   fontSize:
+//                     12,
+//                 }}
+//               >
+
+//                 {cameraError}
+
+//               </div>
+
+//             )}
+
+//           </div>
+
+
+//           {/* =================================================
+//               BOTTOM PANEL
+//           ================================================= */}
+
+//           <div
+//             style={{
+//               padding:
+//                 "16px 20px calc(28px + env(safe-area-inset-bottom))",
+
+//               boxSizing:
+//                 "border-box",
+//             }}
+//           >
+
+//             <input
+//               type="text"
+
+//               inputMode="text"
+
+//               placeholder="Scan or enter device code"
+
+//               value={
+//                 imei
+//               }
+
+//               onChange={(e) => {
+
+//                 // No numeric-only restriction.
+//                 // No 15-character restriction.
+
+//                 setImei(
+//                   e.target.value
+//                 );
+
+//                 setError("");
+//               }}
+
+//               style={{
+//                 width:
+//                   "100%",
+
+//                 padding:
+//                   "13px 16px",
+
+//                 borderRadius:
+//                   8,
+
+//                 border:
+//                   `1px solid ${P.amber}`,
+
+//                 background:
+//                   "#FFFDF6",
+
+//                 color:
+//                   P.textPrimary,
+
+//                 fontSize:
+//                   14,
+
+//                 fontFamily:
+//                   "'Inter', sans-serif",
+
+//                 outline:
+//                   "none",
+
+//                 boxSizing:
+//                   "border-box",
+
+//                 marginBottom:
+//                   10,
+//               }}
+//             />
+
+
+//             <button
+//               type="button"
+
+//               onClick={
+//                 handleOpenQuickAccess
+//               }
+
+//               disabled={
+//                 loading
+//               }
+
+//               style={{
+//                 width:
+//                   "100%",
+
+//                 padding:
+//                   "15px 16px",
+
+//                 border:
+//                   "none",
+
+//                 borderRadius:
+//                   8,
+
+//                 background:
+//                   "linear-gradient(180deg, #2F8FD1 0%, #1F6FB5 100%)",
+
+//                 color:
+//                   P.textWhite,
+
+//                 fontSize:
+//                   15,
+
+//                 fontWeight:
+//                   700,
+
+//                 letterSpacing:
+//                   0.6,
+
+//                 textTransform:
+//                   "uppercase",
+
+//                 fontFamily:
+//                   "'DM Sans', sans-serif",
+
+//                 cursor:
+//                   loading
+//                     ? "not-allowed"
+//                     : "pointer",
+
+//                 opacity:
+//                   loading
+//                     ? 0.7
+//                     : 1,
+//               }}
+//             >
+
+//               {loading
+//                 ? "Opening..."
+//                 : "Open Quick Access"}
+
+//             </button>
+
+
+//             <div
+//               style={{
+//                 marginTop:
+//                   8,
+
+//                 fontSize:
+//                   11,
+
+//                 color:
+//                   "#d8d8d8",
+
+//                 width:
+//                   "100%",
+
+//                 textAlign:
+//                   "center",
+
+//                 padding:
+//                   "0 16px",
+
+//                 boxSizing:
+//                   "border-box",
+//               }}
+//             >
+
+//               Place a barcode inside the viewfinder rectangle to scan it.
+
+//             </div>
+
+
+//             {/* ERROR */}
+
+//             {error &&
+//               popup === null && (
+
+//                 <div
+//                   style={{
+//                     marginTop:
+//                       10,
+
+//                     padding:
+//                       "9px 14px",
+
+//                     borderRadius:
+//                       8,
+
+//                     background:
+//                       "#3a1414",
+
+//                     border:
+//                       "1px solid #5a2020",
+
+//                     color:
+//                       "#ff9a9a",
+
+//                     fontSize:
+//                       12,
+//                   }}
+//                 >
+
+//                   {error}
+
+//                 </div>
+
+//               )}
+
+//           </div>
+
+//         </div>
+
+
+//         {/* =================================================
+//             SELECT PRODUCT TYPE
+//         ================================================= */}
+
+//         {popup ===
+//           "productType" && (
+
+//             <PopupOverlay>
+
+//               <PopupCard
+//                 title="Select Product Type"
+//               >
+
+//                 {PRODUCT_TYPES.map(
+//                   (type) => (
+
+//                     <PopupListItem
+//                       key={
+//                         type
+//                       }
+
+//                       onClick={() =>
+//                         handleSelectProductType(
+//                           type
+//                         )
+//                       }
+//                     >
+
+//                       {type}
+
+//                     </PopupListItem>
+
+//                   )
+//                 )}
+
+//               </PopupCard>
+
+//             </PopupOverlay>
+
+//           )}
+
+
+//         {/* =================================================
+//             SELECT GRID-TIE MODEL
+//         ================================================= */}
+
+//         {popup ===
+//           "model" && (
+
+//             <PopupOverlay>
+
+//               <PopupCard
+//                 title="Select Model"
+//               >
+
+//                 {GRID_TIE_MODELS.map(
+//                   (m) => (
+
+//                     <PopupListItem
+//                       key={
+//                         m
+//                       }
+
+//                       onClick={() =>
+//                         handleSelectModel(
+//                           m
+//                         )
+//                       }
+//                     >
+
+//                       {m}
+
+//                     </PopupListItem>
+
+//                   )
+//                 )}
+
+//               </PopupCard>
+
+//             </PopupOverlay>
+
+//           )}
+
+
+//         {/* =================================================
+//     SELECT THREE-PHASE RATING
+// ================================================= */}
+
+//         {/* {popup ===
+//           "rating" && (
+
+//             <PopupOverlay>
+
+//               <PopupCard
+//                 title="Select Rating"
+//                 scrollable
+//               >
+
+//                 {THREE_PHASE_RATINGS.map(
+//                   (item) => (
+
+//                     <RatingListItem
+//                       key={
+//                         item
+//                       }
+
+//                       onClick={() =>
+//                         handleSelectRating(
+//                           item
+//                         )
+//                       }
+//                     >
+
+//                       {item}
+
+//                     </RatingListItem>
+
+//                   )
+//                 )}
+
+
+//                 <RatingListItem
+//                   onClick={() => {
+
+//                     setRating("");
+//                     setModel("");
+
+//                     setPopup(
+//                       "model"
+//                     );
+//                   }}
+//                 >
+//                   Cancel
+//                 </RatingListItem>
+
+//               </PopupCard>
+
+//             </PopupOverlay>
+
+//           )} */}
+
+
+
+//           {popup ===
+//   "rating" && (
+
+//     <PopupOverlay>
+
+//       <PopupCard
+//         title="Select Rating"
+//         scrollable
+//       >
+
+//         {THREE_PHASE_RATINGS.map(
+//           (item) => (
+
+//             <PopupListItem
+//               key={item}
+
+//               onClick={() =>
+//                 handleSelectRating(
+//                   item
+//                 )
+//               }
+//             >
+
+//               {item}
+
+//             </PopupListItem>
+
+//           )
+//         )}
+
+
+//         <PopupListItem
+//           onClick={() => {
+
+//             setRating("");
+//             setModel("");
+
+//             setPopup(
+//               "model"
+//             );
+//           }}
+//         >
+
+//           Cancel
+
+//         </PopupListItem>
+
+//       </PopupCard>
+
+//     </PopupOverlay>
+
+//   )}
+
+//         {/* =================================================
+//             CONFIRM ADD
+//         ================================================= */}
+
+//         {popup ===
+//           "confirmAdd" && (
+
+//             <PopupOverlay>
+
+//               <PopupCard
+//                 title="Add Device"
+//                 subtitle="Do you want to add this device to your list?"
+//               >
+
+//                 <div
+//                   style={{
+//                     display:
+//                       "flex",
+
+//                     justifyContent:
+//                       "flex-end",
+
+//                     gap:
+//                       22,
+
+//                     marginTop:
+//                       18,
+//                   }}
+//                 >
+
+//                   <PopupTextButton
+//                     onClick={
+//                       handleConfirmAddNo
+//                     }
+//                   >
+
+//                     NO
+
+//                   </PopupTextButton>
+
+
+//                   <PopupTextButton
+//                     onClick={
+//                       handleConfirmAddYes
+//                     }
+
+//                     strong
+//                   >
+
+//                     YES
+
+//                   </PopupTextButton>
+
+//                 </div>
+
+//               </PopupCard>
+
+//             </PopupOverlay>
+
+//           )}
+
+
+//         {/* =================================================
+//             ENTER DEVICE DETAILS
+//         ================================================= */}
+
+//         {popup ===
+//           "details" && (
+
+//             <PopupOverlay>
+
+//               <PopupCard
+//                 title="Enter Device Details"
+//                 subtitle="Nickname and Address"
+//               >
+
+//                 <input
+//                   type="text"
+
+//                   placeholder="e.g. Main Roof Inverter"
+
+//                   value={
+//                     nickname
+//                   }
+
+//                   onChange={(e) =>
+//                     setNickname(
+//                       e.target.value
+//                     )
+//                   }
+
+//                   style={
+//                     popupInputStyle
+//                   }
+//                 />
+
+
+//                 <input
+//                   type="text"
+
+//                   placeholder="e.g. 123 Solar Street"
+
+//                   value={
+//                     address
+//                   }
+
+//                   onChange={(e) =>
+//                     setAddress(
+//                       e.target.value
+//                     )
+//                   }
+
+//                   style={{
+//                     ...popupInputStyle,
+//                     marginBottom: 4,
+//                   }}
+//                 />
+
+
+//                 {error && (
+
+//                   <div
+//                     style={{
+//                       marginTop:
+//                         8,
+
+//                       fontSize:
+//                         12,
+
+//                       color:
+//                         P.textErrorMsg,
+//                     }}
+//                   >
+
+//                     {error}
+
+//                   </div>
+
+//                 )}
+
+
+//                 <div
+//                   style={{
+//                     display:
+//                       "flex",
+
+//                     justifyContent:
+//                       "flex-end",
+
+//                     gap:
+//                       22,
+
+//                     marginTop:
+//                       18,
+//                   }}
+//                 >
+
+//                   <PopupTextButton
+//                     onClick={
+//                       handleDetailsCancel
+//                     }
+
+//                     disabled={
+//                       loading
+//                     }
+//                   >
+
+//                     CANCEL
+
+//                   </PopupTextButton>
+
+
+//                   <PopupTextButton
+//                     onClick={
+//                       handleDetailsSave
+//                     }
+
+//                     strong
+
+//                     disabled={
+//                       loading
+//                     }
+//                   >
+
+//                     {loading
+//                       ? "ADDING..."
+//                       : "SAVE"}
+
+//                   </PopupTextButton>
+
+//                 </div>
+
+//               </PopupCard>
+
+//             </PopupOverlay>
+
+//           )}
+
+
+//         {/* =================================================
+//             BACK BUTTON
+//         ================================================= */}
+
+//         <div
+//           style={{
+//             position:
+//               "absolute",
+
+//             top:
+//               16,
+
+//             left:
+//               16,
+
+//             zIndex:
+//               10,
+//           }}
+//         >
+
+//           <button
+//             type="button"
+
+//             onClick={
+//               handleBack
+//             }
+
+//             style={{
+//               width:
+//                 40,
+
+//               height:
+//                 40,
+
+//               borderRadius:
+//                 "50%",
+
+//               backgroundColor:
+//                 "#fff",
+
+//               border:
+//                 "none",
+
+//               display:
+//                 "flex",
+
+//               alignItems:
+//                 "center",
+
+//               justifyContent:
+//                 "center",
+
+//               cursor:
+//                 "pointer",
+
+//               fontSize:
+//                 18,
+//             }}
+//           >
+
+//             ←
+
+//           </button>
+
+//         </div>
+
+
+//         {/* =================================================
+//             TOAST
+//         ================================================= */}
+
+//         {toast && (
+
+//           <div
+//             style={{
+//               position:
+//                 "absolute",
+
+//               left:
+//                 "50%",
+
+//               top:
+//                 "46%",
+
+//               transform:
+//                 "translate(-50%, -50%)",
+
+//               background:
+//                 "rgba(40, 40, 40, 0.94)",
+
+//               color:
+//                 "#fff",
+
+//               padding:
+//                 "11px 20px",
+
+//               borderRadius:
+//                 20,
+
+//               fontSize:
+//                 13,
+
+//               fontFamily:
+//                 "'Inter', sans-serif",
+
+//               whiteSpace:
+//                 "nowrap",
+
+//               zIndex:
+//                 4000,
+
+//               boxShadow:
+//                 "0 4px 14px rgba(0, 0, 0, 0.3)",
+//             }}
+//           >
+
+//             {toast}
+
+//           </div>
+
+//         )}
+
+//       </div>
+
+//     </div>
+//   );
+// }
+
+
+// // =====================================================
+// // POPUP INPUT
+// // =====================================================
+
+// const popupInputStyle = {
+
+//   width:
+//     "100%",
+
+//   padding:
+//     "10px 2px",
+
+//   marginBottom:
+//     18,
+
+//   border:
+//     "none",
+
+//   borderBottom:
+//     `1px solid ${P.border}`,
+
+//   background:
+//     "transparent",
+
+//   fontSize:
+//     14,
+
+//   fontFamily:
+//     "'Inter', sans-serif",
+
+//   color:
+//     P.textPrimary,
+
+//   outline:
+//     "none",
+
+//   boxSizing:
+//     "border-box",
+// };
+
+
+// // =====================================================
+// // POPUP OVERLAY
+// // =====================================================
+
+// function PopupOverlay({
+//   children,
+// }) {
+
+//   return (
+
+//     <div
+//       style={{
+//         position:
+//           "absolute",
+
+//         inset:
+//           0,
+
+//         background:
+//           "rgba(0, 0, 0, 0.45)",
+
+//         display:
+//           "flex",
+
+//         alignItems:
+//           "center",
+
+//         justifyContent:
+//           "center",
+
+//         padding:
+//           "0 24px",
+
+//         zIndex:
+//           2000,
+
+//         boxSizing:
+//           "border-box",
+//       }}
+//     >
+
+//       {children}
+
+//     </div>
+//   );
+// }
+
+
+// // =====================================================
+// // POPUP CARD
+// // =====================================================
+
+// // function PopupCard({
+// //   title,
+// //   subtitle,
+// //   children,
+// // }) {
+
+// function PopupCard({
+//   title,
+//   subtitle,
+//   children,
+//   scrollable = false,
+// }) {
+
+//   return (
+
+//     // <div
+//     //   style={{
+//     //     width:
+//     //       "100%",
+
+//     //     maxWidth:
+//     //       360,
+
+//     //     background:
+//     //       "#FBEFDD",
+
+//     //     borderRadius:
+//     //       4,
+
+//     //     padding:
+//     //       "20px 22px",
+
+//     //     boxShadow:
+//     //       "0 12px 32px rgba(0, 0, 0, 0.35)",
+
+//     //     boxSizing:
+//     //       "border-box",
+//     //   }}
+//     // >
+
+
+//     <div
+//       style={{
+//         width:
+//           "100%",
+
+//         maxWidth:
+//           360,
+
+//         maxHeight:
+//           scrollable
+//             ? "82vh"
+//             : "none",
+
+//         overflowY:
+//           scrollable
+//             ? "auto"
+//             : "visible",
+
+//         WebkitOverflowScrolling:
+//           "touch",
+
+//         // background:
+//         //   "#F5F5F2",
+
+//         // borderRadius:
+//         //   scrollable
+//         //     ? 34
+//         //     : 4,
+
+//         // padding:
+//         //   scrollable
+//         //     ? "10px 16px 16px"
+//         //     : "20px 22px",
+
+
+//         background:
+//   "#F5F5F2",
+
+// borderRadius:
+//   4,
+
+// padding:
+//   "20px 22px",
+
+//         boxShadow:
+//           "0 12px 32px rgba(0, 0, 0, 0.35)",
+
+//         boxSizing:
+//           "border-box",
+//       }}
+//     >
+// {/* 
+//       <div
+//         style={{
+//           fontSize:
+//             17,
+
+//           fontWeight:
+//             700,
+
+//           color:
+//             P.textPrimary,
+
+//           fontFamily:
+//             "'DM Sans', sans-serif",
+
+//           marginBottom:
+//             subtitle
+//               ? 4
+//               : 14,
+//         }}
+//       >
+
+//         {title}
+
+//       </div> */}
+
+
+//       <div
+//   style={{
+//     fontSize:
+//       scrollable
+//         ? 20
+//         : 17,
+
+//     fontWeight:
+//       scrollable
+//         ? 500
+//         : 700,
+
+//     color:
+//       P.textPrimary,
+
+//     fontFamily:
+//       "'DM Sans', sans-serif",
+
+//     textAlign:
+//       scrollable
+//         ? "center"
+//         : "left",
+
+//     marginBottom:
+//       subtitle
+//         ? 4
+//         : 14,
+//   }}
+// >
+//   {title}
+// </div>
+
+
+//       {subtitle && (
+
+//         <div
+//           style={{
+//             fontSize:
+//               13,
+
+//             color:
+//               P.textSecond,
+
+//             fontFamily:
+//               "'Inter', sans-serif",
+
+//             marginBottom:
+//               16,
+//           }}
+//         >
+
+//           {subtitle}
+
+//         </div>
+
+//       )}
+
+
+//       {children}
+
+//     </div>
+//   );
+// }
+
+
+// // =====================================================
+// // POPUP LIST ITEM
+// // =====================================================
+
+// function PopupListItem({
+//   children,
+//   onClick,
+// }) {
+
+//   return (
+
+//     <button
+//       type="button"
+
+//       onClick={
+//         onClick
+//       }
+
+//       style={{
+//         display:
+//           "block",
+
+//         width:
+//           "100%",
+
+//         textAlign:
+//           "left",
+
+//         background:
+//           "none",
+
+//         border:
+//           "none",
+
+//         padding:
+//           "10px 0",
+
+//         fontSize:
+//           14,
+
+//         color:
+//           P.textPrimary,
+
+//         fontFamily:
+//           "'Inter', sans-serif",
+
+//         cursor:
+//           "pointer",
+
+//         WebkitTapHighlightColor:
+//           "transparent",
+//       }}
+//     >
+
+//       {children}
+
+//     </button>
+//   );
+// }
+
+
+// // =====================================================
+// // POPUP TEXT BUTTON
+// // =====================================================
+
+// function PopupTextButton({
+//   children,
+//   onClick,
+//   strong = false,
+//   disabled = false,
+// }) {
+
+//   return (
+
+//     <button
+//       type="button"
+
+//       onClick={
+//         onClick
+//       }
+
+//       disabled={
+//         disabled
+//       }
+
+//       style={{
+//         background:
+//           "none",
+
+//         border:
+//           "none",
+
+//         padding:
+//           "6px 4px",
+
+//         fontSize:
+//           13,
+
+//         fontWeight:
+//           700,
+
+//         letterSpacing:
+//           0.4,
+
+//         color:
+//           strong
+//             ? P.amberDark
+//             : P.textSecond,
+
+//         fontFamily:
+//           "'DM Sans', sans-serif",
+
+//         cursor:
+//           disabled
+//             ? "not-allowed"
+//             : "pointer",
+
+//         opacity:
+//           disabled
+//             ? 0.6
+//             : 1,
+
+//         WebkitTapHighlightColor:
+//           "transparent",
+//       }}
+//     >
+
+//       {children}
+
+//     </button>
+//   );
+// }
+
+
+// // // =====================================================
+// // // RATING LIST ITEM
+// // // =====================================================
+
+// // function RatingListItem({
+// //   children,
+// //   onClick,
+// // }) {
+
+// //   return (
+
+// //     <button
+// //       type="button"
+
+// //       onClick={
+// //         onClick
+// //       }
+
+// //       style={{
+// //         display:
+// //           "block",
+
+// //         width:
+// //           "100%",
+
+// //         minHeight:
+// //           58,
+
+// //         marginBottom:
+// //           10,
+
+// //         padding:
+// //           "10px 16px",
+
+// //         border:
+// //           "none",
+
+// //         borderRadius:
+// //           32,
+
+// //         background:
+// //           "rgba(190, 194, 194, 0.72)",
+
+// //         color:
+// //           "#111111",
+
+// //         fontSize:
+// //           19,
+
+// //         fontWeight:
+// //           500,
+
+// //         fontFamily:
+// //           "'Inter', sans-serif",
+
+// //         textAlign:
+// //           "center",
+
+// //         cursor:
+// //           "pointer",
+
+// //         boxSizing:
+// //           "border-box",
+
+// //         WebkitTapHighlightColor:
+// //           "transparent",
+// //       }}
+// //     >
+
+// //       {children}
+
+// //     </button>
+// //   );
+// // }
+
+
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import {
   useCallback,
@@ -5237,21 +8017,17 @@ import {
 } from "../utils/deviceMeta";
 
 
-// =====================================================
 // API
-// =====================================================
 
 // Local development
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
 
 // VPSCHANGE
 // When uploaded to VPS and frontend/backend use same domain,
 // you can use relative URLs as already done below.
 
 
-// =====================================================
 // PRODUCT TYPES
-// =====================================================
 //
 // All product types are shown.
 //
@@ -5263,8 +8039,6 @@ const API_BASE = "http://localhost:3000";
 //      -> shows "Device not available"
 //      -> closes popup
 //      -> returns to Quick Access screen
-//
-// =====================================================
 
 const PRODUCT_TYPES = [
   "MPPT based Off-Grid PCU",
@@ -5275,12 +8049,10 @@ const PRODUCT_TYPES = [
 ];
 
 
-// =====================================================
 // AVAILABLE GRID-TIE MODELS
-// =====================================================
 
 const GRID_TIE_MODELS = [
-    "Energiaa X2 - 2KW",
+  "Energiaa X2 - 2KW",
   "Energiaa X3 - 3KW",
   "Energiaa X3T - 3KW",
   "Energiaa X5T - 5KW",
@@ -5288,10 +8060,7 @@ const GRID_TIE_MODELS = [
   "3 Phase - Grid-Tie Inverter",
 ];
 
-
-const THREE_PHASE_MODEL =
-  "3 Phase - Grid-Tie Inverter";
-
+const THREE_PHASE_MODEL = "3 Phase - Grid-Tie Inverter";
 
 const THREE_PHASE_RATINGS = [
   "5KW 3P",
@@ -5315,16 +8084,10 @@ const THREE_PHASE_RATINGS = [
 ];
 
 
-
-// =====================================================
 // COMPONENT
-// =====================================================
-
 export default function AddDevice() {
 
-  const navigate =
-    useNavigate();
-
+  const navigate = useNavigate();
 
   const {
     refreshDevices,
@@ -5333,129 +8096,62 @@ export default function AddDevice() {
   } = useInverter();
 
 
-  // =====================================================
   // WIZARD STATE
-  // =====================================================
-
-  const [popup, setPopup] =
-    useState(null);
-
-  const [imei, setImei] =
-    useState("");
-
-  const [productType, setProductType] =
-    useState("");
-
-  const [model, setModel] =
-    useState("");
-
-  const [rating, setRating] =
-    useState("");
-
-  const [nickname, setNickname] =
-    useState("");
-
-  const [address, setAddress] =
-    useState("");
-
-  const [error, setError] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
+  const [popup, setPopup] = useState(null);
+  const [imei, setImei] = useState("");
+  const [productType, setProductType] = useState("");
+  const [model, setModel] = useState("");
+  const [rating, setRating] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [address, setAddress] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
 
-  // =====================================================
   // TOAST
-  // =====================================================
+  const [toast, setToast] = useState("");
 
-  const [toast, setToast] =
-    useState("");
-
-
-  // =====================================================
   // TOAST HELPER
-  // =====================================================
-
-  const showToast = (
-    message,
-    duration = 1600
-  ) => {
-
+  const showToast = (message, duration = 1600) => {
     setToast(message);
-
     window.setTimeout(() => {
       setToast("");
     }, duration);
   };
 
 
-  // =====================================================
   // CAMERA STATE
-  // =====================================================
+  const [cameraOn, setCameraOn] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState("");
 
-  const [cameraOn, setCameraOn] =
-    useState(false);
-
-  const [cameraReady, setCameraReady] =
-    useState(false);
-
-  const [cameraError, setCameraError] =
-    useState("");
+  const scannerRef = useRef(null);
+  const isRunningRef = useRef(false);
+  const startTokenRef = useRef(0);
+  const scannerId = "add-device-qr-scanner";
 
 
-  const scannerRef =
-    useRef(null);
-
-  const isRunningRef =
-    useRef(false);
-
-  const startTokenRef =
-    useRef(0);
-
-  const scannerId =
-    "add-device-qr-scanner";
-
-
-  // =====================================================
   // STOP CAMERA
-  // =====================================================
+  const stopScanner = useCallback(() => {
+    startTokenRef.current += 1;
 
-  const stopScanner =
-    useCallback(() => {
+    const inst = scannerRef.current;
+    scannerRef.current = null;
 
-      startTokenRef.current += 1;
+    setCameraOn(false);
+    setCameraReady(false);
 
-      const inst =
-        scannerRef.current;
+    if (inst && isRunningRef.current) {
+      isRunningRef.current = false;
 
-      scannerRef.current =
-        null;
-
-      setCameraOn(false);
-      setCameraReady(false);
-
-
-      if (
-        inst &&
-        isRunningRef.current
-      ) {
-
-        isRunningRef.current =
-          false;
-
-        inst
-          .stop()
-          .then(() =>
-            inst.clear()
-          )
-          .catch(() => { });
-      }
-
-    }, []);
+      inst
+        .stop()
+        .then(() => inst.clear())
+        .catch(() => { });
+    }
+  }, []);
 
 
-  // =====================================================
   // START CAMERA
   //
   // IMPORTANT:
@@ -5480,255 +8176,152 @@ export default function AddDevice() {
   //    problem, not a detection problem: the camera
   //    settles on a mid-distance focus that's slightly
   //    soft for a barcode held a few inches away.
-  // =====================================================
 
-  const startScanner =
-    useCallback(() => {
+  const startScanner = useCallback(() => {
 
-      // Prevent duplicate camera starts
-      if (scannerRef.current) {
-        return;
-      }
+    // Prevent duplicate camera starts
+    if (scannerRef.current) return;
 
+    setCameraError("");
+    setCameraOn(true);
 
-      setCameraError("");
-      setCameraOn(true);
+    const token = ++startTokenRef.current;
 
+    const html5QrCode = new Html5Qrcode(scannerId, {
 
-      const token =
-        ++startTokenRef.current;
+      // ONLY CODE 128
+      formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128],
 
+      verbose: false,
 
-      const html5QrCode =
-        new Html5Qrcode(
-          scannerId,
-          {
+      // NATIVE BARCODE DETECTOR
+      //
+      // Falls back to ZXing automatically on
+      // browsers that don't support it.
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true,
+      },
+    });
 
-            // ---------------------------------------------
-            // ONLY CODE 128
-            // ---------------------------------------------
+    scannerRef.current = html5QrCode;
 
-            formatsToSupport: [
+    html5QrCode
+      .start(
 
-              Html5QrcodeSupportedFormats
-                .CODE_128,
+        {
+          facingMode: {
+            ideal: "environment",
+          },
+        },
 
-            ],
+        {
+          // FRAME RATE
+          fps: 20,
 
-            verbose: false,
+          // WIDE SCANNING AREA
+          //
+          // Designed specifically for a horizontal
+          // barcode label instead of a square QR box.
+          qrbox: (viewfinderWidth, viewfinderHeight) => {
+            const width = Math.floor(viewfinderWidth * 0.92);
 
+            const height = Math.min(
+              150,
+              Math.max(100, Math.floor(viewfinderHeight * 0.22))
+            );
 
-            // ---------------------------------------------
-            // NATIVE BARCODE DETECTOR
-            //
-            // Falls back to ZXing automatically on
-            // browsers that don't support it.
-            // ---------------------------------------------
+            return { width, height };
+          },
 
-            experimentalFeatures: {
+          disableFlip: false,
 
-              useBarCodeDetectorIfSupported:
-                true,
-            },
-          }
-        );
-
-
-      scannerRef.current =
-        html5QrCode;
-
-
-      html5QrCode
-        .start(
-
-          {
+          // VIDEO CONSTRAINTS
+          //
+          // Higher resolution feed + continuous
+          // autofocus where the device supports it.
+          //
+          // "advanced" focusMode constraints are ignored
+          // (not rejected) on browsers/devices that don't
+          // support them.
+          videoConstraints: {
             facingMode: {
               ideal: "environment",
             },
-          },
 
-          {
-            // -----------------------------------------------
-            // FRAME RATE
-            // -----------------------------------------------
-
-            fps: 20,
-
-
-            // -----------------------------------------------
-            // WIDE SCANNING AREA
-            //
-            // Designed specifically for a horizontal
-            // barcode label instead of a square QR box.
-            // -----------------------------------------------
-
-            qrbox: (
-              viewfinderWidth,
-              viewfinderHeight
-            ) => {
-
-              const width =
-                Math.floor(
-                  viewfinderWidth * 0.92
-                );
-
-
-              const height =
-                Math.min(
-                  150,
-                  Math.max(
-                    100,
-                    Math.floor(
-                      viewfinderHeight *
-                      0.22
-                    )
-                  )
-                );
-
-
-              return {
-                width,
-                height,
-              };
+            width: {
+              ideal: 1920,
             },
 
-
-            disableFlip:
-              false,
-
-
-            // -----------------------------------------------
-            // VIDEO CONSTRAINTS
-            //
-            // Higher resolution feed + continuous
-            // autofocus where the device supports it.
-            //
-            // "advanced" focusMode constraints are ignored
-            // (not rejected) on browsers/devices that don't
-            // support them.
-            // -----------------------------------------------
-
-            videoConstraints: {
-
-              facingMode: {
-                ideal: "environment",
-              },
-
-              width: {
-                ideal: 1920,
-              },
-
-              height: {
-                ideal: 1080,
-              },
-
-              advanced: [
-                {
-                  focusMode: "continuous",
-                },
-              ],
+            height: {
+              ideal: 1080,
             },
+
+            advanced: [
+              {
+                focusMode: "continuous",
+              },
+            ],
           },
+        },
 
-          // =================================================
-          // SUCCESSFULLY SCANNED
-          // =================================================
+        // SUCCESSFULLY SCANNED
+        (decodedText) => {
+          const scannedCode = decodedText.trim();
 
-          (decodedText) => {
+          setImei(scannedCode);
+          setError("");
 
-            const scannedCode =
-              decodedText.trim();
+          stopScanner();
+        },
 
-            setImei(
-              scannedCode
-            );
+        // Ignore frame-by-frame scan errors
+        () => { }
 
-            setError("");
+      )
+      .then(() => {
 
-            stopScanner();
-          },
+        if (startTokenRef.current !== token) {
+          html5QrCode
+            .stop()
+            .then(() => html5QrCode.clear())
+            .catch(() => { });
 
-          // Ignore frame-by-frame scan errors
-          () => { }
+          return;
+        }
 
-        )
-        .then(() => {
+        isRunningRef.current = true;
+        setCameraReady(true);
+      })
+      .catch((err) => {
+        console.error("Camera error:", err);
 
-          if (
-            startTokenRef.current !==
-            token
-          ) {
+        if (scannerRef.current === html5QrCode) {
+          scannerRef.current = null;
+        }
 
-            html5QrCode
-              .stop()
-              .then(() =>
-                html5QrCode.clear()
-              )
-              .catch(() => { });
+        setCameraOn(false);
+        setCameraReady(false);
 
-            return;
-          }
+        setCameraError(
+          "Couldn't access the camera. You can still type the code below."
+        );
+      });
 
-
-          isRunningRef.current =
-            true;
-
-          setCameraReady(true);
-
-        })
-        .catch((err) => {
-
-          console.error(
-            "Camera error:",
-            err
-          );
+  }, [stopScanner]);
 
 
-          if (
-            scannerRef.current ===
-            html5QrCode
-          ) {
-            scannerRef.current =
-              null;
-          }
-
-
-          setCameraOn(false);
-          setCameraReady(false);
-
-
-          setCameraError(
-            "Couldn't access the camera. You can still type the code below."
-          );
-        });
-
-    }, [
-      stopScanner,
-    ]);
-
-
-  // =====================================================
   // STOP CAMERA WHEN POPUP OPENS
-  // =====================================================
-
   useEffect(() => {
-
     if (popup !== null) {
       stopScanner();
     }
 
-
-    return () =>
-      stopScanner();
+    return () => stopScanner();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  }, [
-    popup,
-  ]);
+  }, [popup]);
 
 
-  // =====================================================
   // OPEN QUICK ACCESS
   //
   // IMPORTANT:
@@ -5739,378 +8332,362 @@ export default function AddDevice() {
   // has been REMOVED.
   //
   // We now only require a non-empty device code.
-  // =====================================================
 
-  const handleOpenQuickAccess =
-    async () => {
+  const handleOpenQuickAccess = async () => {
+    setError("");
 
-      setError("");
+    const cleanImei = imei.trim();
 
+    // NO 15-DIGIT CHECK
+    if (!cleanImei) {
+      setError("Please scan or enter the device code");
+      return;
+    }
 
-      const cleanImei =
-        imei.trim();
+    setLoading(true);
 
+    try {
+      const res = await fetch(`/api/user/devices/${encodeURIComponent(cleanImei)}`);
+      const result = await res.json();
 
-      // =================================================
-      // NO 15-DIGIT CHECK
-      // =================================================
-
-      if (!cleanImei) {
-
-        setError(
-          "Please scan or enter the device code"
-        );
-
+      if (!res.ok) {
+        setError(result?.error || "Device not found");
         return;
       }
 
-
-      setLoading(true);
-
-
-      try {
-
-        const res =
-          await fetch(
-            `/api/user/devices/${encodeURIComponent(
-              cleanImei
-            )}`
-          );
+      // Device exists.
+      // Ask the user to select product type.
+      setPopup("productType");
+    } catch (err) {
+      console.error("Quick access device lookup error:", err);
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
-        const result =
-          await res.json();
-
-
-        if (!res.ok) {
-
-          setError(
-            result?.error ||
-            "Device not found"
-          );
-
-          return;
-        }
-
-
-        // Device exists.
-        // Ask the user to select product type.
-
-        setPopup(
-          "productType"
-        );
-
-      } catch (err) {
-
-        console.error(
-          "Quick access device lookup error:",
-          err
-        );
-
-
-        setError(
-          "Server error. Please try again."
-        );
-
-      } finally {
-
-        setLoading(false);
-      }
-    };
-
-
-  // =====================================================
   // SELECT PRODUCT TYPE
   //
   // ONLY Grid-Tie Inverter is currently available.
-  // =====================================================
 
-  const handleSelectProductType =
-    (type) => {
+  const handleSelectProductType = (type) => {
+    setError("");
 
-      setError("");
+    // NOT GRID-TIE
+    if (type !== "Grid-Tie Inverter") {
 
-
-      // =================================================
-      // NOT GRID-TIE
-      // =================================================
-
-      if (
-        type !==
-        "Grid-Tie Inverter"
-      ) {
-
-        // Clear selection
-        setProductType("");
-        setModel("");
-        setRating("");
-
-
-        // Close popup and return to
-        // Quick Access screen
-        setPopup(null);
-
-
-        // Inform user
-        showToast(
-          "Device not available"
-        );
-
-
-        return;
-      }
-
-
-      // =================================================
-      // GRID-TIE
-      // =================================================
-
-      setProductType(type);
-
+      // Clear selection
+      setProductType("");
       setModel("");
-
-      setPopup(
-        "model"
-      );
-    };
-
-
-  // =====================================================
-  // SELECT MODEL
-  // =====================================================
-
-  // const handleSelectModel =
-  //   (selectedModel) => {
-
-  //     setModel(
-  //       selectedModel
-  //     );
-
-  //     setPopup(
-  //       "confirmAdd"
-  //     );
-  //   };
-
-
-
-  const handleSelectModel =
-    (selectedModel) => {
-
-      setModel(
-        selectedModel
-      );
-
       setRating("");
 
+      // Close popup and return to
+      // Quick Access screen
+      setPopup(null);
 
-      // =================================================
-      // VD7 / THREE-PHASE
-      //
-      // Three-phase inverter needs one additional step:
-      // user must select its rating.
-      // =================================================
+      // Inform user
+      showToast("Device not available");
 
-      if (
-        selectedModel ===
-        THREE_PHASE_MODEL
-      ) {
+      return;
+    }
 
-        setPopup(
-          "rating"
-        );
-
-        return;
-      }
+    // GRID-TIE
+    setProductType(type);
+    setModel("");
+    setPopup("model");
+  };
 
 
-      // =================================================
-      // VD5
-      //
-      // Existing Energiaa models do not need a separate
-      // rating selection.
-      // =================================================
+  // SELECT MODEL
 
-      setPopup(
-        "confirmAdd"
-      );
-    };
+  // const handleSelectModel = (selectedModel) => {
+  //   setModel(selectedModel);
+  //   setPopup("confirmAdd");
+  // };
+
+  const handleSelectModel = (selectedModel) => {
+    setModel(selectedModel);
+    setRating("");
+
+    // VD7 / THREE-PHASE
+    //
+    // Three-phase inverter needs one additional step:
+    // user must select its rating.
+    if (selectedModel === THREE_PHASE_MODEL) {
+      setPopup("rating");
+      return;
+    }
+
+    // VD5
+    //
+    // Existing Energiaa models do not need a separate
+    // rating selection.
+    setPopup("confirmAdd");
+  };
 
 
-  // =====================================================
   // SELECT 3-PHASE RATING
+  const handleSelectRating = (selectedRating) => {
+    setRating(selectedRating);
+
+    // Rating selected.
+    // Continue with the normal add-device flow.
+    setPopup("confirmAdd");
+  };
+
+
+
   // =====================================================
+// SELECTED DEVICE CONFIG
+//
+// Determines the internal inverter device version
+// and selected rated capacity.
+//
+// Existing Grid-Tie models = VD5
+// Three-phase model        = VD7
+// =====================================================
 
-  const handleSelectRating =
-    (selectedRating) => {
+const getSelectedDeviceConfig = () => {
 
-      setRating(
-        selectedRating
-      );
+    const deviceVersion =
+        model === THREE_PHASE_MODEL
+            ? 7
+            : 5;
 
 
-      // Rating selected.
-      // Continue with the normal add-device flow.
+    if (deviceVersion === 5) {
+        return {
+            deviceVersion: 5,
+            ratedCapacityKw: null
+        };
+    }
 
-      setPopup(
-        "confirmAdd"
-      );
+
+    const ratingMatch =
+        rating.match(/[\d.]+/);
+
+
+    const ratedCapacityKw =
+        ratingMatch
+            ? Number(ratingMatch[0])
+            : null;
+
+
+    return {
+        deviceVersion: 7,
+        ratedCapacityKw
     };
+};
 
-  // =====================================================
   // CONFIRM ADD - NO
   //
   // Opens device temporarily without saving it.
-  // =====================================================
-
-  const handleConfirmAddNo =
-    async () => {
-
-      setError("");
-      setLoading(true);
-
-
-      try {
-
-        const cleanImei =
-          imei.trim();
-
-
-        if (!cleanImei) {
-
-          setError(
-            "Please scan or enter the device code"
-          );
-
-          setPopup(null);
-
-          return;
-        }
-
-
-        const res =
-          await fetch(
-            `/api/user/devices/${encodeURIComponent(
-              cleanImei
-            )}`
-          );
-
-
-        const result =
-          await res.json();
-
-
-        if (!res.ok) {
-
-          setError(
-            result?.error ||
-            "Device not found"
-          );
-
-          setPopup(null);
-
-          setProductType("");
-          setModel("");
-          setRating("");
-
-          return;
-        }
-
-
-        // openTemporaryDevice(
-        //   result.device
-        // );
 
 
 
-        openTemporaryDevice({
-  ...result.device,
+  // const handleConfirmAddNo = async () => {
+  //   setError("");
+  //   setLoading(true);
 
-  deviceType:
-    productType,
+  //   try {
+  //     const cleanImei = imei.trim();
 
-  model,
+  //     if (!cleanImei) {
+  //       setError("Please scan or enter the device code");
+  //       setPopup(null);
+  //       return;
+  //     }
 
-  deviceVersion,
+  //     const res = await fetch(`/api/user/devices/${encodeURIComponent(cleanImei)}`);
+  //     const result = await res.json();
 
-  rating:
-    deviceVersion === 7
-      ? rating
-      : null,
+  //     if (!res.ok) {
+  //       setError(result?.error || "Device not found");
 
-  ratedCapacityKw:
-    deviceVersion === 7
-      ? ratedCapacityKw
-      : null,
-});
+  //       setPopup(null);
 
-        navigate(
-          "/home",
-          {
-            replace: true,
-          }
-        );
+  //       setProductType("");
+  //       setModel("");
+  //       setRating("");
 
-      } catch (err) {
+  //       return;
+  //     }
 
-        console.error(
-          "Temporary device lookup error:",
-          err
-        );
+  //     // openTemporaryDevice(result.device);
 
+  //     openTemporaryDevice({
+  //       ...result.device,
 
-        setError(
-          "Server error. Please try again."
-        );
+  //       deviceType: productType,
 
+  //       model,
 
-        setPopup(null);
+  //       deviceVersion,
 
-        setProductType("");
-        setModel("");
-        setRating("");
+  //       rating: deviceVersion === 7 ? rating : null,
 
-      } finally {
+  //       ratedCapacityKw: deviceVersion === 7 ? ratedCapacityKw : null,
+  //     });
 
-        setLoading(false);
-      }
-    };
+  //     navigate("/home", { replace: true });
+  //   } catch (err) {
+  //     console.error("Temporary device lookup error:", err);
 
-
-  // =====================================================
-  // CONFIRM ADD - YES
-  // =====================================================
-
-  const handleConfirmAddYes =
-    () => {
-
-      setPopup(
-        "details"
-      );
-    };
-
-
-  // =====================================================
-  // DETAILS CANCEL
-  // =====================================================
-
-  // const handleDetailsCancel =
-  //   () => {
+  //     setError("Server error. Please try again.");
 
   //     setPopup(null);
 
   //     setProductType("");
   //     setModel("");
+  //     setRating("");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  //     setNickname("");
-  //     setAddress("");
-
-  //     setError("");
-  //   };
 
 
-  const handleDetailsCancel =
-  () => {
+  const handleConfirmAddNo = async () => {
+    setError("");
+    setLoading(true);
 
+    try {
+
+        const cleanImei =
+            imei.trim();
+
+
+        if (!cleanImei) {
+
+            setError(
+                "Please scan or enter the device code"
+            );
+
+            setPopup(null);
+
+            return;
+        }
+
+
+        // =====================================================
+        // VERIFY DEVICE EXISTS
+        // =====================================================
+
+        const res =
+            await fetch(
+                `/api/user/devices/${encodeURIComponent(cleanImei)}`
+            );
+
+
+        const result =
+            await res.json();
+
+
+        if (!res.ok) {
+
+            setError(
+                result?.error ||
+                "Device not found"
+            );
+
+            setPopup(null);
+
+            setProductType("");
+            setModel("");
+            setRating("");
+
+            return;
+        }
+
+
+        // =====================================================
+        // GET SELECTED DEVICE CONFIG
+        // =====================================================
+
+        const {
+            deviceVersion,
+            ratedCapacityKw
+        } =
+            getSelectedDeviceConfig();
+
+
+        // =====================================================
+        // OPEN TEMPORARY DEVICE
+        // =====================================================
+
+        openTemporaryDevice({
+
+            ...result.device,
+
+            deviceType:
+                productType,
+
+            model,
+
+            deviceVersion,
+
+            rating:
+                deviceVersion === 7
+                    ? rating
+                    : null,
+
+            ratedCapacityKw
+        });
+
+
+        navigate(
+            "/home",
+            {
+                replace: true
+            }
+        );
+
+
+    } catch (err) {
+
+        console.error(
+            "Temporary device lookup error:",
+            err
+        );
+
+
+        setError(
+            "Server error. Please try again."
+        );
+
+
+        setPopup(null);
+
+        setProductType("");
+        setModel("");
+        setRating("");
+
+
+    } finally {
+
+        setLoading(false);
+    }
+};
+
+  // CONFIRM ADD - YES
+  const handleConfirmAddYes = () => {
+    setPopup("details");
+  };
+
+
+  // DETAILS CANCEL
+
+  // const handleDetailsCancel = () => {
+  //   setPopup(null);
+  //   setProductType("");
+  //   setModel("");
+  //   setNickname("");
+  //   setAddress("");
+  //   setError("");
+  // };
+
+  const handleDetailsCancel = () => {
     setPopup(null);
 
     setProductType("");
@@ -6123,1876 +8700,675 @@ export default function AddDevice() {
     setError("");
   };
 
-  // =====================================================
   // DETAILS SAVE
-  // =====================================================
+  const handleDetailsSave = () => {
+    setError("");
 
-  const handleDetailsSave =
-    () => {
+    if (!nickname.trim() || !address.trim()) {
+      setError("Nickname and address are both required");
+      return;
+    }
 
-      setError("");
-
-
-      if (
-        !nickname.trim() ||
-        !address.trim()
-      ) {
-
-        setError(
-          "Nickname and address are both required"
-        );
-
-        return;
-      }
+    addDevice();
+  };
 
 
-      addDevice();
-    };
-
-
-  // =====================================================
   // SAVE DEVICE
   //
   // Device metadata is stored in localStorage.
   //
   // NO 15-DIGIT IMEI VALIDATION.
-  // =====================================================
 
-  const addDevice =
-    async () => {
+  const addDevice = async () => {
+    setError("");
 
-      setError("");
+    const cleanImei = imei.trim();
 
+    // ONLY REQUIRE NON-EMPTY CODE
+    if (!cleanImei) {
+      setError("Please scan or enter the device code");
+      setPopup("details");
+      return;
+    }
 
-      const cleanImei =
-        imei.trim();
+    // ALREADY SAVED
+    if (isDeviceSaved(cleanImei)) {
+      setPopup(null);
 
+      showToast("Device already exists", 1200);
 
-      // =================================================
-      // ONLY REQUIRE NON-EMPTY CODE
-      // =================================================
+      setSelectedDeviceId(cleanImei);
 
-      if (!cleanImei) {
+      setTimeout(() => {
+        navigate("/saved-devices", { replace: true });
+        navigate("/home");
+      }, 1200);
 
-        setError(
-          "Please scan or enter the device code"
-        );
+      return;
+    }
 
-        setPopup(
-          "details"
-        );
+    setLoading(true);
 
+    try {
+      // VERIFY DEVICE EXISTS ON SERVER
+      const res = await fetch(`/api/user/devices/${encodeURIComponent(cleanImei)}`);
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result?.error || "Device not found");
+        setPopup("details");
         return;
       }
 
+      // const deviceVersion = model === THREE_PHASE_MODEL ? 7 : 5;
 
-      // =================================================
-      // ALREADY SAVED
-      // =================================================
-
-      if (
-        isDeviceSaved(
-          cleanImei
-        )
-      ) {
-
-        setPopup(null);
-
-        showToast(
-          "Device already exists",
-          1200
-        );
-
-
-        setSelectedDeviceId(
-          cleanImei
-        );
-
-
-        setTimeout(() => {
-
-          navigate(
-            "/saved-devices",
-            {
-              replace: true,
-            }
-          );
-
-          navigate(
-            "/home"
-          );
-
-        }, 1200);
-
-
-        return;
-      }
-
-
-      setLoading(true);
-
-
-      try {
-
-        // =================================================
-        // VERIFY DEVICE EXISTS ON SERVER
-        // =================================================
-
-        const res =
-          await fetch(
-            `/api/user/devices/${encodeURIComponent(
-              cleanImei
-            )}`
-          );
-
-
-        const result =
-          await res.json();
-
-
-        if (!res.ok) {
-
-          setError(
-            result?.error ||
-            "Device not found"
-          );
-
-          setPopup(
-            "details"
-          );
-
-          return;
-        }
-
-        const deviceVersion =
-  model === THREE_PHASE_MODEL
-    ? 7
-    : 5;
-
-    const ratedCapacityKw =
-  deviceVersion === 7
-    ? Number(
-        rating.match(
-          /[\d.]+/
-        )?.[0]
-      )
-    : null;
-
-        // =================================================
-        // SAVE DEVICE INFORMATION LOCALLY
-        // =================================================
-
-        // saveDeviceMeta(
-        //   cleanImei,
-        //   {
-
-        //     nickname:
-        //       nickname.trim(),
-
-        //     deviceType:
-        //       productType,
-
-        //     model,
-
-        //     location:
-        //       address.trim(),
-
-        //     addedAt:
-        //       new Date()
-        //         .toISOString(),
-        //   }
-        // );
+      // const ratedCapacityKw =
+      //   deviceVersion === 7
+      //     ? Number(rating.match(/[\d.]+/)?.[0])
+      //     : null;
 
 
 
-        saveDeviceMeta(
-  cleanImei,
-  {
+      const {
+    deviceVersion,
+    ratedCapacityKw
+} =
+    getSelectedDeviceConfig();
 
-    nickname:
-      nickname.trim(),
 
-    deviceType:
-      productType,
+
+      // SAVE DEVICE INFORMATION LOCALLY
+
+      // saveDeviceMeta(cleanImei, {
+      //   nickname: nickname.trim(),
+      //   deviceType: productType,
+      //   model,
+      //   location: address.trim(),
+      //   addedAt: new Date().toISOString(),
+      // });
+
+  saveDeviceMeta(cleanImei, {
+    nickname: nickname.trim(),
+
+    deviceType: productType,
 
     model,
 
-    // ---------------------------------------------
-    // 5 = existing inverter
-    // 7 = 3-phase GTI
-    // ---------------------------------------------
-
     deviceVersion,
 
-    // ---------------------------------------------
-    // Only VD7 has this user-selected rating
-    // ---------------------------------------------
-
     rating:
-      deviceVersion === 7
-        ? rating
-        : null,
+        deviceVersion === 7
+            ? rating
+            : null,
 
-    ratedCapacityKw:
-      deviceVersion === 7
-        ? ratedCapacityKw
-        : null,
+    ratedCapacityKw,
 
-    location:
-      address.trim(),
+    location: address.trim(),
 
-    addedAt:
-      new Date()
-        .toISOString(),
-  }
-);
+    addedAt: new Date().toISOString(),
+});
 
+      // REFRESH DEVICE LIST
+      await refreshDevices();
 
-        // =================================================
-        // REFRESH DEVICE LIST
-        // =================================================
+      // SELECT NEW DEVICE
+      setSelectedDeviceId(cleanImei);
 
-        await refreshDevices();
+      // NAVIGATE
+      navigate("/saved-devices", { replace: true });
+      navigate("/home");
+    } catch (err) {
+      console.error("Add device error:", err);
 
+      setError("Server error. Please try again.");
 
-        // =================================================
-        // SELECT NEW DEVICE
-        // =================================================
-
-        setSelectedDeviceId(
-          cleanImei
-        );
+      setPopup("details");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
-        // =================================================
-        // NAVIGATE
-        // =================================================
-
-        navigate(
-          "/saved-devices",
-          {
-            replace: true,
-          }
-        );
-
-
-        navigate(
-          "/home"
-        );
-
-      } catch (err) {
-
-        console.error(
-          "Add device error:",
-          err
-        );
-
-
-        setError(
-          "Server error. Please try again."
-        );
-
-
-        setPopup(
-          "details"
-        );
-
-      } finally {
-
-        setLoading(false);
-      }
-    };
-
-
-  // =====================================================
   // BACK BUTTON
-  // =====================================================
+  const handleBack = () => {
+    if (popup !== null) {
+      setPopup(null);
+      return;
+    }
 
-  const handleBack =
-    () => {
-
-      if (
-        popup !== null
-      ) {
-
-        setPopup(null);
-
-        return;
-      }
+    navigate(-1);
+  };
 
 
-      navigate(-1);
-    };
-
-
-  // =====================================================
   // UI
-  // =====================================================
-
   return (
+    <div style={{ minHeight: "100vh", width: "100%", background: P.pageSide, fontFamily: "'Inter', sans-serif" }}>
 
-    <div
-      style={{
-        minHeight:
-          "100vh",
+      {/* PHONE-SIZED AREA */}
+      <div style={{ width: "100%", maxWidth: 520, minHeight: "100vh", margin: "0 auto", position: "relative", overflow: "clip", background: "#0B0B0B" }}>
 
-        width:
-          "100%",
-
-        background:
-          P.pageSide,
-
-        fontFamily:
-          "'Inter', sans-serif",
-      }}
-    >
-
-      {/* =================================================
-          PHONE-SIZED AREA
-      ================================================= */}
-
-      <div
-        style={{
-          width:
-            "100%",
-
-          maxWidth:
-            520,
-
-          minHeight:
-            "100vh",
-
-          margin:
-            "0 auto",
-
-          position:
-            "relative",
-
-          overflow:
-            "clip",
-
-          background:
-            "#0B0B0B",
-        }}
-      >
-
-
-        {/* =================================================
-            CAMERA / QUICK ACCESS
-        ================================================= */}
-
-        <div
-          style={{
-            position:
-              "absolute",
-
-            inset:
-              0,
-
-            display:
-              "flex",
-
-            flexDirection:
-              "column",
-          }}
-        >
+        {/* CAMERA / QUICK ACCESS */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}>
 
           {/* CAMERA */}
+          <div style={{ flex: 1, width: "100%", background: "#000", position: "relative" }}>
 
-          <div
-            style={{
-              flex:
-                1,
-
-              width:
-                "100%",
-
-              background:
-                "#000",
-
-              position:
-                "relative",
-            }}
-          >
-
-            <div
-              id={
-                scannerId
-              }
-
-              style={{
-                width:
-                  "100%",
-
-                height:
-                  "100%",
-
-                display:
-                  cameraOn
-                    ? "block"
-                    : "none",
-              }}
-            />
-
+            <div id={scannerId} style={{ width: "100%", height: "100%", display: cameraOn ? "block" : "none" }} />
 
             {/* CAMERA OFF */}
-
             {!cameraOn && (
-
               <button
                 type="button"
-
-                onClick={
-                  startScanner
-                }
-
+                onClick={startScanner}
                 style={{
-                  position:
-                    "absolute",
-
-                  inset:
-                    0,
-
-                  width:
-                    "100%",
-
-                  height:
-                    "100%",
-
-                  border:
-                    "none",
-
-                  background:
-                    "transparent",
-
-                  display:
-                    "flex",
-
-                  flexDirection:
-                    "column",
-
-                  alignItems:
-                    "center",
-
-                  justifyContent:
-                    "center",
-
-                  gap:
-                    12,
-
-                  cursor:
-                    "pointer",
-
-                  color:
-                    "#cfcfcf",
-
-                  WebkitTapHighlightColor:
-                    "transparent",
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  background: "transparent",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                  cursor: "pointer",
+                  color: "#cfcfcf",
+                  WebkitTapHighlightColor: "transparent",
                 }}
               >
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="34"
-                  height="34"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-
-                  <path
-                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
-                  />
-
-                  <circle
-                    cx="12"
-                    cy="13"
-                    r="4"
-                  />
-
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                  <circle cx="12" cy="13" r="4" />
                 </svg>
 
-
-                <div
-                  style={{
-                    fontSize:
-                      13,
-
-                    padding:
-                      "0 24px",
-
-                    textAlign:
-                      "center",
-                  }}
-                >
-
+                <div style={{ fontSize: 13, padding: "0 24px", textAlign: "center" }}>
                   Tap to scan the device barcode
-
                 </div>
-
               </button>
-
             )}
-
 
             {/* CAMERA STARTING */}
-
-            {cameraOn &&
-              !cameraReady && (
-
-                <div
-                  style={{
-                    position:
-                      "absolute",
-
-                    inset:
-                      0,
-
-                    display:
-                      "flex",
-
-                    alignItems:
-                      "center",
-
-                    justifyContent:
-                      "center",
-
-                    color:
-                      "#cfcfcf",
-
-                    fontSize:
-                      13,
-                  }}
-                >
-
-                  Starting camera…
-
-                </div>
-
-              )}
-
+            {cameraOn && !cameraReady && (
+              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#cfcfcf", fontSize: 13 }}>
+                Starting camera…
+              </div>
+            )}
 
             {/* CLOSE CAMERA */}
-
             {cameraOn && (
-
               <button
                 type="button"
-
-                onClick={
-                  stopScanner
-                }
-
+                onClick={stopScanner}
                 aria-label="Close camera"
-
                 style={{
-                  position:
-                    "absolute",
-
-                  top:
-                    14,
-
-                  right:
-                    14,
-
-                  width:
-                    34,
-
-                  height:
-                    34,
-
-                  borderRadius:
-                    "50%",
-
-                  border:
-                    "none",
-
-                  background:
-                    "rgba(0,0,0,0.5)",
-
-                  color:
-                    "#fff",
-
-                  display:
-                    "flex",
-
-                  alignItems:
-                    "center",
-
-                  justifyContent:
-                    "center",
-
-                  cursor:
-                    "pointer",
-
-                  fontSize:
-                    18,
+                  position: "absolute",
+                  top: 14,
+                  right: 14,
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: "rgba(0,0,0,0.5)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  fontSize: 18,
                 }}
               >
-
                 ×
-
               </button>
-
             )}
-
 
             {/* CAMERA ERROR */}
-
             {cameraError && (
-
-              <div
-                style={{
-                  position:
-                    "absolute",
-
-                  bottom:
-                    10,
-
-                  left:
-                    16,
-
-                  right:
-                    16,
-
-                  textAlign:
-                    "center",
-
-                  color:
-                    "#ff9a9a",
-
-                  fontSize:
-                    12,
-                }}
-              >
-
+              <div style={{ position: "absolute", bottom: 10, left: 16, right: 16, textAlign: "center", color: "#ff9a9a", fontSize: 12 }}>
                 {cameraError}
-
               </div>
-
             )}
-
           </div>
 
-
-          {/* =================================================
-              BOTTOM PANEL
-          ================================================= */}
-
-          <div
-            style={{
-              padding:
-                "16px 20px calc(28px + env(safe-area-inset-bottom))",
-
-              boxSizing:
-                "border-box",
-            }}
-          >
+          {/* BOTTOM PANEL */}
+          <div style={{ padding: "16px 20px calc(28px + env(safe-area-inset-bottom))", boxSizing: "border-box" }}>
 
             <input
               type="text"
-
               inputMode="text"
-
               placeholder="Scan or enter device code"
-
-              value={
-                imei
-              }
-
+              value={imei}
               onChange={(e) => {
-
                 // No numeric-only restriction.
                 // No 15-character restriction.
-
-                setImei(
-                  e.target.value
-                );
-
+                setImei(e.target.value);
                 setError("");
               }}
-
               style={{
-                width:
-                  "100%",
-
-                padding:
-                  "13px 16px",
-
-                borderRadius:
-                  8,
-
-                border:
-                  `1px solid ${P.amber}`,
-
-                background:
-                  "#FFFDF6",
-
-                color:
-                  P.textPrimary,
-
-                fontSize:
-                  14,
-
-                fontFamily:
-                  "'Inter', sans-serif",
-
-                outline:
-                  "none",
-
-                boxSizing:
-                  "border-box",
-
-                marginBottom:
-                  10,
+                width: "100%",
+                padding: "13px 16px",
+                borderRadius: 8,
+                border: `1px solid ${P.amber}`,
+                background: "#FFFDF6",
+                color: P.textPrimary,
+                fontSize: 14,
+                fontFamily: "'Inter', sans-serif",
+                outline: "none",
+                boxSizing: "border-box",
+                marginBottom: 10,
               }}
             />
 
-
             <button
               type="button"
-
-              onClick={
-                handleOpenQuickAccess
-              }
-
-              disabled={
-                loading
-              }
-
+              onClick={handleOpenQuickAccess}
+              disabled={loading}
               style={{
-                width:
-                  "100%",
-
-                padding:
-                  "15px 16px",
-
-                border:
-                  "none",
-
-                borderRadius:
-                  8,
-
-                background:
-                  "linear-gradient(180deg, #2F8FD1 0%, #1F6FB5 100%)",
-
-                color:
-                  P.textWhite,
-
-                fontSize:
-                  15,
-
-                fontWeight:
-                  700,
-
-                letterSpacing:
-                  0.6,
-
-                textTransform:
-                  "uppercase",
-
-                fontFamily:
-                  "'DM Sans', sans-serif",
-
-                cursor:
-                  loading
-                    ? "not-allowed"
-                    : "pointer",
-
-                opacity:
-                  loading
-                    ? 0.7
-                    : 1,
+                width: "100%",
+                padding: "15px 16px",
+                border: "none",
+                borderRadius: 8,
+                background: "linear-gradient(180deg, #2F8FD1 0%, #1F6FB5 100%)",
+                color: P.textWhite,
+                fontSize: 15,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                textTransform: "uppercase",
+                fontFamily: "'DM Sans', sans-serif",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.7 : 1,
               }}
             >
-
-              {loading
-                ? "Opening..."
-                : "Open Quick Access"}
-
+              {loading ? "Opening..." : "Open Quick Access"}
             </button>
 
-
-            <div
-              style={{
-                marginTop:
-                  8,
-
-                fontSize:
-                  11,
-
-                color:
-                  "#d8d8d8",
-
-                width:
-                  "100%",
-
-                textAlign:
-                  "center",
-
-                padding:
-                  "0 16px",
-
-                boxSizing:
-                  "border-box",
-              }}
-            >
-
+            <div style={{ marginTop: 8, fontSize: 11, color: "#d8d8d8", width: "100%", textAlign: "center", padding: "0 16px", boxSizing: "border-box" }}>
               Place a barcode inside the viewfinder rectangle to scan it.
-
             </div>
 
-
             {/* ERROR */}
+            {error && popup === null && (
+              <div style={{ marginTop: 10, padding: "9px 14px", borderRadius: 8, background: "#3a1414", border: "1px solid #5a2020", color: "#ff9a9a", fontSize: 12 }}>
+                {error}
+              </div>
+            )}
+          </div>
+        </div>
 
-            {error &&
-              popup === null && (
+        {/* SELECT PRODUCT TYPE */}
+        {popup === "productType" && (
+          <PopupOverlay>
+            <PopupCard title="Select Product Type">
+              {PRODUCT_TYPES.map((type) => (
+                <PopupListItem key={type} onClick={() => handleSelectProductType(type)}>
+                  {type}
+                </PopupListItem>
+              ))}
+            </PopupCard>
+          </PopupOverlay>
+        )}
 
-                <div
-                  style={{
-                    marginTop:
-                      10,
+        {/* SELECT GRID-TIE MODEL */}
+        {popup === "model" && (
+          <PopupOverlay>
+            <PopupCard title="Select Model">
+              {GRID_TIE_MODELS.map((m) => (
+                <PopupListItem key={m} onClick={() => handleSelectModel(m)}>
+                  {m}
+                </PopupListItem>
+              ))}
+            </PopupCard>
+          </PopupOverlay>
+        )}
 
-                    padding:
-                      "9px 14px",
+        {/* SELECT THREE-PHASE RATING */}
 
-                    borderRadius:
-                      8,
+        {/* {popup === "rating" && (
+          <PopupOverlay>
+            <PopupCard title="Select Rating" scrollable>
+              {THREE_PHASE_RATINGS.map((item) => (
+                <RatingListItem key={item} onClick={() => handleSelectRating(item)}>
+                  {item}
+                </RatingListItem>
+              ))}
 
-                    background:
-                      "#3a1414",
+              <RatingListItem
+                onClick={() => {
+                  setRating("");
+                  setModel("");
+                  setPopup("model");
+                }}
+              >
+                Cancel
+              </RatingListItem>
+            </PopupCard>
+          </PopupOverlay>
+        )} */}
 
-                    border:
-                      "1px solid #5a2020",
+        {popup === "rating" && (
+          <PopupOverlay>
+            <PopupCard title="Select Rating" scrollable>
+              {THREE_PHASE_RATINGS.map((item) => (
+                <PopupListItem key={item} onClick={() => handleSelectRating(item)}>
+                  {item}
+                </PopupListItem>
+              ))}
 
-                    color:
-                      "#ff9a9a",
+              <PopupListItem
+                onClick={() => {
+                  setRating("");
+                  setModel("");
+                  setPopup("model");
+                }}
+              >
+                Cancel
+              </PopupListItem>
+            </PopupCard>
+          </PopupOverlay>
+        )}
 
-                    fontSize:
-                      12,
-                  }}
-                >
+        {/* CONFIRM ADD */}
+        {popup === "confirmAdd" && (
+          <PopupOverlay>
+            <PopupCard title="Add Device" subtitle="Do you want to add this device to your list?">
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 22, marginTop: 18 }}>
+                <PopupTextButton onClick={handleConfirmAddNo}>
+                  NO
+                </PopupTextButton>
 
+                <PopupTextButton onClick={handleConfirmAddYes} strong>
+                  YES
+                </PopupTextButton>
+              </div>
+            </PopupCard>
+          </PopupOverlay>
+        )}
+
+        {/* ENTER DEVICE DETAILS */}
+        {popup === "details" && (
+          <PopupOverlay>
+            <PopupCard title="Enter Device Details" subtitle="Nickname and Address">
+              <input
+                type="text"
+                placeholder="e.g. Main Roof Inverter"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                style={popupInputStyle}
+              />
+
+              <input
+                type="text"
+                placeholder="e.g. 123 Solar Street"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                style={{ ...popupInputStyle, marginBottom: 4 }}
+              />
+
+              {error && (
+                <div style={{ marginTop: 8, fontSize: 12, color: P.textErrorMsg }}>
                   {error}
-
                 </div>
-
               )}
 
-          </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 22, marginTop: 18 }}>
+                <PopupTextButton onClick={handleDetailsCancel} disabled={loading}>
+                  CANCEL
+                </PopupTextButton>
 
-        </div>
-
-
-        {/* =================================================
-            SELECT PRODUCT TYPE
-        ================================================= */}
-
-        {popup ===
-          "productType" && (
-
-            <PopupOverlay>
-
-              <PopupCard
-                title="Select Product Type"
-              >
-
-                {PRODUCT_TYPES.map(
-                  (type) => (
-
-                    <PopupListItem
-                      key={
-                        type
-                      }
-
-                      onClick={() =>
-                        handleSelectProductType(
-                          type
-                        )
-                      }
-                    >
-
-                      {type}
-
-                    </PopupListItem>
-
-                  )
-                )}
-
-              </PopupCard>
-
-            </PopupOverlay>
-
-          )}
-
-
-        {/* =================================================
-            SELECT GRID-TIE MODEL
-        ================================================= */}
-
-        {popup ===
-          "model" && (
-
-            <PopupOverlay>
-
-              <PopupCard
-                title="Select Model"
-              >
-
-                {GRID_TIE_MODELS.map(
-                  (m) => (
-
-                    <PopupListItem
-                      key={
-                        m
-                      }
-
-                      onClick={() =>
-                        handleSelectModel(
-                          m
-                        )
-                      }
-                    >
-
-                      {m}
-
-                    </PopupListItem>
-
-                  )
-                )}
-
-              </PopupCard>
-
-            </PopupOverlay>
-
-          )}
-
-
-        {/* =================================================
-    SELECT THREE-PHASE RATING
-================================================= */}
-
-        {/* {popup ===
-          "rating" && (
-
-            <PopupOverlay>
-
-              <PopupCard
-                title="Select Rating"
-                scrollable
-              >
-
-                {THREE_PHASE_RATINGS.map(
-                  (item) => (
-
-                    <RatingListItem
-                      key={
-                        item
-                      }
-
-                      onClick={() =>
-                        handleSelectRating(
-                          item
-                        )
-                      }
-                    >
-
-                      {item}
-
-                    </RatingListItem>
-
-                  )
-                )}
-
-
-                <RatingListItem
-                  onClick={() => {
-
-                    setRating("");
-                    setModel("");
-
-                    setPopup(
-                      "model"
-                    );
-                  }}
-                >
-                  Cancel
-                </RatingListItem>
-
-              </PopupCard>
-
-            </PopupOverlay>
-
-          )} */}
-
-
-
-          {popup ===
-  "rating" && (
-
-    <PopupOverlay>
-
-      <PopupCard
-        title="Select Rating"
-        scrollable
-      >
-
-        {THREE_PHASE_RATINGS.map(
-          (item) => (
-
-            <PopupListItem
-              key={item}
-
-              onClick={() =>
-                handleSelectRating(
-                  item
-                )
-              }
-            >
-
-              {item}
-
-            </PopupListItem>
-
-          )
+                <PopupTextButton onClick={handleDetailsSave} strong disabled={loading}>
+                  {loading ? "ADDING..." : "SAVE"}
+                </PopupTextButton>
+              </div>
+            </PopupCard>
+          </PopupOverlay>
         )}
 
-
-        <PopupListItem
-          onClick={() => {
-
-            setRating("");
-            setModel("");
-
-            setPopup(
-              "model"
-            );
-          }}
-        >
-
-          Cancel
-
-        </PopupListItem>
-
-      </PopupCard>
-
-    </PopupOverlay>
-
-  )}
-
-        {/* =================================================
-            CONFIRM ADD
-        ================================================= */}
-
-        {popup ===
-          "confirmAdd" && (
-
-            <PopupOverlay>
-
-              <PopupCard
-                title="Add Device"
-                subtitle="Do you want to add this device to your list?"
-              >
-
-                <div
-                  style={{
-                    display:
-                      "flex",
-
-                    justifyContent:
-                      "flex-end",
-
-                    gap:
-                      22,
-
-                    marginTop:
-                      18,
-                  }}
-                >
-
-                  <PopupTextButton
-                    onClick={
-                      handleConfirmAddNo
-                    }
-                  >
-
-                    NO
-
-                  </PopupTextButton>
-
-
-                  <PopupTextButton
-                    onClick={
-                      handleConfirmAddYes
-                    }
-
-                    strong
-                  >
-
-                    YES
-
-                  </PopupTextButton>
-
-                </div>
-
-              </PopupCard>
-
-            </PopupOverlay>
-
-          )}
-
-
-        {/* =================================================
-            ENTER DEVICE DETAILS
-        ================================================= */}
-
-        {popup ===
-          "details" && (
-
-            <PopupOverlay>
-
-              <PopupCard
-                title="Enter Device Details"
-                subtitle="Nickname and Address"
-              >
-
-                <input
-                  type="text"
-
-                  placeholder="e.g. Main Roof Inverter"
-
-                  value={
-                    nickname
-                  }
-
-                  onChange={(e) =>
-                    setNickname(
-                      e.target.value
-                    )
-                  }
-
-                  style={
-                    popupInputStyle
-                  }
-                />
-
-
-                <input
-                  type="text"
-
-                  placeholder="e.g. 123 Solar Street"
-
-                  value={
-                    address
-                  }
-
-                  onChange={(e) =>
-                    setAddress(
-                      e.target.value
-                    )
-                  }
-
-                  style={{
-                    ...popupInputStyle,
-                    marginBottom: 4,
-                  }}
-                />
-
-
-                {error && (
-
-                  <div
-                    style={{
-                      marginTop:
-                        8,
-
-                      fontSize:
-                        12,
-
-                      color:
-                        P.textErrorMsg,
-                    }}
-                  >
-
-                    {error}
-
-                  </div>
-
-                )}
-
-
-                <div
-                  style={{
-                    display:
-                      "flex",
-
-                    justifyContent:
-                      "flex-end",
-
-                    gap:
-                      22,
-
-                    marginTop:
-                      18,
-                  }}
-                >
-
-                  <PopupTextButton
-                    onClick={
-                      handleDetailsCancel
-                    }
-
-                    disabled={
-                      loading
-                    }
-                  >
-
-                    CANCEL
-
-                  </PopupTextButton>
-
-
-                  <PopupTextButton
-                    onClick={
-                      handleDetailsSave
-                    }
-
-                    strong
-
-                    disabled={
-                      loading
-                    }
-                  >
-
-                    {loading
-                      ? "ADDING..."
-                      : "SAVE"}
-
-                  </PopupTextButton>
-
-                </div>
-
-              </PopupCard>
-
-            </PopupOverlay>
-
-          )}
-
-
-        {/* =================================================
-            BACK BUTTON
-        ================================================= */}
-
-        <div
-          style={{
-            position:
-              "absolute",
-
-            top:
-              16,
-
-            left:
-              16,
-
-            zIndex:
-              10,
-          }}
-        >
-
+        {/* BACK BUTTON */}
+        <div style={{ position: "absolute", top: 16, left: 16, zIndex: 10 }}>
           <button
             type="button"
-
-            onClick={
-              handleBack
-            }
-
+            onClick={handleBack}
             style={{
-              width:
-                40,
-
-              height:
-                40,
-
-              borderRadius:
-                "50%",
-
-              backgroundColor:
-                "#fff",
-
-              border:
-                "none",
-
-              display:
-                "flex",
-
-              alignItems:
-                "center",
-
-              justifyContent:
-                "center",
-
-              cursor:
-                "pointer",
-
-              fontSize:
-                18,
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              backgroundColor: "#fff",
+              border: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: 18,
             }}
           >
-
             ←
-
           </button>
-
         </div>
 
-
-        {/* =================================================
-            TOAST
-        ================================================= */}
-
+        {/* TOAST */}
         {toast && (
-
           <div
             style={{
-              position:
-                "absolute",
-
-              left:
-                "50%",
-
-              top:
-                "46%",
-
-              transform:
-                "translate(-50%, -50%)",
-
-              background:
-                "rgba(40, 40, 40, 0.94)",
-
-              color:
-                "#fff",
-
-              padding:
-                "11px 20px",
-
-              borderRadius:
-                20,
-
-              fontSize:
-                13,
-
-              fontFamily:
-                "'Inter', sans-serif",
-
-              whiteSpace:
-                "nowrap",
-
-              zIndex:
-                4000,
-
-              boxShadow:
-                "0 4px 14px rgba(0, 0, 0, 0.3)",
+              position: "absolute",
+              left: "50%",
+              top: "46%",
+              transform: "translate(-50%, -50%)",
+              background: "rgba(40, 40, 40, 0.94)",
+              color: "#fff",
+              padding: "11px 20px",
+              borderRadius: 20,
+              fontSize: 13,
+              fontFamily: "'Inter', sans-serif",
+              whiteSpace: "nowrap",
+              zIndex: 4000,
+              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
             }}
           >
-
             {toast}
-
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }
 
 
-// =====================================================
 // POPUP INPUT
-// =====================================================
-
 const popupInputStyle = {
-
-  width:
-    "100%",
-
-  padding:
-    "10px 2px",
-
-  marginBottom:
-    18,
-
-  border:
-    "none",
-
-  borderBottom:
-    `1px solid ${P.border}`,
-
-  background:
-    "transparent",
-
-  fontSize:
-    14,
-
-  fontFamily:
-    "'Inter', sans-serif",
-
-  color:
-    P.textPrimary,
-
-  outline:
-    "none",
-
-  boxSizing:
-    "border-box",
+  width: "100%",
+  padding: "10px 2px",
+  marginBottom: 18,
+  border: "none",
+  borderBottom: `1px solid ${P.border}`,
+  background: "transparent",
+  fontSize: 14,
+  fontFamily: "'Inter', sans-serif",
+  color: P.textPrimary,
+  outline: "none",
+  boxSizing: "border-box",
 };
 
 
-// =====================================================
 // POPUP OVERLAY
-// =====================================================
-
-function PopupOverlay({
-  children,
-}) {
-
+function PopupOverlay({ children }) {
   return (
-
     <div
       style={{
-        position:
-          "absolute",
-
-        inset:
-          0,
-
-        background:
-          "rgba(0, 0, 0, 0.45)",
-
-        display:
-          "flex",
-
-        alignItems:
-          "center",
-
-        justifyContent:
-          "center",
-
-        padding:
-          "0 24px",
-
-        zIndex:
-          2000,
-
-        boxSizing:
-          "border-box",
+        position: "absolute",
+        inset: 0,
+        background: "rgba(0, 0, 0, 0.45)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "0 24px",
+        zIndex: 2000,
+        boxSizing: "border-box",
       }}
     >
-
       {children}
-
     </div>
   );
 }
 
 
-// =====================================================
 // POPUP CARD
-// =====================================================
 
-// function PopupCard({
-//   title,
-//   subtitle,
-//   children,
-// }) {
+// function PopupCard({ title, subtitle, children }) {
 
-function PopupCard({
-  title,
-  subtitle,
-  children,
-  scrollable = false,
-}) {
-
+function PopupCard({ title, subtitle, children, scrollable = false }) {
   return (
 
     // <div
     //   style={{
-    //     width:
-    //       "100%",
-
-    //     maxWidth:
-    //       360,
-
-    //     background:
-    //       "#FBEFDD",
-
-    //     borderRadius:
-    //       4,
-
-    //     padding:
-    //       "20px 22px",
-
-    //     boxShadow:
-    //       "0 12px 32px rgba(0, 0, 0, 0.35)",
-
-    //     boxSizing:
-    //       "border-box",
+    //     width: "100%",
+    //     maxWidth: 360,
+    //     background: "#FBEFDD",
+    //     borderRadius: 4,
+    //     padding: "20px 22px",
+    //     boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
+    //     boxSizing: "border-box",
     //   }}
     // >
 
-
     <div
       style={{
-        width:
-          "100%",
+        width: "100%",
+        maxWidth: 360,
 
-        maxWidth:
-          360,
+        maxHeight: scrollable ? "82vh" : "none",
+        overflowY: scrollable ? "auto" : "visible",
+        WebkitOverflowScrolling: "touch",
 
-        maxHeight:
-          scrollable
-            ? "82vh"
-            : "none",
+        // background: "#F5F5F2",
+        // borderRadius: scrollable ? 34 : 4,
+        // padding: scrollable ? "10px 16px 16px" : "20px 22px",
 
-        overflowY:
-          scrollable
-            ? "auto"
-            : "visible",
+        background: "#F5F5F2",
+        borderRadius: 4,
+        padding: "20px 22px",
 
-        WebkitOverflowScrolling:
-          "touch",
-
-        // background:
-        //   "#F5F5F2",
-
-        // borderRadius:
-        //   scrollable
-        //     ? 34
-        //     : 4,
-
-        // padding:
-        //   scrollable
-        //     ? "10px 16px 16px"
-        //     : "20px 22px",
-
-
-        background:
-  "#F5F5F2",
-
-borderRadius:
-  4,
-
-padding:
-  "20px 22px",
-
-        boxShadow:
-          "0 12px 32px rgba(0, 0, 0, 0.35)",
-
-        boxSizing:
-          "border-box",
+        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
+        boxSizing: "border-box",
       }}
     >
-{/* 
+      {/*
       <div
         style={{
-          fontSize:
-            17,
-
-          fontWeight:
-            700,
-
-          color:
-            P.textPrimary,
-
-          fontFamily:
-            "'DM Sans', sans-serif",
-
-          marginBottom:
-            subtitle
-              ? 4
-              : 14,
+          fontSize: 17,
+          fontWeight: 700,
+          color: P.textPrimary,
+          fontFamily: "'DM Sans', sans-serif",
+          marginBottom: subtitle ? 4 : 14,
         }}
       >
-
         {title}
-
       </div> */}
 
-
       <div
-  style={{
-    fontSize:
-      scrollable
-        ? 20
-        : 17,
-
-    fontWeight:
-      scrollable
-        ? 500
-        : 700,
-
-    color:
-      P.textPrimary,
-
-    fontFamily:
-      "'DM Sans', sans-serif",
-
-    textAlign:
-      scrollable
-        ? "center"
-        : "left",
-
-    marginBottom:
-      subtitle
-        ? 4
-        : 14,
-  }}
->
-  {title}
-</div>
-
+        style={{
+          fontSize: scrollable ? 20 : 17,
+          fontWeight: scrollable ? 500 : 700,
+          color: P.textPrimary,
+          fontFamily: "'DM Sans', sans-serif",
+          textAlign: scrollable ? "center" : "left",
+          marginBottom: subtitle ? 4 : 14,
+        }}
+      >
+        {title}
+      </div>
 
       {subtitle && (
-
-        <div
-          style={{
-            fontSize:
-              13,
-
-            color:
-              P.textSecond,
-
-            fontFamily:
-              "'Inter', sans-serif",
-
-            marginBottom:
-              16,
-          }}
-        >
-
+        <div style={{ fontSize: 13, color: P.textSecond, fontFamily: "'Inter', sans-serif", marginBottom: 16 }}>
           {subtitle}
-
         </div>
-
       )}
 
-
       {children}
-
     </div>
   );
 }
 
 
-// =====================================================
 // POPUP LIST ITEM
-// =====================================================
-
-function PopupListItem({
-  children,
-  onClick,
-}) {
-
+function PopupListItem({ children, onClick }) {
   return (
-
     <button
       type="button"
-
-      onClick={
-        onClick
-      }
-
+      onClick={onClick}
       style={{
-        display:
-          "block",
-
-        width:
-          "100%",
-
-        textAlign:
-          "left",
-
-        background:
-          "none",
-
-        border:
-          "none",
-
-        padding:
-          "10px 0",
-
-        fontSize:
-          14,
-
-        color:
-          P.textPrimary,
-
-        fontFamily:
-          "'Inter', sans-serif",
-
-        cursor:
-          "pointer",
-
-        WebkitTapHighlightColor:
-          "transparent",
+        display: "block",
+        width: "100%",
+        textAlign: "left",
+        background: "none",
+        border: "none",
+        padding: "10px 0",
+        fontSize: 14,
+        color: P.textPrimary,
+        fontFamily: "'Inter', sans-serif",
+        cursor: "pointer",
+        WebkitTapHighlightColor: "transparent",
       }}
     >
-
       {children}
-
     </button>
   );
 }
 
 
-// =====================================================
 // POPUP TEXT BUTTON
-// =====================================================
-
-function PopupTextButton({
-  children,
-  onClick,
-  strong = false,
-  disabled = false,
-}) {
-
+function PopupTextButton({ children, onClick, strong = false, disabled = false }) {
   return (
-
     <button
       type="button"
-
-      onClick={
-        onClick
-      }
-
-      disabled={
-        disabled
-      }
-
+      onClick={onClick}
+      disabled={disabled}
       style={{
-        background:
-          "none",
-
-        border:
-          "none",
-
-        padding:
-          "6px 4px",
-
-        fontSize:
-          13,
-
-        fontWeight:
-          700,
-
-        letterSpacing:
-          0.4,
-
-        color:
-          strong
-            ? P.amberDark
-            : P.textSecond,
-
-        fontFamily:
-          "'DM Sans', sans-serif",
-
-        cursor:
-          disabled
-            ? "not-allowed"
-            : "pointer",
-
-        opacity:
-          disabled
-            ? 0.6
-            : 1,
-
-        WebkitTapHighlightColor:
-          "transparent",
+        background: "none",
+        border: "none",
+        padding: "6px 4px",
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: 0.4,
+        color: strong ? P.amberDark : P.textSecond,
+        fontFamily: "'DM Sans', sans-serif",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.6 : 1,
+        WebkitTapHighlightColor: "transparent",
       }}
     >
-
       {children}
-
     </button>
   );
 }
 
 
-// // =====================================================
 // // RATING LIST ITEM
-// // =====================================================
 
-// function RatingListItem({
-//   children,
-//   onClick,
-// }) {
-
+// function RatingListItem({ children, onClick }) {
 //   return (
-
 //     <button
 //       type="button"
-
-//       onClick={
-//         onClick
-//       }
-
+//       onClick={onClick}
 //       style={{
-//         display:
-//           "block",
-
-//         width:
-//           "100%",
-
-//         minHeight:
-//           58,
-
-//         marginBottom:
-//           10,
-
-//         padding:
-//           "10px 16px",
-
-//         border:
-//           "none",
-
-//         borderRadius:
-//           32,
-
-//         background:
-//           "rgba(190, 194, 194, 0.72)",
-
-//         color:
-//           "#111111",
-
-//         fontSize:
-//           19,
-
-//         fontWeight:
-//           500,
-
-//         fontFamily:
-//           "'Inter', sans-serif",
-
-//         textAlign:
-//           "center",
-
-//         cursor:
-//           "pointer",
-
-//         boxSizing:
-//           "border-box",
-
-//         WebkitTapHighlightColor:
-//           "transparent",
+//         display: "block",
+//         width: "100%",
+//         minHeight: 58,
+//         marginBottom: 10,
+//         padding: "10px 16px",
+//         border: "none",
+//         borderRadius: 32,
+//         background: "rgba(190, 194, 194, 0.72)",
+//         color: "#111111",
+//         fontSize: 19,
+//         fontWeight: 500,
+//         fontFamily: "'Inter', sans-serif",
+//         textAlign: "center",
+//         cursor: "pointer",
+//         boxSizing: "border-box",
+//         WebkitTapHighlightColor: "transparent",
 //       }}
 //     >
-
 //       {children}
-
 //     </button>
 //   );
 // }

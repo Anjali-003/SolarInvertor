@@ -18,13 +18,20 @@ import { getAllSavedDevices } from "../utils/deviceMeta";
 
 const InverterContext = createContext();
 //VPSCHANGE
-const API_BASE = "http://localhost:3000";
+// const API_BASE = "http://localhost:3000";
 // const API_BASE = "http://213.210.21.49:3001";
 
+// const EMPTY_ENERGY = {
+//   today: 0,
+//   monthly: 0,
+//   yearly: 0,
+// };
+
+
 const EMPTY_ENERGY = {
-  today: 0,
-  monthly: 0,
-  yearly: 0,
+    today: null,
+    monthly: null,
+    yearly: null,
 };
 
 const EMPTY_CHARTS = {
@@ -145,9 +152,9 @@ export function InverterProvider({ children }) {
         saved.map(async (local) => {
           try {
             const res = await fetch(
-              `${API_BASE}/api/user/devices/${local.imei}`,
+              // `${API_BASE}/api/user/devices/${local.imei}`,
             // VPSCHANGE
-                        //   `/api/user/devices/${local.imei}`,
+                          `/api/user/devices/${local.imei}`,
 
             );
 
@@ -254,9 +261,9 @@ export function InverterProvider({ children }) {
 
     try {
       const res = await fetch(
-        `${API_BASE}/api/latest-message?imei=${selectedDeviceId}`,
+        // `${API_BASE}/api/latest-message?imei=${selectedDeviceId}`,
         // VPSCHANGE
-        // `/api/latest-message?imei=${selectedDeviceId}`,
+        `/api/latest-message?imei=${selectedDeviceId}`,
 
         {
           method: "GET",
@@ -400,9 +407,9 @@ setData({
 
     try {
       const res = await fetch(
-        `${API_BASE}/api/energy/summary?imei=${selectedDeviceId}`,
+        // `${API_BASE}/api/energy/summary?imei=${selectedDeviceId}`,
         // VPSCHANGE
-        // `/api/energy/summary?imei=${selectedDeviceId}`,
+        `/api/energy/summary?imei=${selectedDeviceId}`,
 
         {
           method: "GET",
@@ -549,9 +556,9 @@ setData({
         });
 
         const res = await fetch(
-          `${API_BASE}/api/energy/chart?${params.toString()}`,
+          // `${API_BASE}/api/energy/chart?${params.toString()}`,
         // VPSCHANGE
-        // `/api/energy/chart?${params.toString()}`,
+        `/api/energy/chart?${params.toString()}`,
           {
             method: "GET",
           },

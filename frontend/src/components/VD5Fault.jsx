@@ -20,158 +20,361 @@ export default function VD5FaultContent({
     // PARAMETER HELPER
     // =====================================================
 
+    // const getParameterValue = (
+    //     parameter,
+    //     fallback = "--",
+    //     kind = null
+    // ) => {
+
+    //     const value =
+    //         data?.[parameter];
+
+
+    //     if (
+    //         value === undefined ||
+    //         value === null
+    //     ) {
+    //         return fallback;
+    //     }
+
+
+    //     return sanitizeReading(
+    //         value,
+    //         kind,
+    //         null
+    //     ) === "--"
+    //         ? fallback
+    //         : value;
+    // };
+
+
+
     const getParameterValue = (
-        parameter,
-        fallback = "--",
-        kind = null
-    ) => {
+    parameter,
+    fallback = "--",
+    kind = null
+) => {
 
-        const value =
-            data?.[parameter];
+    const value =
+        data?.[parameter];
 
+    if (
+        value === undefined ||
+        value === null
+    ) {
+        return fallback;
+    }
 
-        if (
-            value === undefined ||
-            value === null
-        ) {
-            return fallback;
-        }
-
-
-        return sanitizeReading(
+    const sanitized =
+        sanitizeReading(
             value,
             kind,
             null
-        ) === "--"
-            ? fallback
-            : value;
-    };
+        );
 
+    return sanitized === "--"
+        ? fallback
+        : sanitized;
+};
 
     // =====================================================
     // CUF
     // =====================================================
 
-    const formatCUF = (
-        value
-    ) => {
+    // const formatCUF = (
+    //     value
+    // ) => {
 
-        const number =
-            Number(value);
-
-
-        if (
-            !Number.isFinite(
-                number
-            )
-        ) {
-            return "--";
-        }
+    //     const number =
+    //         Number(value);
 
 
-        return number.toFixed(2);
-    };
+    //     if (
+    //         !Number.isFinite(
+    //             number
+    //         )
+    //     ) {
+    //         return "--";
+    //     }
+
+
+    //     return number.toFixed(2);
+    // };
+
+    const formatCUF = (value) => {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return "--";
+    }
+
+
+    const number =
+        Number(value);
+
+
+    if (
+        !Number.isFinite(number)
+    ) {
+        return "--";
+    }
+
+
+    return number.toFixed(2);
+};
+
+
+    // // =====================================================
+    // // ST3
+    // // =====================================================
+
+    // const st3 =
+    //     Number(
+    //         data?.ST3 ?? 0
+    //     );
+
+
+    // const inverterRelayConnected =
+    //     Boolean(
+    //         st3 &
+    //         (1 << 0)
+    //     );
+
+
+    // const gridRelayConnected =
+    //     Boolean(
+    //         st3 &
+    //         (1 << 1)
+    //     );
+
+
+    // const statusFromST3 =
+    //     Boolean(
+    //         st3 &
+    //         (1 << 2)
+    //     );
+
+
+    // // =====================================================
+    // // STINTERVAL
+    // // =====================================================
+
+    // const stInterval =
+    //     Number(
+    //         data?.STINTERVAL ?? 0
+    //     );
+
+
+    // const intervalTooLarge =
+    //     stInterval / 4 >= 1;
+
+
+    // // =====================================================
+    // // DATA AGE
+    // // =====================================================
+
+    // const updatedAt =
+    //     lastUpdated
+    //         ? new Date(
+    //             lastUpdated
+    //         ).getTime()
+    //         : null;
+
+
+    // const dataTooOld =
+    //     !updatedAt ||
+    //     (
+    //         Date.now() -
+    //         updatedAt
+    //     ) >=
+    //     3 * 60 * 1000;
+
+
+    // // =====================================================
+    // // FINAL INVERTER STATUS
+    // // =====================================================
+
+    // const inverterRunning =
+    //     statusFromST3 &&
+    //     !dataTooOld &&
+    //     !intervalTooLarge;
+
+
+    // const inverterRelayText =
+    //     inverterRelayConnected
+    //         ? "Connected"
+    //         : "Disconnected";
+
+
+    // const gridRelayText =
+    //     gridRelayConnected
+    //         ? "Connected"
+    //         : "Disconnected";
+
+
+    // const systemStatusText =
+    //     inverterRunning
+    //         ? "ON"
+    //         : "OFF";
+
+
+    // const systemStatusColor =
+    //     inverterRunning
+    //         ? P.green
+    //         : P.red;
 
 
     // =====================================================
-    // ST3
-    // =====================================================
+// STATUS DATA AVAILABILITY
+// =====================================================
 
-    const st3 =
-        Number(
-            data?.ST3 ?? 0
-        );
+const hasST3 =
+    data?.ST3 !== undefined &&
+    data?.ST3 !== null &&
+    Number.isFinite(
+        Number(data.ST3)
+    );
+
+const hasSTInterval =
+    data?.STINTERVAL !== undefined &&
+    data?.STINTERVAL !== null &&
+    Number.isFinite(
+        Number(data.STINTERVAL)
+    );
 
 
-    const inverterRelayConnected =
-        Boolean(
+// =====================================================
+// ST3
+// =====================================================
+
+const st3 =
+    hasST3
+        ? Number(data.ST3)
+        : null;
+
+
+const inverterRelayConnected =
+    hasST3
+        ? Boolean(
             st3 &
             (1 << 0)
-        );
+        )
+        : null;
 
 
-    const gridRelayConnected =
-        Boolean(
+const gridRelayConnected =
+    hasST3
+        ? Boolean(
             st3 &
             (1 << 1)
-        );
+        )
+        : null;
 
 
-    const statusFromST3 =
-        Boolean(
+const statusFromST3 =
+    hasST3
+        ? Boolean(
             st3 &
             (1 << 2)
-        );
+        )
+        : null;
 
 
-    // =====================================================
-    // STINTERVAL
-    // =====================================================
+// =====================================================
+// STINTERVAL
+// =====================================================
 
-    const stInterval =
-        Number(
-            data?.STINTERVAL ?? 0
-        );
-
-
-    const intervalTooLarge =
-        stInterval / 4 >= 1;
+const stInterval =
+    hasSTInterval
+        ? Number(data.STINTERVAL)
+        : null;
 
 
-    // =====================================================
-    // DATA AGE
-    // =====================================================
-
-    const updatedAt =
-        lastUpdated
-            ? new Date(
-                lastUpdated
-            ).getTime()
-            : null;
+const intervalTooLarge =
+    hasSTInterval
+        ? stInterval / 4 >= 1
+        : null;
 
 
-    const dataTooOld =
-        !updatedAt ||
-        (
+// =====================================================
+// DATA AGE
+// =====================================================
+
+const updatedAt =
+    lastUpdated
+        ? new Date(
+            lastUpdated
+        ).getTime()
+        : null;
+
+
+const hasValidTimestamp =
+    Number.isFinite(updatedAt);
+
+
+const dataTooOld =
+    hasValidTimestamp
+        ? (
             Date.now() -
             updatedAt
         ) >=
-        3 * 60 * 1000;
+        3 * 60 * 1000
+        : null;
 
 
-    // =====================================================
-    // FINAL INVERTER STATUS
-    // =====================================================
+// =====================================================
+// FINAL INVERTER STATUS
+// =====================================================
 
-    const inverterRunning =
-        statusFromST3 &&
-        !dataTooOld &&
-        !intervalTooLarge;
+const hasStatusData =
+    hasST3 &&
+    hasSTInterval &&
+    hasValidTimestamp;
 
 
-    const inverterRelayText =
-        inverterRelayConnected
+const inverterRunning =
+    hasStatusData
+        ? (
+            statusFromST3 &&
+            !dataTooOld &&
+            !intervalTooLarge
+        )
+        : null;
+
+
+const inverterRelayText =
+    inverterRelayConnected === null
+        ? "--"
+        : inverterRelayConnected
             ? "Connected"
             : "Disconnected";
 
 
-    const gridRelayText =
-        gridRelayConnected
+const gridRelayText =
+    gridRelayConnected === null
+        ? "--"
+        : gridRelayConnected
             ? "Connected"
             : "Disconnected";
 
 
-    const systemStatusText =
-        inverterRunning
+const systemStatusText =
+    inverterRunning === null
+        ? "--"
+        : inverterRunning
             ? "ON"
             : "OFF";
 
 
-    const systemStatusColor =
-        inverterRunning
+const systemStatusColor =
+    inverterRunning === null
+        ? undefined
+        : inverterRunning
             ? P.green
             : P.red;
-
 
     // =====================================================
     // VD5 FAULT DEFINITIONS

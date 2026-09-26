@@ -354,24 +354,70 @@ export default function VD7FaultContent({
     // IST = 1 -> ON
     // =====================================================
 
-    const ist =
-        Number(
-            data?.IST
-        );
+    // const ist =
+    //     Number(
+    //         data?.IST
+    //     );
 
 
-    const inverterOn =
-        ist === 1;
+    // const inverterOn =
+    //     ist === 1;
 
 
-    const inverterStatus =
-        inverterOn
+    // const inverterStatus =
+    //     inverterOn
+    //         ? "INVERTER ON"
+    //         : "INVERTER OFF";
+
+
+    // const inverterStatusColor =
+    //     inverterOn
+    //         ? P.green
+    //         : P.red;
+
+
+    // =====================================================
+// INVERTER STATUS
+//
+// VD7:
+//
+// IST = 0 -> OFF
+// IST = 1 -> ON
+// Missing -> --
+// =====================================================
+
+const hasIST =
+    data?.IST !== undefined &&
+    data?.IST !== null &&
+    Number.isFinite(
+        Number(data.IST)
+    );
+
+
+const ist =
+    hasIST
+        ? Number(data.IST)
+        : null;
+
+
+const inverterOn =
+    hasIST
+        ? ist === 1
+        : null;
+
+
+const inverterStatus =
+    inverterOn === null
+        ? "--"
+        : inverterOn
             ? "INVERTER ON"
             : "INVERTER OFF";
 
 
-    const inverterStatusColor =
-        inverterOn
+const inverterStatusColor =
+    inverterOn === null
+        ? undefined
+        : inverterOn
             ? P.green
             : P.red;
 
@@ -739,7 +785,7 @@ export default function VD7FaultContent({
                 />
 
 
-                <ParameterRow
+                {/* <ParameterRow
                     label="Status"
                     value={
                         inverterStatus
@@ -747,7 +793,18 @@ export default function VD7FaultContent({
                     valueColor={
                         inverterStatusColor
                     }
-                />
+                /> */}
+
+
+                <ParameterRow
+    label="Status"
+    value={
+        inverterStatus
+    }
+    valueColor={
+        inverterStatusColor
+    }
+/>
 
 
                 <ParameterRow
